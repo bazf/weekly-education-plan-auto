@@ -68,6 +68,36 @@
                 page-break-inside: avoid !important;
             }
         }
+
+        /* NEW: Styles for the spinner overlay */
+        #spinnerOverlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            padding-top: 20%;
+            font-size: 24px;
+        }
+        /* Just a simple rotating animation (optional) */
+        .spinnerIcon {
+            border: 6px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 6px solid #3498db;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -98,6 +128,12 @@
     <button id="btnPrint">Друк</button>
 </div>
 
+<!-- NEW: Spinner overlay -->
+<div id="spinnerOverlay">
+    <div class="spinnerIcon"></div>
+    <div>Заповнюю, очікуйте, будь ласка!</div>
+</div>
+
 <script>
     /****************************************************
      * Змінна для назв місяців українською
@@ -117,6 +153,12 @@
             document.getElementById('apiKeyInput').value = savedApiKey;
         }
 
+        // NEW: Відновлюємо збережений рік-місяць, якщо є
+        const savedMonthYear = localStorage.getItem('selectedMonthYear'); // <-- NEW
+        if (savedMonthYear) {
+            document.getElementById('monthYearInput').value = savedMonthYear; // <-- NEW
+        }
+
         // Відновлюємо збережений HTML (усіх .page разом)
         const savedPages = localStorage.getItem('allGeneratedPages');
         if (savedPages) {
@@ -126,6 +168,13 @@
             // Після вставляння – знову навішаємо обробники на кнопки редагування/збереження
             reattachTableHandlers();
             reattachThemeInputHandlers();
+
+            // NEW: Enable Edit and Save buttons if tables exist
+            document.querySelectorAll('.page').forEach(page => {
+                page.querySelectorAll('.editBtn, .saveBtn').forEach(btn => {
+                    btn.disabled = false;
+                });
+            });
         }
 
         // Перевіряємо, чи можна активувати кнопки автозаповнення
@@ -136,6 +185,13 @@
      * ЗБЕРІГАННЯ / ВІДНОВЛЕННЯ КОНТЕНТУ
      ****************************************************/
     function saveGeneratedPages() {
+        // Iterate over all '.page' elements to set 'value' attributes
+        document.querySelectorAll('.page').forEach(page => {
+            page.querySelectorAll('input').forEach(input => {
+                input.setAttribute('value', input.value);
+            });
+        });
+
         // Зчитуємо всі .page і зберігаємо їхній зовнішній HTML у localStorage
         const pagesHtml = Array.from(document.querySelectorAll('.page'))
             .map(page => page.outerHTML)
@@ -198,6 +254,10 @@
             alert('Будь ласка, виберіть рік та місяць!');
             return;
         }
+
+        // NEW: зберігаємо вибраний рік-місяць
+        localStorage.setItem('selectedMonthYear', monthInput); // <-- NEW
+
         // Видаляємо усі поточні сторінки .page
         document.querySelectorAll('.page').forEach(page => page.remove());
         // Також очистимо збережені сторінки у localStorage
@@ -462,6 +522,29 @@
     });
 
     /****************************************************
+     * NEW: Spinner / enable / disable main control buttons
+     ****************************************************/
+    function showSpinner() {
+        document.getElementById('spinnerOverlay').style.display = 'block';
+    }
+    function hideSpinner() {
+        document.getElementById('spinnerOverlay').style.display = 'none';
+    }
+    function disableAllButtons() {
+        // Disable only main control buttons within .no-print
+        document.querySelectorAll('.no-print button, .no-print input').forEach(el => {
+            el.disabled = true;
+        });
+    }
+    function enableAllButtons() {
+        // Enable only main control buttons within .no-print
+        document.querySelectorAll('.no-print button, .no-print input').forEach(el => {
+            el.disabled = false;
+        });
+        checkAutoFillAvailability(); // re-check states
+    }
+
+    /****************************************************
      * АВТОЗАПОВНЕННЯ ТЕМ ТИЖНІВ
      ****************************************************/
     const autoFillWeekThemesBtn = document.getElementById('autoFillWeekThemesBtn');
@@ -478,6 +561,11 @@
             alert('Спочатку оберіть рік та місяць!');
             return;
         }
+
+        // NEW: Disable UI and show spinner
+        disableAllButtons();  // <-- NEW
+        showSpinner();        // <-- NEW
+
         const [year, monthStr] = monthInput.split('-');
         const monthIndex = parseInt(monthStr, 10) - 1;
         const monthName = monthNamesUkr[monthIndex] || "";
@@ -535,10 +623,13 @@
             // Зберігаємо зміни
             saveGeneratedPages();
             alert("Автозаповнення тем тижнів завершено!");
-            checkAutoFillAvailability();
         } catch (error) {
             console.error(error);
             alert("Не вдалося отримати дані від Gemini API: " + error.message);
+        } finally {
+            // NEW: Re-enable UI and hide spinner
+            hideSpinner();      // <-- NEW
+            enableAllButtons(); // <-- NEW
         }
     });
 
@@ -559,6 +650,11 @@
             alert('Спочатку оберіть рік та місяць!');
             return;
         }
+
+        // NEW: Disable UI and show spinner
+        disableAllButtons();  // <-- NEW
+        showSpinner();        // <-- NEW
+
         const [year, monthStr] = monthInput.split('-');
         const monthIndex = parseInt(monthStr, 10) - 1;
         const monthName = monthNamesUkr[monthIndex] || "";
@@ -578,7 +674,7 @@
                 const howManyDays = dayInputs.length;
                 if (howManyDays === 0) continue;
 
-                // Prompt: "Придумай N коротких тем днів за темою тижня..."
+                // Prompt: "Придумай N коротких тем днів..."
                 const promptText = `
 Будь ласка, запропонуй ${howManyDays} актуальних коротких тем днів у дитячому садочку в Україні 
 за загальною темою: "${weekTheme}" 
@@ -621,17 +717,18 @@
             // Зберігаємо зміни
             saveGeneratedPages();
             alert("Автозаповнення тем днів завершено!");
-            checkAutoFillAvailability();
         } catch (error) {
             console.error(error);
             alert("Не вдалося отримати дані від Gemini API: " + error.message);
+        } finally {
+            // NEW: Re-enable UI and hide spinner
+            hideSpinner();      
+            enableAllButtons();
         }
     });
 
     /****************************************************
      * АВТОЗАПОВНЕННЯ (ПОВНА ТАБЛИЦЯ)
-     * Заповнює усі стовпчики (8 освітніх ліній) для кожного дня тижня,
-     * базуючись на темі тижня і темі кожного дня.
      ****************************************************/
     const autoFillBtn = document.getElementById('autoFillBtn');
     autoFillBtn.addEventListener('click', async () => {
@@ -647,6 +744,11 @@
             alert('Спочатку оберіть рік та місяць!');
             return;
         }
+
+        // NEW: Disable UI and show spinner
+        disableAllButtons();  
+        showSpinner();        
+
         const [year, monthStr] = monthInput.split('-');
         const monthIndex = parseInt(monthStr, 10) - 1;
         const monthName = monthNamesUkr[monthIndex] || "";
@@ -689,7 +791,7 @@
                     days: dayData
                 };
 
-                // Тут просимо врахувати місяць, рік, актуальність для дитсадка в Україні
+                // Формуємо текст запиту
                 const promptText = `
 Будь ласка, згенеруй план занять для дитячого садочка в Україні на тиждень (період: ${monthName} ${year}) 
 за темою "${promptObj.weekTheme}". 
@@ -709,7 +811,7 @@
   ]
 }
 
-Важливо! Відповіді в масив "lines" з описом активностей повинні не повинні містити нумерацію в кінці опису чи на початку.
+Важливо! Відповіді в масив "lines" з описом активностей не повинні містити нумерацію.
 
 Ось перелік днів тижня і теми днів, які треба включити у план (масив у JSON):
 ${JSON.stringify(promptObj.days, null, 2)}
@@ -769,8 +871,8 @@ ${JSON.stringify(promptObj.days, null, 2)}
                     });
 
                     if (dayEntry && Array.isArray(dayEntry.lines)) {
-                        // columns[0] = dayCell, columns[1..7]
                         const columns = row.querySelectorAll('td');
+                        // columns[0] = dayCell, columns[1..7] = other cells
                         for (let colIndex = 1; colIndex < columns.length; colIndex++) {
                             if (dayEntry.lines[colIndex - 1]) {
                                 columns[colIndex].textContent = dayEntry.lines[colIndex - 1];
@@ -786,6 +888,10 @@ ${JSON.stringify(promptObj.days, null, 2)}
         } catch (error) {
             console.error(error);
             alert("Не вдалося отримати дані від Gemini API: " + error.message);
+        } finally {
+            // NEW: Re-enable UI and hide spinner
+            hideSpinner();
+            enableAllButtons();
         }
     });
 </script>
