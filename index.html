@@ -604,7 +604,7 @@
                 }
                 const data = await response.json();
                 let generatedText = data.candidates[0].content.parts[0].text;
-                
+
                 // Спробуємо розділити результат на рядки
                 const lines = generatedText
                     .split(/\r?\n/)
@@ -709,6 +709,8 @@
   ]
 }
 
+Важливо! Відповіді в масив "lines" з описом активностей повинні не повинні містити нумерацію в кінці опису чи на початку.
+
 Ось перелік днів тижня і теми днів, які треба включити у план (масив у JSON):
 ${JSON.stringify(promptObj.days, null, 2)}
                 `.trim();
@@ -731,22 +733,16 @@ ${JSON.stringify(promptObj.days, null, 2)}
                 const data = await response.json();
 
                 // Спробуємо знайти JSON у тексті відповіді
-                let generatedText = "";
-                if (data.contents && data.contents[0].parts && data.contents[0].parts[0].text) {
-                    generatedText = data.contents[0].parts[0].text;
-                }
+                let generatedText = data.candidates[0].content.parts[0].text;
 
-                // Для безпечного парсингу шукаємо фрагмент { "tableData": [...] }
-                const jsonRegex = /\{[\s\S]*?"tableData"\s*:\s*\[[\s\S]*?\}(\s*\])?\}/;
-                const match = generatedText.match(jsonRegex);
-                if (!match) {
-                    console.warn("Не знайдено валідний JSON у відповіді:", generatedText);
-                    continue;
-                }
+                let cleaned = generatedText
+                    .replace(/^```json\s*/i, '') // видаляє початок ```json
+                    .replace('```', '')         // видаляє кінець ```
+                    .trim();
 
                 let parsedData = null;
                 try {
-                    parsedData = JSON.parse(match[0]);
+                    parsedData = JSON.parse(cleaned);
                 } catch (e) {
                     console.error("Помилка парсингу JSON:", e);
                     console.log("Відповідь від Gemini:", generatedText);
