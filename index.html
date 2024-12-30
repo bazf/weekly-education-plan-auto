@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Планування занять на січень (група "Казка")</title>
+    <title>Планування занять (група "Казка")</title>
     <style>
         /* Базові стилі таблиць */
         table {
@@ -19,14 +19,10 @@
         th {
             background-color: #f2f2f2;
         }
-        h2 {
-            margin-top: 40px;
-        }
 
-        /* Кожна таблиця (і заголовок) обгорнуті у .page, щоб контролювати розриви */
+        /* Кожна таблиця (і заголовок) обгорнуті в .page, щоб контролювати розриви */
         .page {
             page-break-after: always;
-            /* Забороняємо розриви всередині блоку, де можливо */
             break-inside: avoid;
         }
 
@@ -45,7 +41,7 @@
             font-size: 14px;
         }
 
-        /* Сховати кнопки й додаткові поля при друку */
+        /* При друку приховуємо панелі керування (клас .no-print) */
         @media print {
             .no-print {
                 display: none !important;
@@ -55,20 +51,16 @@
         /*
            Примусово робимо сторінку A4 альбомною при друку.
            Зменшуємо масштаб (transform: scale(0.85)) щоб таблиця краще вміщувалась.
-           За потреби змінюйте значення масштабування (0.7, 0.8, 0.9 тощо).
         */
         @page {
             size: A4 landscape;
             margin: 0mm;
         }
-
         @media print {
             body {
-                /* Щоби весь вміст трохи масштабувався */
                 transform: scale(0.85);
                 transform-origin: top left;
             }
-            /* Додатково можна зменшити шрифт усередині таблиць */
             table, th, td {
                 font-size: 12px; /* За потреби змінюйте */
             }
@@ -82,526 +74,177 @@
 
 <!-- Блок налаштувань: вибір місяця, API ключа та автозаповнення -->
 <div class="no-print">
-    <h3>Налаштування місяця, API ключа та автозаповнення</h3>
+    <h3>Налаштування місяця, API-ключа та автозаповнення</h3>
 
     <!-- Вибір року-місяця -->
     <label for="monthYearInput">Оберіть рік та місяць:</label>
     <input type="month" id="monthYearInput">
-
-    <!-- Кнопка генерації порожніх таблиць згідно з кількістю робочих тижнів -->
     <button id="generateWeeksBtn">Згенерувати таблиці</button>
     <br><br>
 
-    <!-- Поле для введення API ключа -->
+    <!-- Поле для введення API-ключа -->
     <label for="apiKeyInput">Google Gemini API Key:</label>
-    <input type="text" id="apiKeyInput">
+    <input type="text" id="apiKeyInput" placeholder="Введіть ваш ключ...">
     <button id="saveApiKeyBtn">Зберегти ключ</button>
     <br><br>
 
-    <!-- Кнопка автозаповнення -->
-    <button id="autoFillBtn" disabled>Автозаповнення</button>
+    <!-- Кнопки автозаповнення (дві окремі) -->
+    <button id="autoFillBtn" disabled>Автозаповнення (приклад)</button>
+    <button id="autoFillDayThemesBtn" disabled>Автозаповнення тем днів</button>
     <br><br>
 
-    <!-- Кнопка друку (уже була) -->
+    <!-- Кнопка друку -->
     <button id="btnPrint">Друк</button>
 </div>
 
-<!-- Нижче – вихідний контент із таблицями -->
-<!-- ТИЖДЕНЬ 1: 1-3 січня -->
-<div class="page">
-    <h2>Тиждень 1 (1–3 січня). Тема тижня: «Новорічні свята»</h2>
-
-    <!-- Кнопки для редагування/збереження саме цієї таблиці -->
-    <div class="no-print">
-        <button class="editBtn" data-table="table1">Редагувати</button>
-        <button class="saveBtn" data-table="table1">Зберегти</button>
-    </div>
-
-    <table id="table1" class="editable-table">
-        <tr>
-            <th>Дні тижня</th>
-            <th>Освітня лінія «Особистість дитини»</th>
-            <th>Освітня лінія «Дитина в соціумі»</th>
-            <th>Освітня лінія «Дитина в природному довкіллі»</th>
-            <th>Освітня лінія «Дитина у світі культури»</th>
-            <th>Освітня лінія «Мовлення дитини»</th>
-            <th>Освітня лінія «Дитина в сенсорно-математичному просторі»</th>
-            <th>Освітня лінія «Гра дитини»</th>
-        </tr>
-        <tr>
-            <td><strong>01.01 (Середа)</strong></td>
-            <td>Ранкова гімнастика «Веселі рухи під музику»</td>
-            <td>Бесіда «Як ми святкуємо Новий рік у родині»</td>
-            <td>Спостереження за зимовою погодою: визначаємо температуру та стан неба</td>
-            <td>Розглядання ілюстрацій «Новорічна ялинка»</td>
-            <td>Вправи на розвиток мовлення: «Опиши ялинкову прикрасу»</td>
-            <td>Лічба ялинкових іграшок (у межах доступної кількості)</td>
-            <td>Рухлива гра «Прикрась ялинку» (імітуємо дії прикрашання)</td>
-        </tr>
-        <tr>
-            <td><strong>02.01 (Четвер)</strong></td>
-            <td>Заняття з фізкультури: «Сніжки» (кидки в ціль)</td>
-            <td>Розповідь-бесіда «Допомога батькам у підготовці до свята»</td>
-            <td>Спостереження за снігом: «Якого він кольору та який на дотик?»</td>
-            <td>Читання вірша «Зима прийшла» (обговорення вражень)</td>
-            <td>Мовленнєва вправа «Склади речення з зимовими словами»</td>
-            <td>Дидактична вправа «Порівняй сніжинки за розміром»</td>
-            <td>Ігрова ситуація «Знайди таку саму сніжинку» (парування за ознаками)</td>
-        </tr>
-        <tr>
-            <td><strong>03.01 (П’ятниця)</strong></td>
-            <td>Ранкова гімнастика з музичним супроводом</td>
-            <td>Бесіда «Святковий настрій у садочку: як бути чемним?»</td>
-            <td>Експеримент «Чи тане сніг у теплій кімнаті?»</td>
-            <td>Виконання аплікації «Сніговичок із вати»</td>
-            <td>Лексична гра «Назви чарівне слово (вітаємо одне одного)»</td>
-            <td>Закріплення понять «більше» і «менше» (снігові кульки)</td>
-            <td>Сюжетно-рольова гра «Веселе свято у групі»</td>
-        </tr>
-    </table>
-</div>
-
-<!-- ТИЖДЕНЬ 2: 6-10 січня -->
-<div class="page">
-    <h2>Тиждень 2 (6–10 січня). Тема тижня: «Зимові та Різдвяні традиції»</h2>
-
-    <!-- Кнопки для редагування/збереження цієї таблиці -->
-    <div class="no-print">
-        <button class="editBtn" data-table="table2">Редагувати</button>
-        <button class="saveBtn" data-table="table2">Зберегти</button>
-    </div>
-
-    <table id="table2" class="editable-table">
-        <tr>
-            <th>Дні тижня</th>
-            <th>Освітня лінія «Особистість дитини»</th>
-            <th>Освітня лінія «Дитина в соціумі»</th>
-            <th>Освітня лінія «Дитина в природному довкіллі»</th>
-            <th>Освітня лінія «Дитина у світі культури»</th>
-            <th>Освітня лінія «Мовлення дитини»</th>
-            <th>Освітня лінія «Дитина в сенсорно-математичному просторі»</th>
-            <th>Освітня лінія «Гра дитини»</th>
-        </tr>
-        <tr>
-            <td><strong>06.01 (Понеділок)</strong></td>
-            <td>Фізкультура на повітрі (лижня прогулянка за сприятливих умов)</td>
-            <td>Бесіда «Як святкують Різдво у родинах»</td>
-            <td>Спостереження за пташками: синички, горобці, ворони</td>
-            <td>Читання колядок, розучування короткої колядки</td>
-            <td>Мовленнєва вправа «Опиши різдвяну вечерю»</td>
-            <td>Порівняння форм (круглий калач, квадратна серветка)</td>
-            <td>Рухлива гра «Затанцюємо колом»</td>
-        </tr>
-        <tr>
-            <td><strong>07.01 (Вівторок)</strong></td>
-            <td>Фізичні вправи «Передай різдвяний ліхтарик»</td>
-            <td>Розповідь «Звичаї та традиції святвечора»</td>
-            <td>Екологічна вправа «Як подбати про природу взимку»</td>
-            <td>Слухання колядок та щедрівок (український народний мелос)</td>
-            <td>Вправа «Склади речення з новим словом: вертеп, свята вечеря»</td>
-            <td>Дидактична вправа «Полічи гостинці в кошику»</td>
-            <td>Гра «Чарівна свічечка» (наслідування та передавання по колу)</td>
-        </tr>
-        <tr>
-            <td><strong>08.01 (Середа)</strong></td>
-            <td>Заняття з фізкультури «Кидай сніжку!»</td>
-            <td>Ігрова ситуація «Допоможи другу знайти рукавичку»</td>
-            <td>Спостереження за погодою: хмарність, іній на деревах</td>
-            <td>Музичний гурток: розучування короткої щедрівки</td>
-            <td>Мовленнєва вправа «Добери риму до слів: зима, іній, сніг»</td>
-            <td>Лічильний матеріал: «Скільки іграшок заховано у снігу?»</td>
-            <td>Гра «Зліпи сніговика» (колективна робота)</td>
-        </tr>
-        <tr>
-            <td><strong>09.01 (Четвер)</strong></td>
-            <td>Ранкова розминка: «Веселі кроки»</td>
-            <td>Бесіда «Як підтримати одне одного під час святкувань»</td>
-            <td>Спостереження: «Як поводиться вода на морозі» (дослід із заморожуванням)</td>
-            <td>Аплікація «Різдвяна зірка» (папір, фольга)</td>
-            <td>Вправи з переказу короткої історії про Різдво</td>
-            <td>Порівняння за кількістю: «Ялинкові іграшки у двох кошиках»</td>
-            <td>Гра-загадка «Що змінилося в оздобленні кімнати?»</td>
-        </tr>
-        <tr>
-            <td><strong>10.01 (П’ятниця)</strong></td>
-            <td>Фізичні вправи: «Сніжний лабіринт» (ходьба слідом)</td>
-            <td>Розповідь «Мої враження від Різдва»</td>
-            <td>Спостереження за деревами взимку: «Чому немає листя?»</td>
-            <td>Спів колядок із дітьми, танок «Зимова полька»</td>
-            <td>Мовленнєва вправа «Побажай друзям у Новому році…»</td>
-            <td>Закріплення числа і цифри 4 (у простих ігрових ситуаціях)</td>
-            <td>Сюжетно-рольова гра «Різдвяне частування»</td>
-        </tr>
-    </table>
-</div>
-
-<!-- ТИЖДЕНЬ 3: 13-17 січня -->
-<div class="page">
-    <h2>Тиждень 3 (13–17 січня). Тема тижня: «Добро і повага»</h2>
-
-    <div class="no-print">
-        <button class="editBtn" data-table="table3">Редагувати</button>
-        <button class="saveBtn" data-table="table3">Зберегти</button>
-    </div>
-
-    <table id="table3" class="editable-table">
-        <tr>
-            <th>Дні тижня</th>
-            <th>Освітня лінія «Особистість дитини»</th>
-            <th>Освітня лінія «Дитина в соціумі»</th>
-            <th>Освітня лінія «Дитина в природному довкіллі»</th>
-            <th>Освітня лінія «Дитина у світі культури»</th>
-            <th>Освітня лінія «Мовлення дитини»</th>
-            <th>Освітня лінія «Дитина в сенсорно-математичному просторі»</th>
-            <th>Освітня лінія «Гра дитини»</th>
-        </tr>
-        <tr>
-            <td><strong>13.01 (Понеділок)</strong></td>
-            <td>Фізичні вправи «Стрибки через уявну калюжу»</td>
-            <td>Бесіда «Що таке доброта? Приклади добрих вчинків»</td>
-            <td>Спостереження за змінами в природі взимку (вітер, мороз)</td>
-            <td>Розповідь «Як народжуються добрі традиції»</td>
-            <td>Вправа «Добери ввічливі слова»</td>
-            <td>Порівняння множин предметів (кубики та м’ячі)</td>
-            <td>Гра-інсценізація «Телефонна розмова: ввічливі слова»</td>
-        </tr>
-        <tr>
-            <td><strong>14.01 (Вівторок)</strong></td>
-            <td>Фізкультура на повітрі «Перегони на санчатах»</td>
-            <td>Розповідь «Повага до старших людей у родині»</td>
-            <td>Спостереження за зимовим небом та сонцем</td>
-            <td>Вивчення вірша «Шана старшим»</td>
-            <td>Мовленнєва вправа «Продовж ввічливе речення»</td>
-            <td>Вправи з вимірювання (довше-коротше, вище-нижче)</td>
-            <td>Дидактична гра «Чарівна стежина в країну Доброти»</td>
-        </tr>
-        <tr>
-            <td><strong>15.01 (Середа)</strong></td>
-            <td>Рухливі ігри «Кізонька» та «Бджілки»</td>
-            <td>Обговорення «Добре слово всім потрібне»</td>
-            <td>Спостереження за снігопадом: якою буває сніжинка</td>
-            <td>Вірш К.Перелісної «Чарівні слова» (читання і бесіда)</td>
-            <td>Лексична гра «Ланцюжок ввічливих слів»</td>
-            <td>Геометричні фігури (коло, квадрат, трикутник) – вправи на впізнавання</td>
-            <td>Дидактична гра «Вчимося спілкуватися» (розігрування діалогів)</td>
-        </tr>
-        <tr>
-            <td><strong>16.01 (Четвер)</strong></td>
-            <td>Фізкультура: «Закоти м’яч у ворота», «Веселі бігуни»</td>
-            <td>Розповідь-бесіда «Нехай у серці живе добро»</td>
-            <td>Розглядання кімнатних рослин: як вони ростуть узимку?</td>
-            <td>Вивчення вірша «Г.Черінь. Святий Миколай»</td>
-            <td>Мовленнєва вправа «Скринька з чарівними словами»</td>
-            <td>Порівняння об’єктів у природі (довжина гілки, розмір листка)</td>
-            <td>Дидактична гра «У світі добрих вчинків»</td>
-        </tr>
-        <tr>
-            <td><strong>17.01 (П’ятниця)</strong></td>
-            <td>Фізкультура на повітрі «Жабки», «Біжіть до мене»</td>
-            <td>Бесіда «Як проявляти любов і милосердя?»</td>
-            <td>Спостереження за сонцем: зима і короткий світловий день</td>
-            <td>Вірш В.Багірової «Лист до Чудотворця» (читання і обговорення)</td>
-            <td>Вправа «Добери подібні слова (синоніми до доброти)»</td>
-            <td>Дидактична вправа «Полічи рибок» (з використанням картинок)</td>
-            <td>Гра-фантазування «Уяви, що ти чарівник» (що б ти зробив доброго?)</td>
-        </tr>
-    </table>
-</div>
-
-<!-- ТИЖДЕНЬ 4: 20-24 січня -->
-<div class="page">
-    <h2>Тиждень 4 (20–24 січня). Тема тижня: «Зимовий одяг та піклування про себе»</h2>
-
-    <div class="no-print">
-        <button class="editBtn" data-table="table4">Редагувати</button>
-        <button class="saveBtn" data-table="table4">Зберегти</button>
-    </div>
-
-    <table id="table4" class="editable-table">
-        <tr>
-            <th>Дні тижня</th>
-            <th>Освітня лінія «Особистість дитини»</th>
-            <th>Освітня лінія «Дитина в соціумі»</th>
-            <th>Освітня лінія «Дитина в природному довкіллі»</th>
-            <th>Освітня лінія «Дитина у світі культури»</th>
-            <th>Освітня лінія «Мовлення дитини»</th>
-            <th>Освітня лінія «Дитина в сенсорно-математичному просторі»</th>
-            <th>Освітня лінія «Гра дитини»</th>
-        </tr>
-        <tr>
-            <td><strong>20.01 (Понеділок)</strong></td>
-            <td>Фізкультура на повітрі «Біжіть до мене» та «Жабки»</td>
-            <td>Допомога одне одному під час одягання на прогулянку</td>
-            <td>Бесіда «Зимонька-зима» (ознаки зими у природі)</td>
-            <td>Читання та обговорення вірша С.Жупаника «Віхола»</td>
-            <td>Лексична гра «Назви зимове слово»</td>
-            <td>Лічба на прогулянці в межах 2 (пара рукавиць, чобіт)</td>
-            <td>Дидактична гра «Що змінилося?» (з предметами одягу)</td>
-        </tr>
-        <tr>
-            <td><strong>21.01 (Вівторок)</strong></td>
-            <td>Фізкультура: «Закоти м’яч у ворота» та «Рухливі бджілки»</td>
-            <td>Бесіда-розповідь «Бережи свій одяг»</td>
-            <td>Обговорення «Як ми одягаємось взимку?» (шапка, шарф, рукавиці)</td>
-            <td>Читання оповідання «Хлопчик, який хотів приголубити сніжинку»</td>
-            <td>Вправа «Назви предмети зимового одягу»</td>
-            <td>«Полічи предмети одягу ляльки» (у межах 5)</td>
-            <td>Дидактична гра «Склади ціле з частин» (зображення шубки)</td>
-        </tr>
-        <tr>
-            <td><strong>22.01 (Середа)</strong></td>
-            <td>Фізкультура на повітрі «Ходьба слідом», «Перелізь через бар’єр»</td>
-            <td>Дидактична вправа «Можна – не можна» (догляд за одягом)</td>
-            <td>Спостереження за снігопадом (форма сніжинок)</td>
-            <td>Бесіда за змістом загадки «Дятел» (як птахи рятуються взимку)</td>
-            <td>Мовленнєва вправа «Впізнай за описом» (шарф, шапка, рукавиці)</td>
-            <td>Дидактична вправа «Що робимо вранці, а що увечері?»</td>
-            <td>Гра зі снігом «Які сліди залишає сніг?» (дослідницький інтерес)</td>
-        </tr>
-        <tr>
-            <td><strong>23.01 (Четвер)</strong></td>
-            <td>Заняття з фізкультури «Закоти м’яч у ворота»</td>
-            <td>Бесіда «Повага до старших людей»</td>
-            <td>Обговорення «Піклуємося про пташок узимку»</td>
-            <td>Розглядання картинок із зображенням зимового одягу</td>
-            <td>Мовленнєва вправа «Що буває взимку?» (формуємо розгорнуті речення)</td>
-            <td>Орієнтування в часі: ранок, день, вечір</td>
-            <td>Сюжетно-рольова гра «В крамниці одягу»</td>
-        </tr>
-        <tr>
-            <td><strong>24.01 (П’ятниця)</strong></td>
-            <td>Фізкультура на повітрі «Біжіть до мене», «Хто швидше?»</td>
-            <td>Бесіда «Поведінка на території дитячого садка»</td>
-            <td>Читання вірша Г.Демченко «Синичка» (обговорюємо допомогу пташці)</td>
-            <td>Слухання музичного твору «Зима» (класична композиція)</td>
-            <td>Мовленнєва вправа «Закінчи речення…» (розвиток зв’язного мовлення)</td>
-            <td>Дидактична вправа «Що подібне на трикутник?» (форма ялинки, ковпак)</td>
-            <td>Гра-перевтілення «Ми – пташки» (рухова діяльність)</td>
-        </tr>
-    </table>
-</div>
-
-<!-- ТИЖДЕНЬ 5: 27-31 січня -->
-<div class="page">
-    <h2>Тиждень 5 (27–31 січня). Тема тижня: «Праця дорослих»</h2>
-
-    <div class="no-print">
-        <button class="editBtn" data-table="table5">Редагувати</button>
-        <button class="saveBtn" data-table="table5">Зберегти</button>
-    </div>
-
-    <table id="table5" class="editable-table">
-        <tr>
-            <th>Дні тижня</th>
-            <th>Освітня лінія «Особистість дитини»</th>
-            <th>Освітня лінія «Дитина в соціумі»</th>
-            <th>Освітня лінія «Дитина в природному довкіллі»</th>
-            <th>Освітня лінія «Дитина у світі культури»</th>
-            <th>Освітня лінія «Мовлення дитини»</th>
-            <th>Освітня лінія «Дитина в сенсорно-математичному просторі»</th>
-            <th>Освітня лінія «Гра дитини»</th>
-        </tr>
-        <tr>
-            <td><strong>27.01 (Понеділок)<br>«Праця дорослих. Продавець»</strong></td>
-            <td>Ранкова гімнастика «Рухи продавця» (імітація пакування товарів)</td>
-            <td>Бесіда «Хто такий продавець і що він робить?»</td>
-            <td>Спостереження «Продукти з чого виготовляються?» (рослинне, тваринне походження)</td>
-            <td>Розглядання ілюстрацій магазину, обговорення зовнішнього вигляду продавця</td>
-            <td>Мовленнєва вправа «Склади речення про магазин»</td>
-            <td>Дидактична вправа «Полічи товари на полиці»</td>
-            <td>Сюжетно-рольова гра «В магазині» (ролі: продавець, покупець)</td>
-        </tr>
-        <tr>
-            <td><strong>28.01 (Вівторок)<br>«День становлення державного прапора України»</strong></td>
-            <td>Фізкультура на повітрі: «Прапорець у руці» (біг із прапорцями)</td>
-            <td>Розповідь «Символи України: прапор»</td>
-            <td>Спостереження «Поєднання кольорів у природі: синій, жовтий»</td>
-            <td>Аплікація «Наш прапор» (жовтий і синій папір)</td>
-            <td>Бесіда «Що означають кольори прапора?» (формування словникового запасу)</td>
-            <td>Дидактична вправа «Полічи смужки на прапорі»</td>
-            <td>Гра «Урочистий парад» (імітація ходи з прапорцями)</td>
-        </tr>
-        <tr>
-            <td><strong>29.01 (Середа)<br>«День пам’яті героїв Крут»</strong></td>
-            <td>Ранкова гімнастика із загальнорозвивальними вправами</td>
-            <td>Розповідь вихователя (у доступній формі) про героїзм юнаків під Крутами</td>
-            <td>Спостереження «Зимова природа довкола: зима тоді і тепер»</td>
-            <td>Перегляд ілюстрацій «Символи пам’яті, свічка»</td>
-            <td>Мовленнєва вправа «Скажи слова пошани» (героїзм, відвага)</td>
-            <td>Порівняння груп предметів «Свічки на столі» (більше, менше)</td>
-            <td>Тиха гра «Вшануймо хвилиною мовчання» (етична вправа)</td>
-        </tr>
-        <tr>
-            <td><strong>30.01 (Четвер)<br>«Працівники пошти»</strong></td>
-            <td>Фізкультура «Листоноша поспішає» (біг із «листами», передавання естафети)</td>
-            <td>Бесіда «Робота листоноші: як надсилаються листи?»</td>
-            <td>Спостереження «Шлях листа: від поштової скриньки до адресата»</td>
-            <td>Розглядання поштових конвертів, марок, листівок</td>
-            <td>Мовленнєва вправа «Склади коротку історію про лист»</td>
-            <td>Дидактична вправа «Оціни вагу посилки» (важка, легка)</td>
-            <td>Сюжетно-рольова гра «Пошта» (надсилання листів у скриньку)</td>
-        </tr>
-        <tr>
-            <td><strong>31.01 (П’ятниця)<br>«Стрітення Господнє»</strong></td>
-            <td>Ранкова гімнастика «Промінчики-сніжинки»</td>
-            <td>Бесіда «Народні традиції на Стрітення»</td>
-            <td>Спостереження за першими змінами природи наприкінці зими</td>
-            <td>Вивчення народних прикмет, пов’язаних зі Стрітенням</td>
-            <td>Мовленнєва вправа «Розкажи, що таке Стрітення?»</td>
-            <td>Дидактична вправа «Порахуй свічечки на столі»</td>
-            <td>Гра-інсценізація «Як Зима із Весною зустрілись»</td>
-        </tr>
-    </table>
-</div>
-
 <script>
-    // ============================
-    // ВІДНОВЛЕННЯ ТАБЛИЦЬ З localStorage
-    // ============================
+    /****************************************************
+     * ВІДНОВЛЕННЯ ДАНИХ З LOCALSTORAGE (якщо були збережені)
+     ****************************************************/
     document.addEventListener('DOMContentLoaded', function() {
-        const tables = document.querySelectorAll('.editable-table');
-        tables.forEach(table => {
-            const tableId = table.id;
-            const savedData = localStorage.getItem(tableId);
-            if (savedData) {
-                table.innerHTML = savedData;
-            }
-        });
-
-        // Спробуємо відновити збережений API ключ
+        // Відновлюємо збережений ключ, якщо є
         const savedApiKey = localStorage.getItem('geminiApiKey');
-        if(savedApiKey) {
+        if (savedApiKey) {
             document.getElementById('apiKeyInput').value = savedApiKey;
-            // Якщо ключ є - вмикаємо кнопку автозаповнення
-            document.getElementById('autoFillBtn').disabled = false;
         }
+
+        // Відновлюємо збережений HTML (усіх .page разом)
+        const savedPages = localStorage.getItem('allGeneratedPages');
+        if (savedPages) {
+            // Вставимо відновлений HTML у body
+            document.body.insertAdjacentHTML('beforeend', savedPages);
+
+            // Після вставляння – знову навішаємо обробники на кнопки редагування/збереження
+            reattachTableHandlers();
+            reattachThemeInputHandlers();
+        }
+
+        // Перевіряємо, чи можна активувати кнопки автозаповнення
+        checkAutoFillAvailability();
     });
 
-    // ============================
-    // ФУНКЦІЇ РЕДАГУВАННЯ ТАБЛИЦЬ
-    // ============================
-    function saveTableContent(tableId) {
-        const table = document.getElementById(tableId);
-        // Вимикаємо режим редагування
-        table.querySelectorAll('td, th').forEach(cell => {
-            cell.contentEditable = 'false';
-        });
-        // Зберігаємо HTML у localStorage
-        localStorage.setItem(tableId, table.innerHTML);
+    /****************************************************
+     * ЗБЕРІГАННЯ / ВІДНОВЛЕННЯ КОНТЕНТУ
+     ****************************************************/
+    function saveGeneratedPages() {
+        // Зчитуємо всі .page і зберігаємо їхній зовнішній HTML у localStorage
+        const pagesHtml = Array.from(document.querySelectorAll('.page'))
+            .map(page => page.outerHTML)
+            .join('\n');
+
+        localStorage.setItem('allGeneratedPages', pagesHtml);
     }
 
+    /****************************************************
+     * ФУНКЦІЯ РЕДАГУВАННЯ ТАБЛИЦЬ (вмикаємо contentEditable)
+     ****************************************************/
     function editTableContent(tableId) {
         const table = document.getElementById(tableId);
+        if (!table) return;
         table.querySelectorAll('td, th').forEach(cell => {
             cell.contentEditable = 'true';
         });
     }
 
-    // Обробники кліків по кнопках "Редагувати" та "Зберегти"
-    document.querySelectorAll('.editBtn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tableId = this.getAttribute('data-table');
-            editTableContent(tableId);
+    /****************************************************
+     * ФУНКЦІЯ ЗБЕРЕЖЕННЯ ТАБЛИЦЬ (вимикаємо contentEditable)
+     ****************************************************/
+    function saveTableContent(tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        table.querySelectorAll('td, th').forEach(cell => {
+            cell.contentEditable = 'false';
         });
-    });
-    document.querySelectorAll('.saveBtn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tableId = this.getAttribute('data-table');
-            saveTableContent(tableId);
-            alert('Дані збережено успішно!');
+
+        // Після вимкнення редагування – зберігаємо все у localStorage
+        saveGeneratedPages();
+        alert('Дані збережено успішно!');
+    }
+
+    /****************************************************
+     * ОБРОБНИКИ КНОПОК "Редагувати" / "Зберегти"
+     ****************************************************/
+    function reattachTableHandlers() {
+        document.querySelectorAll('.editBtn').forEach(btn => {
+            btn.onclick = function() {
+                const tableId = this.getAttribute('data-table');
+                editTableContent(tableId);
+            };
         });
-    });
+        document.querySelectorAll('.saveBtn').forEach(btn => {
+            btn.onclick = function() {
+                const tableId = this.getAttribute('data-table');
+                saveTableContent(tableId);
+            };
+        });
+    }
 
-    // ============================
-    // ДРУК
-    // ============================
-    document.getElementById('btnPrint').addEventListener('click', function() {
-        window.print();
-    });
-
-    // ============================
-    // ЗБЕРЕЖЕННЯ API-КЛЮЧА
-    // ============================
-    const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
-    saveApiKeyBtn.addEventListener('click', () => {
-        const keyInput = document.getElementById('apiKeyInput').value.trim();
-        if(keyInput) {
-            localStorage.setItem('geminiApiKey', keyInput);
-            // Активуємо кнопку автозаповнення
-            document.getElementById('autoFillBtn').disabled = false;
-            alert('API ключ збережено успішно!');
-        } else {
-            alert('Введіть дійсний API ключ!');
-        }
-    });
-
-    // ============================
-    // ГЕНЕРАЦІЯ ТИЖНІВ ЗА МІСЯЦЕМ
-    // ============================
+    /****************************************************
+     * ГЕНЕРАЦІЯ "РОБОЧИХ ТИЖНІВ" МІСЯЦЯ
+     ****************************************************/
     const generateWeeksBtn = document.getElementById('generateWeeksBtn');
     generateWeeksBtn.addEventListener('click', () => {
-        const monthInput = document.getElementById('monthYearInput').value; 
-        if(!monthInput) {
+        const monthInput = document.getElementById('monthYearInput').value;
+        if (!monthInput) {
             alert('Будь ласка, виберіть рік та місяць!');
             return;
         }
-        // Парсимо введене значення
-        // Формат: YYYY-MM
+        // Видаляємо усі поточні сторінки .page
+        document.querySelectorAll('.page').forEach(page => page.remove());
+        // Також очистимо збережені сторінки у localStorage
+        localStorage.removeItem('allGeneratedPages');
+
+        // Парсимо обраний рік і місяць
         const [year, monthStr] = monthInput.split('-');
-        const month = parseInt(monthStr, 10) - 1; // місяці в JS з 0
+        const month = parseInt(monthStr, 10) - 1; // JS-місяці з 0
 
-        // Видаляємо старі (згенеровані) таблиці, щоб не накопичувались
-        // (За бажанням можна робити якось інакше)
-        const generatedDivs = document.querySelectorAll('.generated-week');
-        generatedDivs.forEach(div => div.remove());
-
-        // Отримуємо масив дат (понеділків) поточного місяця
-        const mondays = getMondaysOfMonth(year, month);
-
-        if(mondays.length === 0) {
-            alert('У цьому місяці немає повноцінних понеділків (див. логіку getMondaysOfMonth).');
+        // Отримаємо "тижні" (масив масивів), де кожен тиждень складається тільки з робочих днів (пн–пт).
+        const weeks = getWorkingWeeksOfMonth(year, month);
+        if(weeks.length === 0) {
+            alert('У цьому місяці немає робочих днів (за логікою getWorkingWeeksOfMonth).');
             return;
         }
 
-        // Для кожного понеділка згенеруємо блок таблиці
-        mondays.forEach((mondayDate, index) => {
-            // Рахунок тижня
+        // Генеруємо блоки-«тижні»
+        weeks.forEach((daysArray, index) => {
             const weekNumber = index + 1;
 
-            // Розрахуємо п’ятницю тижня (monday + 4 дні)
-            const fridayDate = new Date(mondayDate);
-            fridayDate.setDate(fridayDate.getDate() + 4);
+            // Перша й остання дата у тижні
+            const firstDateStr = formatDateDDMM(daysArray[0]);
+            const lastDateStr = formatDateDDMM(daysArray[daysArray.length - 1]);
 
-            // Формуємо дні у форматі dd.mm
-            const mondayStr = formatDateDDMM(mondayDate);
-            const fridayStr = formatDateDDMM(fridayDate);
+            // Створюємо контейнер (.page)
+            const pageDiv = document.createElement('div');
+            pageDiv.classList.add('page');
 
-            // Створюємо контейнер (div) із таблицею
-            const weekDiv = document.createElement('div');
-            weekDiv.classList.add('page', 'generated-week'); // .page - щоб зберегти розрив сторінки, якщо потрібно
-            // Заголовок
+            // Заголовок: "Тиждень X (DD.MM – DD.MM), Тема тижня: <input>"
             const h2 = document.createElement('h2');
-            h2.textContent = `Тиждень ${weekNumber} (${mondayStr} – ${fridayStr}). Тема тижня: «___»`;
-            weekDiv.appendChild(h2);
+            h2.innerHTML = `
+                Тиждень ${weekNumber} (${firstDateStr} – ${lastDateStr}).
+                <label> Тема тижня: <input type="text" class="week-theme-input" placeholder="Вкажіть тему тижня"> </label>
+            `;
+            pageDiv.appendChild(h2);
 
             // Кнопки редагування / збереження
             const noPrintDiv = document.createElement('div');
             noPrintDiv.classList.add('no-print');
             const editBtn = document.createElement('button');
             editBtn.textContent = 'Редагувати';
+            editBtn.classList.add('editBtn');
             const saveBtn = document.createElement('button');
             saveBtn.textContent = 'Зберегти';
-            // Призначимо унікальний ID для таблиці
-            const tableId = `autoTable${weekNumber}`;
-            editBtn.setAttribute('data-table', tableId);
-            editBtn.classList.add('editBtn');
-            saveBtn.setAttribute('data-table', tableId);
             saveBtn.classList.add('saveBtn');
+
+            // Встановимо унікальний ID для таблиці
+            const tableId = `weekTable${weekNumber}`;
+            editBtn.setAttribute('data-table', tableId);
+            saveBtn.setAttribute('data-table', tableId);
+
             noPrintDiv.appendChild(editBtn);
             noPrintDiv.appendChild(saveBtn);
-            weekDiv.appendChild(noPrintDiv);
+            pageDiv.appendChild(noPrintDiv);
 
-            // Створимо HTML таблицю
+            // Створюємо таблицю
             const table = document.createElement('table');
             table.id = tableId;
             table.classList.add('editable-table');
@@ -609,7 +252,7 @@
             // Шапка
             table.innerHTML = `
                 <tr>
-                    <th>Дні тижня</th>
+                    <th>Дні тижня (Тема дня)</th>
                     <th>Освітня лінія «Особистість дитини»</th>
                     <th>Освітня лінія «Дитина в соціумі»</th>
                     <th>Освітня лінія «Дитина в природному довкіллі»</th>
@@ -619,28 +262,19 @@
                     <th>Освітня лінія «Гра дитини»</th>
                 </tr>
             `;
-            
-            // Додаємо 5 рядків (понеділок-п’ятниця)
-            for(let i=0; i<5; i++){
-                // i=0 -> Monday, i=4 -> Friday
-                // Створюємо дату = mondayDate + i
-                const currentDate = new Date(mondayDate);
-                currentDate.setDate(currentDate.getDate() + i);
-                // Якщо дата “вистрибнула” з місяця - можна або припинити, або показати, що це інший місяць
-                if(currentDate.getMonth() !== month) {
-                    // Якщо хочемо показувати як пусту - розкоментуйте або адаптуйте
-                    // break;
-                }
-                const ddMM = formatDateDDMM(currentDate);
 
-                let dayNames = ['Понеділок','Вівторок','Середа','Четвер','П’ятниця','Субота','Неділя'];
-                let dayOfWeekName = dayNames[currentDate.getDay()-1] || '';
-                // Якщо getDay() = 0, це неділя; змістимо індекс на -1, тому може виникнути undefined
-                // Можна підлаштувати, щоб виводити через switch/case. Тут для спрощення - перевірка.
+            // Додаємо рядки для кожного робочого дня тижня
+            daysArray.forEach(dayDate => {
+                const ddMM = formatDateDDMM(dayDate);
+                const dayOfWeekName = getDayNameUkr(dayDate.getDay());
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><strong>${ddMM} (${dayOfWeekName})</strong></td>
+                    <td>
+                        <strong>${ddMM} (${dayOfWeekName})</strong>
+                        <br>
+                        Тема дня: <input type="text" class="day-theme-input" placeholder="Вкажіть тему дня">
+                    </td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -650,103 +284,281 @@
                     <td></td>
                 `;
                 table.appendChild(row);
-            }
-            weekDiv.appendChild(table);
-
-            // Додаємо новий тиждень у кінець body (або куди вам потрібно)
-            document.body.appendChild(weekDiv);
-        });
-
-        // Заново вішаємо обробники на кнопки Редагувати/Зберегти (адже з’явилися нові таблиці)
-        document.querySelectorAll('.editBtn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tableId = this.getAttribute('data-table');
-                editTableContent(tableId);
             });
+
+            pageDiv.appendChild(table);
+            document.body.appendChild(pageDiv);
         });
-        document.querySelectorAll('.saveBtn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tableId = this.getAttribute('data-table');
-                saveTableContent(tableId);
-                alert('Дані збережено успішно!');
-            });
-        });
+
+        // Заново навішуємо обробники на кнопки Редагувати/Зберегти
+        reattachTableHandlers();
+
+        // Навішуємо обробники на поля вводу (щоб відстежувати, коли всі теми заповнені)
+        reattachThemeInputHandlers();
+
+        // Зберігаємо порожні згенеровані таблиці в localStorage
+        saveGeneratedPages();
+
+        // Після генерації перевіряємо кнопки автозаповнення
+        checkAutoFillAvailability();
     });
 
-    // Повертає список дат (усі понеділки вибраного року/місяця)
-    function getMondaysOfMonth(year, month) {
-        // year - число, month - 0..11
-        let date = new Date(year, month, 1);
-        // Знайдемо перший понеділок
-        while (date.getDay() !== 1) {
-            date.setDate(date.getDate() + 1);
-            if(date.getMonth() !== month) {
-                // Вийшли за межі місяця - понеділків немає
-                return [];
+    /**
+     * Повертає масив «тижнів» (кожен «тиждень» – це масив робочих днів),
+     * де перший тиждень починається з першого робочого дня місяця (якщо це сер/чет/пт),
+     * і кожен новий понеділок створює нову таблицю.
+     * Суботи і неділі пропускаються.
+     */
+    function getWorkingWeeksOfMonth(year, month) {
+        // Спочатку зберемо всі робочі дні (пн–пт) у масив "allWorkDays".
+        const allWorkDays = [];
+        let d = new Date(year, month, 1);
+
+        while (d.getMonth() === month) {
+            const dayOfWeek = d.getDay(); // 0=Нд, 1=Пн, ... 6=Сб
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                // Це робочий день (пн–пт)
+                allWorkDays.push(new Date(d));
             }
+            d.setDate(d.getDate() + 1);
         }
 
-        let mondays = [];
-        // Додаємо всі понеділки
-        while (date.getMonth() === month) {
-            mondays.push(new Date(date));
-            date.setDate(date.getDate() + 7);
+        if (allWorkDays.length === 0) return [];
+
+        // Тепер поділимо "allWorkDays" на «тижні»:
+        const weeks = [];
+        let currentWeek = [];
+
+        for (let i = 0; i < allWorkDays.length; i++) {
+            const dayDate = allWorkDays[i];
+            // Якщо це понеділок і "currentWeek" вже містить дні, починаємо новий тиждень
+            if (dayDate.getDay() === 1 && currentWeek.length > 0) {
+                weeks.push(currentWeek);
+                currentWeek = [];
+            }
+            currentWeek.push(dayDate);
         }
-        return mondays;
+        // Додаємо останній тиждень, якщо є
+        if (currentWeek.length > 0) {
+            weeks.push(currentWeek);
+        }
+
+        return weeks;
     }
 
-    // Форматування дати як dd.mm
+    // Допоміжні форматери
     function formatDateDDMM(dateObj) {
         const dd = String(dateObj.getDate()).padStart(2, '0');
         const mm = String(dateObj.getMonth()+1).padStart(2, '0');
         return dd + '.' + mm;
     }
+    function getDayNameUkr(dayIndex) {
+        // dayIndex: 0(Нд), 1(Пн), 2(Вт), ...
+        const days = [
+            'Неділя',   // 0
+            'Понеділок',// 1
+            'Вівторок', // 2
+            'Середа',   // 3
+            'Четвер',   // 4
+            'П’ятниця', // 5
+            'Субота'    // 6
+        ];
+        return days[dayIndex] || '';
+    }
 
-    // ============================
-    // АВТОЗАПОВНЕННЯ ДАНИХ ЧЕРЕЗ GOOGLE GEMINI API
-    // ============================
+    /****************************************************
+     * ВВІД / КОНТРОЛЬ ТЕМ ТИЖНІВ ТА ДНІВ
+     ****************************************************/
+    function reattachThemeInputHandlers() {
+        // Усі поля .week-theme-input і .day-theme-input
+        const weekInputs = document.querySelectorAll('.week-theme-input');
+        const dayInputs = document.querySelectorAll('.day-theme-input');
+
+        // Слухаємо події input
+        weekInputs.forEach(input => {
+            input.addEventListener('input', checkAutoFillAvailability);
+        });
+        dayInputs.forEach(input => {
+            input.addEventListener('input', checkAutoFillAvailability);
+        });
+    }
+
+    // Перевірка: чи всі теми тижнів і днів заповнені
+    function areAllThemesFilled() {
+        const weekInputs = document.querySelectorAll('.week-theme-input');
+        const dayInputs = document.querySelectorAll('.day-theme-input');
+        for (let wi of weekInputs) {
+            if (!wi.value.trim()) {
+                return false;
+            }
+        }
+        for (let di of dayInputs) {
+            if (!di.value.trim()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Перевірка для кнопок автозаповнення
+    function checkAutoFillAvailability() {
+        const autoFillBtn = document.getElementById('autoFillBtn');
+        const autoFillDayThemesBtn = document.getElementById('autoFillDayThemesBtn');
+        const apiKey = localStorage.getItem('geminiApiKey') || '';
+
+        // Якщо ключа немає — кнопки вимкнені
+        if (!apiKey.trim()) {
+            autoFillBtn.disabled = true;
+            autoFillDayThemesBtn.disabled = true;
+            return;
+        }
+
+        // "autoFillBtn" (приклад) вмикаємо, якщо ключ є (не обов'язково всі теми заповнені)
+        autoFillBtn.disabled = false;
+
+        // "autoFillDayThemesBtn" вмикаємо, лише якщо ключ є і заповнені всі теми тижнів
+        // (наприклад, щоб ґрунтуватися на "Темі тижня" під час генерації).
+        let allWeekThemesFilled = true;
+        document.querySelectorAll('.week-theme-input').forEach(wi => {
+            if (!wi.value.trim()) allWeekThemesFilled = false;
+        });
+        autoFillDayThemesBtn.disabled = !allWeekThemesFilled;
+    }
+
+    /****************************************************
+     * ЗБЕРЕЖЕННЯ API-КЛЮЧА В LOCALSTORAGE
+     ****************************************************/
+    const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+    saveApiKeyBtn.addEventListener('click', () => {
+        const keyInput = document.getElementById('apiKeyInput').value.trim();
+        if (keyInput) {
+            localStorage.setItem('geminiApiKey', keyInput);
+            alert('API ключ збережено успішно!');
+        } else {
+            alert('Введіть дійсний API ключ!');
+        }
+        checkAutoFillAvailability();
+    });
+
+    /****************************************************
+     * ДРУК
+     ****************************************************/
+    document.getElementById('btnPrint').addEventListener('click', function() {
+        window.print();
+    });
+
+    /****************************************************
+     * АВТОЗАПОВНЕННЯ (ПРИКЛАД)
+     ****************************************************/
     const autoFillBtn = document.getElementById('autoFillBtn');
     autoFillBtn.addEventListener('click', async () => {
+        // Демонстраційний приклад автозаповнення (не обов’язково залежить від тем)
         const apiKey = localStorage.getItem('geminiApiKey');
-        if(!apiKey) {
+        if (!apiKey) {
             alert('API ключ не знайдено! Спочатку збережіть ключ.');
             return;
         }
-        // Приклад автозапиту до Google Gemini API
-        // Тут можна зробити логіку обходу всіх нових таблиць або наявних,
-        // зчитати тему тижня з заголовка <h2> і т.д.
-        // Нижче - лише ДЕМОНСТРАЦІЯ ОДНОГО ЗАПИТУ!
         try {
-            const promptText = "Write a short plan for a preschool group about winter nature observation and games."; 
-            // (Замість цього можна формувати щось типу: "Тематика: "+themeWeek+"; День: "+subThemeDay+"; ...")
-
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                  contents: [{
-                    parts: [{ text: promptText }]
-                  }]
-                })
-            });
-            if(!response.ok) {
+            const promptText = "Write a short plan for preschool children about winter games.";
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }]
+                    })
+                }
+            );
+            if (!response.ok) {
                 throw new Error(`Помилка від API: ${response.status}`);
             }
             const data = await response.json();
-            // В об’єкті data, залежно від структури відповіді від Google,
-            // шукаємо потрібне поле з текстом:
-            // Для прикладу припустимо, що відповідь приходить у data.contents[0].parts[0].text
             let generatedText = "";
             if (data.contents && data.contents[0].parts && data.contents[0].parts[0].text) {
                 generatedText = data.contents[0].parts[0].text;
             }
             alert("Отриманий текст:\n" + generatedText);
-
-            // Далі за потреби розпарсити цей text і розкласти по клітинках таблиці
-            // У прикладі - просто демонстрація через alert.
+            // За потреби - розкласти у таблиці
         } catch (error) {
             console.error(error);
-            alert("Не вдалося отримати дані від Gemini API.");
+            alert("Не вдалося отримати дані від Gemini API: " + error.message);
+        }
+    });
+
+    /****************************************************
+     * АВТОЗАПОВНЕННЯ ТЕМ ДНІВ (НОВА КНОПКА)
+     ****************************************************/
+    const autoFillDayThemesBtn = document.getElementById('autoFillDayThemesBtn');
+    autoFillDayThemesBtn.addEventListener('click', async () => {
+        const apiKey = localStorage.getItem('geminiApiKey');
+        if (!apiKey) {
+            alert('API ключ не знайдено! Спочатку збережіть ключ.');
+            return;
+        }
+        try {
+            // Обходимо кожен "Тиждень" (.page).
+            const pages = document.querySelectorAll('.page');
+            for (let page of pages) {
+                const weekThemeInput = page.querySelector('.week-theme-input');
+                if (!weekThemeInput) continue;
+                
+                const weekTheme = weekThemeInput.value.trim();
+                if (!weekTheme) continue; // якщо не заповнено — пропускаємо
+
+                // Знайдемо всі інпути .day-theme-input (для 3–5 днів, залежно від тижня)
+                const dayInputs = page.querySelectorAll('.day-theme-input');
+
+                // Prompt: "Придумай 5 (чи менше) коротких тем для днів тижня..."
+                // У прикладі беремо довжину dayInputs (наприклад, 3 чи 5).
+                const howMany = dayInputs.length;
+
+                const promptText = `Будь ласка, запропонуй ${howMany} коротких тем для днів тижня за загальною темою: "${weekTheme}". 
+Вкажи кожну тему з нового рядка.`;
+
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{ text: promptText }]
+                            }]
+                        })
+                    }
+                );
+                if (!response.ok) {
+                    throw new Error(`Помилка від API: ${response.status}`);
+                }
+                const data = await response.json();
+                let generatedText = "";
+                if (data.contents && data.contents[0].parts && data.contents[0].parts[0].text) {
+                    generatedText = data.contents[0].parts[0].text;
+                }
+                // Спробуємо розділити результат на рядки
+                const lines = generatedText
+                    .split('\n')
+                    .map(l => l.trim())
+                    .filter(Boolean);
+
+                // Заповнимо day-theme-input (тільки якщо вони ще порожні)
+                for (let i = 0; i < dayInputs.length; i++) {
+                    if (!dayInputs[i].value.trim()) {
+                        if (i < lines.length) {
+                            dayInputs[i].value = lines[i];
+                        }
+                    }
+                }
+            }
+            // Зберігаємо зміни
+            saveGeneratedPages();
+            alert("Автозаповнення тем днів завершено!");
+        } catch (error) {
+            console.error(error);
+            alert("Не вдалося отримати дані від Gemini API: " + error.message);
         }
     });
 </script>
