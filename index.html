@@ -88,9 +88,10 @@
     <button id="saveApiKeyBtn">Зберегти ключ</button>
     <br><br>
 
-    <!-- Кнопки автозаповнення (дві окремі) -->
-    <button id="autoFillBtn" disabled>Автозаповнення (приклад)</button>
+    <!-- Кнопки автозаповнення -->
+    <button id="autoFillWeekThemesBtn" disabled>Автозаповнення тем тижнів</button>
     <button id="autoFillDayThemesBtn" disabled>Автозаповнення тем днів</button>
+    <button id="autoFillBtn" disabled>Автозаповнення (повна таблиця)</button>
     <br><br>
 
     <!-- Кнопка друку -->
@@ -98,6 +99,14 @@
 </div>
 
 <script>
+    /****************************************************
+     * Змінна для назв місяців українською
+     ****************************************************/
+    const monthNamesUkr = [
+        "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+        "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
+    ];
+
     /****************************************************
      * ВІДНОВЛЕННЯ ДАНИХ З LOCALSTORAGE (якщо були збережені)
      ****************************************************/
@@ -196,10 +205,10 @@
 
         // Парсимо обраний рік і місяць
         const [year, monthStr] = monthInput.split('-');
-        const month = parseInt(monthStr, 10) - 1; // JS-місяці з 0
+        const monthIndex = parseInt(monthStr, 10) - 1; // JS-місяці з 0
 
         // Отримаємо "тижні" (масив масивів), де кожен тиждень складається тільки з робочих днів (пн–пт).
-        const weeks = getWorkingWeeksOfMonth(year, month);
+        const weeks = getWorkingWeeksOfMonth(year, monthIndex);
         if(weeks.length === 0) {
             alert('У цьому місяці немає робочих днів (за логікою getWorkingWeeksOfMonth).');
             return;
@@ -402,27 +411,32 @@
 
     // Перевірка для кнопок автозаповнення
     function checkAutoFillAvailability() {
-        const autoFillBtn = document.getElementById('autoFillBtn');
+        const autoFillWeekThemesBtn = document.getElementById('autoFillWeekThemesBtn');
         const autoFillDayThemesBtn = document.getElementById('autoFillDayThemesBtn');
+        const autoFillBtn = document.getElementById('autoFillBtn');
+
         const apiKey = localStorage.getItem('geminiApiKey') || '';
 
         // Якщо ключа немає — кнопки вимкнені
         if (!apiKey.trim()) {
-            autoFillBtn.disabled = true;
+            autoFillWeekThemesBtn.disabled = true;
             autoFillDayThemesBtn.disabled = true;
+            autoFillBtn.disabled = true;
             return;
         }
 
-        // "autoFillBtn" (приклад) вмикаємо, якщо ключ є (не обов'язково всі теми заповнені)
-        autoFillBtn.disabled = false;
+        // Кнопка автозаповнення тем тижнів: просто вимагає наявність ключа
+        autoFillWeekThemesBtn.disabled = false;
 
-        // "autoFillDayThemesBtn" вмикаємо, лише якщо ключ є і заповнені всі теми тижнів
-        // (наприклад, щоб ґрунтуватися на "Темі тижня" під час генерації).
+        // Кнопка автозаповнення тем днів: вимагає, щоб всі теми тижнів були заповнені (або згенеровані)
         let allWeekThemesFilled = true;
         document.querySelectorAll('.week-theme-input').forEach(wi => {
             if (!wi.value.trim()) allWeekThemesFilled = false;
         });
         autoFillDayThemesBtn.disabled = !allWeekThemesFilled;
+
+        // Кнопка повного автозаповнення (таблиць): вимагає, щоб усі теми тижнів і днів були заповнені
+        autoFillBtn.disabled = !areAllThemesFilled();
     }
 
     /****************************************************
@@ -448,18 +462,43 @@
     });
 
     /****************************************************
-     * АВТОЗАПОВНЕННЯ (ПРИКЛАД)
+     * АВТОЗАПОВНЕННЯ ТЕМ ТИЖНІВ
      ****************************************************/
-    const autoFillBtn = document.getElementById('autoFillBtn');
-    autoFillBtn.addEventListener('click', async () => {
-        // Демонстраційний приклад автозаповнення (не обов’язково залежить від тем)
+    const autoFillWeekThemesBtn = document.getElementById('autoFillWeekThemesBtn');
+    autoFillWeekThemesBtn.addEventListener('click', async () => {
         const apiKey = localStorage.getItem('geminiApiKey');
         if (!apiKey) {
             alert('API ключ не знайдено! Спочатку збережіть ключ.');
             return;
         }
+
+        // Дістанемо вибраний місяць і рік, щоб сформувати більш точний prompt
+        const monthInput = document.getElementById('monthYearInput').value;
+        if (!monthInput) {
+            alert('Спочатку оберіть рік та місяць!');
+            return;
+        }
+        const [year, monthStr] = monthInput.split('-');
+        const monthIndex = parseInt(monthStr, 10) - 1;
+        const monthName = monthNamesUkr[monthIndex] || "";
+
         try {
-            const promptText = "Write a short plan for preschool children about winter games.";
+            // Кількість тижнів — кількість .page
+            const pages = document.querySelectorAll('.page');
+            const howManyWeeks = pages.length;
+            if (howManyWeeks === 0) {
+                alert("Немає згенерованих тижнів!");
+                return;
+            }
+
+            // Створимо prompt для генерації назв/тем тижнів
+            const promptText = `
+Будь ласка, запропонуй ${howManyWeeks} актуальних коротких тем для тижнів у дитячому садочку в Україні 
+на період: ${monthName} ${year}. 
+Кожну тему подай з нового рядка. 
+Теми мають бути креативними, але враховувати сезон та особливості виховання дітей дошкільного віку.
+            `.trim();
+
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
                 {
@@ -472,16 +511,31 @@
                     })
                 }
             );
+
             if (!response.ok) {
                 throw new Error(`Помилка від API: ${response.status}`);
             }
             const data = await response.json();
-            let generatedText = "";
-            if (data.contents && data.contents[0].parts && data.contents[0].parts[0].text) {
-                generatedText = data.contents[0].parts[0].text;
+            let generatedText = data.candidates[0].content.parts[0].text;
+            
+            // Розділимо результат на рядки (видаляємо можливу нумерацію на кшталт "1) ")
+            const lines = generatedText
+                .split(/\r?\n/)
+                .map(l => l.replace(/^\d+\)\s*/, '').trim())
+                .filter(Boolean);
+
+            // Заповнюємо week-theme-input
+            const weekInputs = document.querySelectorAll('.week-theme-input');
+            for (let i = 0; i < weekInputs.length; i++) {
+                if (i < lines.length) {
+                    weekInputs[i].value = lines[i];
+                }
             }
-            alert("Отриманий текст:\n" + generatedText);
-            // За потреби - розкласти у таблиці
+
+            // Зберігаємо зміни
+            saveGeneratedPages();
+            alert("Автозаповнення тем тижнів завершено!");
+            checkAutoFillAvailability();
         } catch (error) {
             console.error(error);
             alert("Не вдалося отримати дані від Gemini API: " + error.message);
@@ -489,7 +543,7 @@
     });
 
     /****************************************************
-     * АВТОЗАПОВНЕННЯ ТЕМ ДНІВ (НОВА КНОПКА)
+     * АВТОЗАПОВНЕННЯ ТЕМ ДНІВ
      ****************************************************/
     const autoFillDayThemesBtn = document.getElementById('autoFillDayThemesBtn');
     autoFillDayThemesBtn.addEventListener('click', async () => {
@@ -498,25 +552,40 @@
             alert('API ключ не знайдено! Спочатку збережіть ключ.');
             return;
         }
+
+        // Дістанемо вибраний місяць і рік (для промпту)
+        const monthInput = document.getElementById('monthYearInput').value;
+        if (!monthInput) {
+            alert('Спочатку оберіть рік та місяць!');
+            return;
+        }
+        const [year, monthStr] = monthInput.split('-');
+        const monthIndex = parseInt(monthStr, 10) - 1;
+        const monthName = monthNamesUkr[monthIndex] || "";
+
         try {
             // Обходимо кожен "Тиждень" (.page).
             const pages = document.querySelectorAll('.page');
             for (let page of pages) {
                 const weekThemeInput = page.querySelector('.week-theme-input');
                 if (!weekThemeInput) continue;
-                
+
                 const weekTheme = weekThemeInput.value.trim();
                 if (!weekTheme) continue; // якщо не заповнено — пропускаємо
 
                 // Знайдемо всі інпути .day-theme-input (для 3–5 днів, залежно від тижня)
                 const dayInputs = page.querySelectorAll('.day-theme-input');
+                const howManyDays = dayInputs.length;
+                if (howManyDays === 0) continue;
 
-                // Prompt: "Придумай 5 (чи менше) коротких тем для днів тижня..."
-                // У прикладі беремо довжину dayInputs (наприклад, 3 чи 5).
-                const howMany = dayInputs.length;
-
-                const promptText = `Будь ласка, запропонуй ${howMany} коротких тем для днів тижня за загальною темою: "${weekTheme}". 
-Вкажи кожну тему з нового рядка.`;
+                // Prompt: "Придумай N коротких тем днів за темою тижня..."
+                const promptText = `
+Будь ласка, запропонуй ${howManyDays} актуальних коротких тем днів у дитячому садочку в Україні 
+за загальною темою: "${weekTheme}" 
+(період: ${monthName} ${year}, українською мовою). 
+Кожну тему подай з нового рядка. 
+Теми мають бути доречними для дошкільнят.
+                `.trim();
 
                 const response = await fetch(
                     `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
@@ -534,28 +603,190 @@
                     throw new Error(`Помилка від API: ${response.status}`);
                 }
                 const data = await response.json();
-                let generatedText = "";
-                if (data.contents && data.contents[0].parts && data.contents[0].parts[0].text) {
-                    generatedText = data.contents[0].parts[0].text;
-                }
+                let generatedText = data.candidates[0].content.parts[0].text;
+                
                 // Спробуємо розділити результат на рядки
                 const lines = generatedText
-                    .split('\n')
-                    .map(l => l.trim())
+                    .split(/\r?\n/)
+                    .map(l => l.replace(/^\d+\)\s*/, '').trim())
                     .filter(Boolean);
 
-                // Заповнимо day-theme-input (тільки якщо вони ще порожні)
+                // Заповнимо day-theme-input
                 for (let i = 0; i < dayInputs.length; i++) {
-                    if (!dayInputs[i].value.trim()) {
-                        if (i < lines.length) {
-                            dayInputs[i].value = lines[i];
-                        }
+                    if (i < lines.length) {
+                        dayInputs[i].value = lines[i];
                     }
                 }
             }
             // Зберігаємо зміни
             saveGeneratedPages();
             alert("Автозаповнення тем днів завершено!");
+            checkAutoFillAvailability();
+        } catch (error) {
+            console.error(error);
+            alert("Не вдалося отримати дані від Gemini API: " + error.message);
+        }
+    });
+
+    /****************************************************
+     * АВТОЗАПОВНЕННЯ (ПОВНА ТАБЛИЦЯ)
+     * Заповнює усі стовпчики (8 освітніх ліній) для кожного дня тижня,
+     * базуючись на темі тижня і темі кожного дня.
+     ****************************************************/
+    const autoFillBtn = document.getElementById('autoFillBtn');
+    autoFillBtn.addEventListener('click', async () => {
+        const apiKey = localStorage.getItem('geminiApiKey');
+        if (!apiKey) {
+            alert('API ключ не знайдено! Спочатку збережіть ключ.');
+            return;
+        }
+
+        // Для більш точного prompt-а (місяць, рік)
+        const monthInput = document.getElementById('monthYearInput').value;
+        if (!monthInput) {
+            alert('Спочатку оберіть рік та місяць!');
+            return;
+        }
+        const [year, monthStr] = monthInput.split('-');
+        const monthIndex = parseInt(monthStr, 10) - 1;
+        const monthName = monthNamesUkr[monthIndex] || "";
+
+        try {
+            const pages = document.querySelectorAll('.page');
+
+            // Для кожного тижня робимо окремий запит
+            for (let page of pages) {
+                // Тема тижня
+                const weekThemeInput = page.querySelector('.week-theme-input');
+                if (!weekThemeInput) continue;
+                const weekTheme = weekThemeInput.value.trim();
+                if (!weekTheme) continue;
+
+                // Зберемо інформацію про дні
+                const table = page.querySelector('table');
+                if (!table) continue;
+
+                const rows = table.querySelectorAll('tr');
+                // Перший рядок – це заголовок, тому починаємо з i=1
+                const dayData = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    const dayThemeInput = row.querySelector('.day-theme-input');
+                    if (!dayThemeInput) continue;
+
+                    const dayCell = row.querySelector('td');
+                    const strong = dayCell.querySelector('strong');
+                    let dayText = strong ? strong.textContent : '';
+                    dayData.push({
+                        dateAndDay: dayText.trim(),
+                        dayTheme: dayThemeInput.value.trim()
+                    });
+                }
+
+                // Формуємо prompt для Gemini (попросимо вивести JSON)
+                const promptObj = {
+                    weekTheme: weekTheme,
+                    days: dayData
+                };
+
+                // Тут просимо врахувати місяць, рік, актуальність для дитсадка в Україні
+                const promptText = `
+Будь ласка, згенеруй план занять для дитячого садочка в Україні на тиждень (період: ${monthName} ${year}) 
+за темою "${promptObj.weekTheme}". 
+Для кожного дня (з його темою) вкажи 8 коротких активностей (українською мовою), кожна відповідає одній 
+з освітніх ліній (1: «Особистість дитини», 2: «Дитина в соціумі», 3: «Дитина в природному довкіллі», 
+4: «Дитина у світі культури», 5: «Мовлення дитини», 6: «Дитина в сенсорно-математичному просторі», 
+7: «Гра дитини», 8: + ще одна на вибір). 
+Просимо підлаштувати активності з урахуванням пори року. 
+Формат відповіді подай у JSON, де ключ "tableData" містить масив із об’єктами:
+{
+  "dateAndDay": "наприклад '01.01 (Середа)'",
+  "dayTheme": "наприклад 'Пригоди сніговика'",
+  "lines": [
+    "короткий опис активності 1",
+    "короткий опис активності 2",
+    ... (усього 8 пунктів)
+  ]
+}
+
+Ось перелік днів тижня і теми днів, які треба включити у план (масив у JSON):
+${JSON.stringify(promptObj.days, null, 2)}
+                `.trim();
+
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{ text: promptText }]
+                            }]
+                        })
+                    }
+                );
+                if (!response.ok) {
+                    throw new Error(`Помилка від API: ${response.status}`);
+                }
+                const data = await response.json();
+
+                // Спробуємо знайти JSON у тексті відповіді
+                let generatedText = "";
+                if (data.contents && data.contents[0].parts && data.contents[0].parts[0].text) {
+                    generatedText = data.contents[0].parts[0].text;
+                }
+
+                // Для безпечного парсингу шукаємо фрагмент { "tableData": [...] }
+                const jsonRegex = /\{[\s\S]*?"tableData"\s*:\s*\[[\s\S]*?\}(\s*\])?\}/;
+                const match = generatedText.match(jsonRegex);
+                if (!match) {
+                    console.warn("Не знайдено валідний JSON у відповіді:", generatedText);
+                    continue;
+                }
+
+                let parsedData = null;
+                try {
+                    parsedData = JSON.parse(match[0]);
+                } catch (e) {
+                    console.error("Помилка парсингу JSON:", e);
+                    console.log("Відповідь від Gemini:", generatedText);
+                    continue;
+                }
+
+                if (!parsedData || !parsedData.tableData) {
+                    console.warn("У розпарсеному JSON немає tableData.");
+                    continue;
+                }
+
+                // Заповнюємо рядки таблиці відповідно до отриманих даних
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    const dayCell = row.querySelector('td');
+                    if (!dayCell) continue;
+                    const strong = dayCell.querySelector('strong');
+                    if (!strong) continue;
+
+                    const currentDateAndDay = strong.textContent.trim();
+                    // Знаходимо відповідний елемент у parsedData.tableData
+                    const dayEntry = parsedData.tableData.find(entry => {
+                        return entry.dateAndDay && entry.dateAndDay.includes(currentDateAndDay);
+                    });
+
+                    if (dayEntry && Array.isArray(dayEntry.lines)) {
+                        // columns[0] = dayCell, columns[1..7]
+                        const columns = row.querySelectorAll('td');
+                        for (let colIndex = 1; colIndex < columns.length; colIndex++) {
+                            if (dayEntry.lines[colIndex - 1]) {
+                                columns[colIndex].textContent = dayEntry.lines[colIndex - 1];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Зберігаємо таблиці у localStorage
+            saveGeneratedPages();
+            alert("Повне автозаповнення таблиць завершено!");
         } catch (error) {
             console.error(error);
             alert("Не вдалося отримати дані від Gemini API: " + error.message);
