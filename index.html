@@ -163,9 +163,15 @@
                 <button id="btnPrint" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
                     Друк
                 </button>
-                <button id="btnClearAll" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-                    Очистити Все
-                </button>
+                <div class="flex items-center gap-2">
+                    <button id="btnClearAll" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                        Очистити Все
+                    </button>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="clearApiKeyCheck" class="h-5 w-5 text-red-600" disabled>
+                        <span class="ml-2 text-gray-700">Видалити API ключ</span>
+                    </label>
+                </div>
                 <button id="btnInstructions" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
                     Інструкція
                 </button>
@@ -389,6 +395,16 @@
 
             // Перевіряємо, чи можна активувати кнопки автозаповнення
             checkAutoFillAvailability();
+
+            // Add this to initialize the checkbox state
+            updateClearApiKeyCheckbox();
+
+            // Update useAICheck initial state
+            const hasGeneratedTables = document.querySelectorAll('.page').length > 0;
+            if (!hasGeneratedTables) {
+                useAICheck.checked = false;
+                aiAutofillSection.style.display = 'none';
+            }
         });
 
         /****************************************************
@@ -397,8 +413,14 @@
         const useAICheck = document.getElementById('useAICheck');
         const aiAutofillSection = document.getElementById('aiAutofillSection');
         useAICheck.addEventListener('change', function () {
+            const hasGeneratedTables = document.querySelectorAll('.page').length > 0;
+            if (!hasGeneratedTables) {
+                this.checked = false;
+                alert('Спочатку створіть таблиці!');
+                return;
+            }
+
             aiAutofillSection.style.display = this.checked ? 'block' : 'none';
-            // Зберігаємо статус у localStorage
             localStorage.setItem('useAICheck', this.checked);
         });
 
@@ -437,10 +459,29 @@
         /****************************************************
          * КНОПКА "ОЧИСТИТИ ВСЕ"
          ****************************************************/
-        const btnClearAll = document.getElementById('btnClearAll');
+        const clearApiKeyCheck = document.getElementById('clearApiKeyCheck');
+
+        // Add function to update checkbox state based on API key presence
+        function updateClearApiKeyCheckbox() {
+            const apiKey = localStorage.getItem('geminiApiKey');
+            clearApiKeyCheck.disabled = !apiKey;
+            if (!apiKey) {
+                clearApiKeyCheck.checked = false;
+            }
+        }
+
         btnClearAll.addEventListener('click', function () {
             if (confirm("Ви впевнені, що хочете видалити всі дані та перезавантажити сторінку?")) {
-                localStorage.clear();
+                if (!clearApiKeyCheck.checked) {
+                    // Save the API key temporarily
+                    const apiKey = localStorage.getItem('geminiApiKey');
+                    localStorage.clear();
+                    if (apiKey) {
+                        localStorage.setItem('geminiApiKey', apiKey);
+                    }
+                } else {
+                    localStorage.clear();
+                }
                 window.location.reload();
             }
         });
@@ -617,6 +658,8 @@
                 tableContainer.appendChild(pageDiv);
             });
 
+            useAICheck.disabled = false;
+
             reattachTableHandlers();
             reattachThemeInputHandlers();
             saveGeneratedPages();
@@ -748,10 +791,10 @@
             clearTimeout(saveTimeout);
             const keyInput = this.value.trim();
 
-            // Set a timeout to save after user stops typing for 500ms
             saveTimeout = setTimeout(() => {
                 localStorage.setItem('geminiApiKey', keyInput);
                 checkAutoFillAvailability();
+                updateClearApiKeyCheckbox(); // Add this line
             }, 500);
         });
 
