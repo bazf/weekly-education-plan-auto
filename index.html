@@ -811,7 +811,7 @@
             const pages = document.querySelectorAll('.page');
             const howManyWeeks = pages.length;
             if (howManyWeeks === 0) {
-                alert("Немає згенерованих тижнів!");
+                alert("Спочатку створіть тижні!");
                 hideSpinner();
                 enableAllButtons();
                 return;
@@ -903,7 +903,7 @@
                     const table = page.querySelector('table');
                     if (!table) continue;
                     const rows = table.querySelectorAll('tr');
-                    // Перший tr – заголовок, тому починаємо з i=1
+                    // First tr is header, start from i=1
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i];
                         const dayCell = row.querySelector('td');
@@ -932,10 +932,10 @@
 враховуючи усі ці дати (період: ${monthName} ${year}, українською мовою), 
 з огляду на те, що в Україні можуть бути державні свята у деякі з цих дат. 
 Свята повинні відповідати Григоріанському календарю. 
-Кожну тему подай з нового рядка (без нумерації) та без додаткових пояснень. 
+Не додавай нумерацію чи додаткові пояснення. 
 Ось перелік дат для контексту:
 ${datesList.join('\n')}
-                `.trim();
+        `.trim();
 
                 const selectedModel = getSelectedModel();
                 const response = await fetch(
@@ -946,7 +946,25 @@ ${datesList.join('\n')}
                         body: JSON.stringify({
                             contents: [{
                                 parts: [{ text: promptText }]
-                            }]
+                            }],
+                            generationConfig: {
+                                temperature: 1,
+                                topK: 40,
+                                topP: 0.95,
+                                maxOutputTokens: 8192,
+                                responseMimeType: "application/json",
+                                responseSchema: {
+                                    type: "object",
+                                    properties: {
+                                        response: {
+                                            type: "array",
+                                            items: {
+                                                type: "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         })
                     }
                 );
@@ -955,16 +973,24 @@ ${datesList.join('\n')}
                     throw new Error(`Помилка від API: ${response.status}`);
                 }
                 const data = await response.json();
-                let generatedText = data.candidates[0].content.parts.at(-1).text || "";
 
-                const lines = generatedText
-                    .split(/\r?\n/)
-                    .map(l => l.replace(/^\d+\)\s*/, '').trim())
-                    .filter(Boolean);
+                // Parse the structured JSON response
+                let parsedResponse;
+                try {
+                    const responseText = data.candidates[0].content.parts[0].text;
+                    parsedResponse = JSON.parse(responseText);
+                } catch (e) {
+                    console.error("Error parsing JSON response:", e);
+                    throw new Error("Неправильний формат відповіді від API");
+                }
 
+                // Get the array of themes from the structured response
+                const themes = parsedResponse.response;
+
+                // Apply themes to inputs
                 for (let i = 0; i < allDayData.length; i++) {
-                    if (i < lines.length) {
-                        allDayData[i].dayInput.value = lines[i];
+                    if (i < themes.length) {
+                        allDayData[i].dayInput.value = themes[i];
                     }
                 }
 
