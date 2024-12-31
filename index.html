@@ -219,9 +219,9 @@
                 </div>
 
                 <button id="generateWeeksBtn"
-                    class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
-                    Стрворити порожні таблиці
-                </button>
+    class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+    Створити порожні таблиці
+</button>
             </div>
 
             <!-- AI Settings section -->
@@ -405,6 +405,8 @@
                 useAICheck.checked = false;
                 aiAutofillSection.style.display = 'none';
             }
+
+            updateGenerateButtonState();
         });
 
         /****************************************************
@@ -544,6 +546,21 @@
             });
         }
 
+        function updateGenerateButtonState() {
+    const hasGeneratedTables = document.querySelectorAll('.page').length > 0;
+    const generateWeeksBtn = document.getElementById('generateWeeksBtn');
+    
+    if (hasGeneratedTables) {
+        generateWeeksBtn.textContent = 'Перестворити порожні таблиці';
+        generateWeeksBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+        generateWeeksBtn.classList.add('bg-orange-500', 'hover:bg-orange-600');
+    } else {
+        generateWeeksBtn.textContent = 'Створити порожні таблиці';
+        generateWeeksBtn.classList.remove('bg-orange-500', 'hover:bg-orange-600');
+        generateWeeksBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+    }
+}
+
         /****************************************************
          * ГЕНЕРАЦІЯ "РОБОЧИХ ТИЖНІВ" МІСЯЦЯ
          ****************************************************/
@@ -664,6 +681,7 @@
             reattachThemeInputHandlers();
             saveGeneratedPages();
             checkAutoFillAvailability();
+            updateGenerateButtonState();
         });
 
         function getWorkingWeeksOfMonth(year, month) {
