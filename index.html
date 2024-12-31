@@ -1003,41 +1003,47 @@
 враховуючи усі ці дати (період: ${monthName} ${year}, українською мовою), 
 з огляду на те, що в Україні можуть бути державні свята у деякі з цих дат. 
 Свята повинні відповідати Григоріанському календарю.
-Не додавай нумерацію чи додаткові пояснення.
 Коли свято випадає на вихідний, тоді темою найближчого робочого дня може бути свято.
+Подай відповідь у вигляді простого списку тем, кожна тема з нового рядка.
+Не додавай нумерацію чи додаткові пояснення на початку чи в кінці теми (наприклад - не додавай "(1)" у кінці назви теми)!
 Ось перелік дат для контексту:
-${datesList.join('\n')}
-        `.trim();
+${datesList.join('\n')}`.trim();
 
                 const selectedModel = getSelectedModel();
+                const requestBody = {
+                    contents: [{
+                        parts: [{ text: promptText }]
+                    }]
+                };
+
+                // Add JSON schema only for models that support it
+                if (!selectedModel.includes('thinking-exp')) {
+                    requestBody.generationConfig = {
+                        temperature: 1,
+                        topK: 40,
+                        topP: 0.95,
+                        maxOutputTokens: 8192,
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "object",
+                            properties: {
+                                response: {
+                                    type: "array",
+                                    items: {
+                                        type: "string"
+                                    }
+                                }
+                            }
+                        }
+                    };
+                }
+
                 const response = await fetch(
                     `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`,
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{ text: promptText }]
-                            }],
-                            generationConfig: {
-                                temperature: 1,
-                                topK: 40,
-                                topP: 0.95,
-                                maxOutputTokens: 8192,
-                                responseMimeType: "application/json",
-                                responseSchema: {
-                                    type: "object",
-                                    properties: {
-                                        response: {
-                                            type: "array",
-                                            items: {
-                                                type: "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        })
+                        body: JSON.stringify(requestBody)
                     }
                 );
 
@@ -1045,19 +1051,22 @@ ${datesList.join('\n')}
                     throw new Error(`Помилка від API: ${response.status}`);
                 }
                 const data = await response.json();
+                let themes = [];
 
-                // Parse the structured JSON response
-                let parsedResponse;
+                // Try to parse as JSON first
                 try {
                     const responseText = data.candidates[0].content.parts[0].text;
-                    parsedResponse = JSON.parse(responseText);
+                    const parsedResponse = JSON.parse(responseText);
+                    themes = parsedResponse.response;
                 } catch (e) {
-                    console.error("Error parsing JSON response:", e);
-                    throw new Error("Неправильний формат відповіді від API");
+                    // Fallback to line-by-line parsing if JSON parsing fails
+                    console.log("Falling back to line-by-line parsing");
+                    const generatedText = data.candidates[0].content.parts.at(-1).text || "";
+                    themes = generatedText
+                        .split(/\r?\n/)
+                        .map(line => line.replace(/^\d+[\.\)]\s*/, '').trim())
+                        .filter(Boolean);
                 }
-
-                // Get the array of themes from the structured response
-                const themes = parsedResponse.response;
 
                 // Apply themes to inputs
                 for (let i = 0; i < allDayData.length; i++) {
@@ -1154,6 +1163,7 @@ ${datesList.join('\n')}
 }
 
 Важливо! Відповіді в масив "lines" з описом активностей не повинні містити нумерацію. Не додавай опис освітньої лінії в результат.
+Не додавай нумерацію чи додаткові пояснення на початку чи в кінці назви активності (наприклад - не додавай "(1)" у кінці назви)!
 
 Ось перелік днів тижня і теми днів, які треба включити у план (масив у JSON):
 ${JSON.stringify(promptObj.days, null, 2)}
