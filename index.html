@@ -16,13 +16,14 @@
 
             @page {
                 size: A4 landscape;
-                margin: 5mm;
-                /* Reduced margins */
+                margin: 0;
+                /* Remove page margins completely */
             }
 
             body {
                 margin: 0;
                 padding: 0;
+                width: 100vw;
             }
 
             .container {
@@ -34,38 +35,41 @@
             .page {
                 width: 100%;
                 margin: 0;
-                padding: 0;
                 page-break-after: always;
                 break-inside: avoid;
                 page-break-inside: avoid !important;
-                transform-origin: top left;
-                transform: scale(0.85);
-                /* Adjust scale to fit */
+                display: flex;
+                flex-direction: column;
             }
 
-            /* Adjust title spacing */
+            /* Title section */
             .page h2 {
-                margin: 5px 0;
+                margin: 0 0 4mm 0;
                 font-size: 11pt;
+                flex: 0 0 auto;
             }
 
+            /* Make table fill remaining space */
             table {
                 width: 100% !important;
-                max-width: none !important;
                 table-layout: fixed;
                 border-collapse: collapse;
                 font-size: 8pt;
-                /* Slightly smaller font */
                 margin: 0;
+                flex: 1;
+            }
+
+            thead {
+                height: 12%;
             }
 
             th,
             td {
-                padding: 2px !important;
-                /* Minimal padding */
+                padding: 2mm !important;
                 word-wrap: break-word;
                 font-size: 8pt;
                 line-height: 1.2;
+                vertical-align: top;
             }
 
             /* Make date column smaller */
@@ -78,7 +82,6 @@
             table td:not(:first-child),
             table th:not(:first-child) {
                 width: 13.14%;
-                /* (100% - 8%) / 7 */
             }
 
             /* Handle inputs and text */
@@ -89,14 +92,13 @@
                 font-size: 8pt;
             }
 
-            /* Week theme input adjustment */
+            /* Theme inputs */
             .week-theme-input {
                 margin: 2px 0;
                 padding: 1px;
                 font-size: 8pt;
             }
 
-            /* Day theme input adjustment */
             .day-theme-input {
                 margin: 1px 0;
                 padding: 1px;
@@ -545,7 +547,7 @@
                     Тиждень ${weekNumber} (${firstDateStr} – ${lastDateStr}).
                     <div class="mt-2">
                         <label class="inline-flex items-center">
-                            Тема тижня:
+                            Тема тижня: 
                             <input type="text" class="week-theme-input border rounded-md ml-2 py-1 px-2" placeholder="Вкажіть тему тижня">
                         </label>
                     </div>
