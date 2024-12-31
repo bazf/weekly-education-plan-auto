@@ -16,24 +16,91 @@
 
             @page {
                 size: A4 landscape;
-                margin: 0mm;
+                margin: 5mm;
+                /* Reduced margins */
             }
 
             body {
-                transform: scale(0.85);
-                transform-origin: top left;
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                margin: 0;
+                padding: 0;
+                width: 100%;
             }
 
             .page {
+                width: 100%;
+                margin: 0;
+                padding: 0;
                 page-break-after: always;
                 break-inside: avoid;
                 page-break-inside: avoid !important;
+                transform-origin: top left;
+                transform: scale(0.85);
+                /* Adjust scale to fit */
             }
 
-            table,
+            /* Adjust title spacing */
+            .page h2 {
+                margin: 5px 0;
+                font-size: 11pt;
+            }
+
+            table {
+                width: 100% !important;
+                max-width: none !important;
+                table-layout: fixed;
+                border-collapse: collapse;
+                font-size: 8pt;
+                /* Slightly smaller font */
+                margin: 0;
+            }
+
             th,
             td {
-                font-size: 12px;
+                padding: 2px !important;
+                /* Minimal padding */
+                word-wrap: break-word;
+                font-size: 8pt;
+                line-height: 1.2;
+            }
+
+            /* Make date column smaller */
+            table td:first-child,
+            table th:first-child {
+                width: 8%;
+            }
+
+            /* Distribute remaining width */
+            table td:not(:first-child),
+            table th:not(:first-child) {
+                width: 13.14%;
+                /* (100% - 8%) / 7 */
+            }
+
+            /* Handle inputs and text */
+            input,
+            span {
+                max-width: 100%;
+                word-wrap: break-word;
+                font-size: 8pt;
+            }
+
+            /* Week theme input adjustment */
+            .week-theme-input {
+                margin: 2px 0;
+                padding: 1px;
+                font-size: 8pt;
+            }
+
+            /* Day theme input adjustment */
+            .day-theme-input {
+                margin: 1px 0;
+                padding: 1px;
+                font-size: 8pt;
             }
         }
 
