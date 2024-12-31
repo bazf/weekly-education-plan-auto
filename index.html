@@ -151,7 +151,8 @@
             <!-- AI Settings section -->
             <div class="space-y-4">
                 <label class="flex items-center space-x-2">
-                    <input type="checkbox" id="useAICheck" class="form-checkbox h-5 w-5 text-blue-600">
+                    <input type="checkbox" id="useAICheck" class="h-5 w-5 text-blue-600"
+                           >
                     <span class="text-gray-700">Використовувати ШІ для автозаповнення</span>
                 </label>
 
@@ -175,11 +176,12 @@
                     <!-- Model selection -->
                     <div class="space-y-2">
                         <label class="flex items-center space-x-2">
-                            <input type="checkbox" id="useModelsCheck" class="form-checkbox h-5 w-5 text-blue-600">
+                            <input type="checkbox" id="useModelsCheck" class="h-5 w-5 text-blue-600">
                             <span class="text-gray-700">Використати іншу модель ШІ</span>
                         </label>
-
-                        <div id="modelSelectContainer" class="hidden">
+                    
+                        <!-- Change this div's class -->
+                        <div id="modelSelectContainer" style="display: none;">
                             <label for="modelSelect" class="block text-sm font-medium text-gray-700">
                                 Оберіть модель (від найшвидшої до найрозумнішої):
                             </label>
@@ -315,17 +317,17 @@
         const modelSelectContainer = document.getElementById('modelSelectContainer');
         const modelSelect = document.getElementById('modelSelect');
 
-        useModelsCheck.addEventListener('change', function () {
-            if (this.checked) {
-                // Показати селектор моделей
-                modelSelectContainer.classList.remove('hidden');
-            } else {
-                // Сховати селектор, скинути модель на дефолтну
-                modelSelectContainer.classList.add('hidden');
-                modelSelect.value = 'gemini-2.0-flash-exp';
-                localStorage.setItem('selectedModel', 'gemini-2.0-flash-exp');
-            }
-        });
+            useModelsCheck.addEventListener('change', function () {
+                if (this.checked) {
+                    // Show the model selector container by setting display to block
+                    modelSelectContainer.style.display = 'block';
+                } else {
+                    // Hide the selector container and reset to default model
+                    modelSelectContainer.style.display = 'none';
+                    modelSelect.value = 'gemini-2.0-flash-exp';
+                    localStorage.setItem('selectedModel', 'gemini-2.0-flash-exp');
+                }
+            });
 
         // Коли користувач змінює модель у селекторі
         modelSelect.addEventListener('change', function () {
@@ -788,7 +790,8 @@
             const monthIndex = parseInt(monthSelect, 10) - 1;
             const monthName = monthNamesUkr[monthIndex] || "";
 
-            try {
+            try
+            {
                 const allDayData = [];
                 const pages = document.querySelectorAll('.page');
                 for (let page of pages) {

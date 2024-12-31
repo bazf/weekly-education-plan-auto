@@ -2,115 +2,102 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Інструкція користування інструментом планування</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        h2 {
-            margin-top: 30px;
-        }
-        p {
-            margin-bottom: 15px;
-        }
-        ul {
-            margin-bottom: 15px;
-        }
-        li {
-            margin-bottom: 8px;
-        }
-        .back-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #eee;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <button class="back-button" onclick="window.close();">Закрити інструкцію</button>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="bg-white shadow-lg rounded-lg p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800">Інструкція користування інструментом для генерації тижневих планів навчання</h1>
+                <button onclick="window.close();" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition duration-200">
+                    Закрити
+                </button>
+            </div>
 
-    <h1>Інструкція користування інструментом для генерації тижневих планів навчання для дошкільнят</h1>
+            <div class="prose max-w-none">
+                <p class="text-gray-600 mb-6">
+                    Цей інструмент дозволяє генерувати тижневі плани навчання для дошкільнят, враховуючи обраний рік та місяць. 
+                    Ви можете використовувати можливості штучного інтелекту для автоматичного заповнення тем тижнів, днів та навіть повного плану занять.
+                </p>
 
-    <p>Цей інструмент дозволяє генерувати тижневі плани навчання для дошкільнят, враховуючи обраний рік та місяць. Ви можете використовувати можливості штучного інтелекту для автоматичного заповнення тем тижнів, днів та навіть повного плану занять.</p>
+                <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Основні кроки:</h2>
+                <ol class="space-y-6 list-decimal list-outside ml-6">
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Вибір року та місяця:</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>У блоці "Налаштування місяця, року та автозаповнення" оберіть потрібний рік</li>
+                            <li>Оберіть потрібний місяць</li>
+                        </ul>
+                    </li>
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Генерація таблиць:</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>Натисніть кнопку "Згенерувати таблиці"</li>
+                        </ul>
+                    </li>
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Введення API-ключа (для автозаповнення):</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>Введіть ваш Google Gemini API Key</li>
+                            <li>Натисніть "Зберегти ключ"</li>
+                        </ul>
+                    </li>
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Використання інших моделей ШІ:</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>Встановіть позначку "Використати іншу модель ШІ"</li>
+                            <li>Оберіть бажану модель зі списку</li>
+                            <li>Моделі відсортовані від найшвидшої до найрозумнішої</li>
+                        </ul>
+                    </li>
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Автозаповнення тем тижнів:</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>Натисніть "Автозаповнення тем тижнів"</li>
+                        </ul>
+                    </li>
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Автозаповнення тем днів:</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>Натисніть "Автозаповнення тем днів"</li>
+                        </ul>
+                    </li>
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Повне автозаповнення:</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>Натисніть "Автозаповнення (повна таблиця)"</li>
+                        </ul>
+                    </li>
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Редагування таблиць:</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>Використовуйте кнопки "Редагувати" та "Зберегти"</li>
+                        </ul>
+                    </li>
+                    <li class="text-gray-700">
+                        <strong class="text-gray-900">Друк:</strong>
+                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
+                            <li>Натисніть кнопку "Друк" для друку планів</li>
+                        </ul>
+                    </li>
+                </ol>
 
-    <h2>Основні кроки:</h2>
-    <ol>
-        <li><strong>Вибір року та місяця:</strong>
-            <ul>
-                <li>У блоці "Налаштування місяця, року, API-ключа та автозаповнення" оберіть потрібний рік з випадаючого списку "Оберіть рік".</li>
-                <li>Оберіть потрібний місяць з випадаючого списку "Оберіть місяць".</li>
-            </ul>
-        </li>
-        <li><strong>Генерація таблиць:</strong>
-            <ul>
-                <li>Натисніть кнопку "Згенерувати таблиці". Після цього будуть створені таблиці для кожного робочого тижня обраного місяця.</li>
-            </ul>
-        </li>
-        <li><strong>Введення API-ключа (для автозаповнення):</strong>
-            <ul>
-                <li>Для використання функцій автоматичного заповнення необхідно ввести ваш Google Gemini API Key у поле "Google Gemini API Key".</li>
-                <li>Натисніть кнопку "Зберегти ключ", щоб зберегти ваш ключ у локальному сховищі браузера.</li>
-            </ul>
-        </li>
-        <li><strong>Використання інших моделей Штучного інтелекту:</strong>
-            <ul>
-                <li>Якщо ви хочете використовувати інші моделі Gemini, відмінні від встановленої за замовчуванням, встановіть позначку у чекбокс "Використати іншу модель ШІ".</li>
-                <li>Оберіть бажану модель з випадаючого списку "Оберіть модель".</li>
-                <li>Мовні моделі відсортовані від найшвидшої до найрозумнішої.</li>
-            </ul>
-        </li>
-        <li><strong>Автозаповнення тем тижнів:</strong>
-            <ul>
-                <li>Після генерації таблиць та введення API-ключа кнопка "Автозаповнення тем тижнів" стане активною.</li>
-                <li>Натисніть цю кнопку, щоб автоматично згенерувати теми для кожного тижня.</li>
-            </ul>
-        </li>
-        <li><strong>Автозаповнення тем днів:</strong>
-            <ul>
-                <li>Після заповнення тем тижнів кнопка "Автозаповнення тем днів" стане активною.</li>
-                <li>Натисніть цю кнопку, щоб автоматично згенерувати теми для кожного дня тижня, враховуючи теми тижнів.</li>
-            </ul>
-        </li>
-        <li><strong>Повне автозаповнення:</strong>
-            <ul>
-                <li>Після заповнення тем тижнів та днів кнопка "Автозаповнення (повна таблиця)" стане активною.</li>
-                <li>Натисніть цю кнопку, щоб автоматично заповнити всі поля таблиць планами занять на кожен день, враховуючи теми тижнів та днів.</li>
-            </ul>
-        </li>
-        <li><strong>Редагування таблиць:</strong>
-            <ul>
-                <li>Щоб відредагувати вміст таблиці вручну, натисніть кнопку "Редагувати" під потрібною таблицею.</li>
-                <li>Після внесення змін натисніть кнопку "Зберегти", щоб зберегти ваші зміни.</li>
-            </ul>
-        </li>
-        <li><strong>Друк:</strong>
-            <ul>
-                <li>Натисніть кнопку "Друк", щоб відкрити вікно друку та роздрукувати ваші плани.</li>
-            </ul>
-        </li>
-        <li><strong>Очистити все:</strong>
-            <ul>
-                <li>Натисніть кнопку "Очистити Все", щоб видалити всі згенеровані таблиці та введені дані (включаючи API-ключ) та перезавантажити сторінку.</li>
-            </ul>
-        </li>
-    </ol>
+                <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Поради:</h2>
+                <ul class="space-y-2 list-disc list-outside ml-6 text-gray-700">
+                    <li>Переконайтеся, що ваш API-ключ є дійсним</li>
+                    <li>Перевіряйте згенерований контент</li>
+                    <li>Функція друку оптимізована для альбомної орієнтації A4</li>
+                </ul>
+            </div>
 
-    <h2>Поради:</h2>
-    <ul>
-        <li>Переконайтеся, що ваш API-ключ є дійсним, щоб функції автозаповнення працювали коректно.</li>
-        <li>Перевіряйте згенерований контент та за потреби вносьте власні корективи.</li>
-        <li>Функція друку оптимізована для альбомної орієнтації сторінки A4.</li>
-    </ul>
-
-    <button class="back-button" onclick="window.close();">Закрити інструкцію</button>
-
+            <div class="mt-8 text-center">
+                <button onclick="window.close();" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg transition duration-200">
+                    Закрити інструкцію
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
