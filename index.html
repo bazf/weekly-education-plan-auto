@@ -3,94 +3,43 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Планування занять (група "Казка")</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Базові стилі таблиць */
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 40px;
-        }
-
-        th,
-        td {
-            border: 1px solid #444;
-            padding: 8px;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        /* Кожна таблиця (і заголовок) обгорнуті в .page, щоб контролювати розриви */
-        .page {
-            page-break-after: always;
-            break-inside: avoid;
-        }
-
-        /* Кнопки та їх стилі */
-        .no-print {
-            margin: 10px 0;
-        }
-
-        button {
-            padding: 8px 16px;
-            margin-right: 10px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        select {
-            padding: 5px;
-            font-size: 14px;
-            margin-right: 10px;
-        }
-
-        input {
-            padding: 5px;
-            font-size: 14px;
-        }
-
-        /* При друку приховуємо панелі керування (клас .no-print) */
+        /* Keep original print styles */
         @media print {
             .no-print {
                 display: none !important;
             }
-        }
 
-        /*
-           Примусово робимо сторінку A4 альбомною при друку.
-           Зменшуємо масштаб (transform: scale(0.85)) щоб таблиця краще вміщувалась.
-        */
-        @page {
-            size: A4 landscape;
-            margin: 0mm;
-        }
+            @page {
+                size: A4 landscape;
+                margin: 0mm;
+            }
 
-        @media print {
             body {
                 transform: scale(0.85);
                 transform-origin: top left;
+            }
+
+            .page {
+                page-break-after: always;
+                break-inside: avoid;
+                page-break-inside: avoid !important;
             }
 
             table,
             th,
             td {
                 font-size: 12px;
-                /* За потреби змінюйте */
-            }
-
-            .page {
-                page-break-inside: avoid !important;
             }
         }
 
-        /* Spinner overlay */
+        /* Spinner styles */
         #spinnerOverlay {
             display: none;
-            /* Hidden by default */
             position: fixed;
             z-index: 9999;
             top: 0;
@@ -124,100 +73,148 @@
             }
         }
 
-        /* Приховувати селектор моделі, якщо чекбокс не активний */
+        /* Hidden sections */
         #modelSelectContainer {
             display: none;
         }
 
-        /* НОВЕ! – за замовчуванням приховуємо весь блок автозаповнення ШІ */
         #aiAutofillSection {
             display: none;
         }
     </style>
 </head>
 
-<body>
-
-    <!-- Блок налаштувань: вибір місяця, року, та ін. -->
-    <div class="no-print">
-        <!-- Кнопка друку -->
-        <button id="btnPrint">Друк</button>
-        <!-- Кнопка очистити все -->
-        <button id="btnClearAll">Очистити Все</button>
-        <!-- Кнопка інструкції -->
-        <button id="btnInstructions">Інструкція</button>
-
-        <h3>Налаштування місяця, року та автозаповнення</h3>
-
-        <!-- Вибір року -->
-        <label for="yearSelect">Оберіть рік:</label>
-        <select id="yearSelect">
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
-            <option value="2028">2028</option>
-        </select>
-
-        <!-- Вибір місяця українською -->
-        <label for="monthSelect">Оберіть місяць:</label>
-        <select id="monthSelect">
-            <option value="1">Січень</option>
-            <option value="2">Лютий</option>
-            <option value="3">Березень</option>
-            <option value="4">Квітень</option>
-            <option value="5">Травень</option>
-            <option value="6">Червень</option>
-            <option value="7">Липень</option>
-            <option value="8">Серпень</option>
-            <option value="9">Вересень</option>
-            <option value="10">Жовтень</option>
-            <option value="11">Листопад</option>
-            <option value="12">Грудень</option>
-        </select>
-
-        <button id="generateWeeksBtn">Згенерувати таблиці</button>
-        <br><br>
-
-        <!-- НОВЕ! – Чекбокс "Використовувати ШІ для автозаповнення" -->
-        <label>
-            <input type="checkbox" id="useAICheck">
-            Використовувати ШІ для автозаповнення
-        </label>
-        <br><br>
-
-        <!-- НОВЕ! – Увесь блок автозаповнення тепер обгорнутий у див #aiAutofillSection -->
-        <div id="aiAutofillSection">
-            <!-- Поле для введення API-ключа -->
-            <label for="apiKeyInput">Google Gemini API Key:</label>
-            <input type="text" id="apiKeyInput" placeholder="Введіть ваш ключ...">
-            <button id="saveApiKeyBtn">Зберегти ключ</button>
-            <br><br>
-
-            <!-- Вибір (checkbox) для використання моделей та селектор моделей -->
-            <label>
-                <input type="checkbox" id="useModelsCheck">
-                Використати іншу модель ШІ
-            </label>
-            <div id="modelSelectContainer">
-                <label for="modelSelect">Оберіть модель (від найшвидшої до найрозумнішої):</label>
-                <select id="modelSelect">
-                    <!-- Дружні назви, але значення - реальні ID моделей -->
-                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash 8B</option>
-                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                    <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Exp</option>
-                    <option value="gemini-2.0-flash-thinking-exp-1219">Gemini 2.0 Flash Thinking Exp 1219</option>
-                </select>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Main container with responsive padding -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Control panel -->
+        <div class="no-print space-y-6 mb-8">
+            <!-- Action buttons -->
+            <div class="flex flex-wrap gap-4">
+                <button id="btnPrint" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                    Друк
+                </button>
+                <button id="btnClearAll" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                    Очистити Все
+                </button>
+                <button id="btnInstructions" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                    Інструкція
+                </button>
             </div>
-            <br>
 
-            <!-- Кнопки автозаповнення -->
-            <button id="autoFillWeekThemesBtn" disabled>Автозаповнення тем тижнів</button>
-            <button id="autoFillDayThemesBtn" disabled>Автозаповнення тем днів</button>
-            <button id="autoFillBtn" disabled>Автозаповнення (повна таблиця)</button>
-            <br><br>
+            <!-- Settings section -->
+            <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
+                <h3 class="text-xl font-semibold mb-4">Налаштування місяця, року та автозаповнення</h3>
+
+                <!-- Year and month selection -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="yearSelect" class="block text-sm font-medium text-gray-700">
+                            Оберіть рік:
+                        </label>
+                        <select id="yearSelect" class="w-full border rounded-md py-2 px-3">
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="monthSelect" class="block text-sm font-medium text-gray-700">
+                            Оберіть місяць:
+                        </label>
+                        <select id="monthSelect" class="w-full border rounded-md py-2 px-3">
+                            <option value="1">Січень</option>
+                            <option value="2">Лютий</option>
+                            <option value="3">Березень</option>
+                            <option value="4">Квітень</option>
+                            <option value="5">Травень</option>
+                            <option value="6">Червень</option>
+                            <option value="7">Липень</option>
+                            <option value="8">Серпень</option>
+                            <option value="9">Вересень</option>
+                            <option value="10">Жовтень</option>
+                            <option value="11">Листопад</option>
+                            <option value="12">Грудень</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="generateWeeksBtn" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                    Згенерувати таблиці
+                </button>
+            </div>
+
+            <!-- AI Settings section -->
+            <div class="space-y-4">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" id="useAICheck" class="form-checkbox h-5 w-5 text-blue-600">
+                    <span class="text-gray-700">Використовувати ШІ для автозаповнення</span>
+                </label>
+
+                <div id="aiAutofillSection" class="bg-white p-6 rounded-lg shadow-md space-y-4">
+                    <!-- API Key input -->
+                    <div class="space-y-2">
+                        <label for="apiKeyInput" class="block text-sm font-medium text-gray-700">
+                            Google Gemini API Key:
+                        </label>
+                        <div class="flex space-x-2">
+                            <input type="text" id="apiKeyInput"
+                                class="flex-1 border rounded-md py-2 px-3"
+                                placeholder="Введіть ваш ключ...">
+                            <button id="saveApiKeyBtn"
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                                Зберегти ключ
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Model selection -->
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" id="useModelsCheck" class="form-checkbox h-5 w-5 text-blue-600">
+                            <span class="text-gray-700">Використати іншу модель ШІ</span>
+                        </label>
+
+                        <div id="modelSelectContainer" class="hidden">
+                            <label for="modelSelect" class="block text-sm font-medium text-gray-700">
+                                Оберіть модель (від найшвидшої до найрозумнішої):
+                            </label>
+                            <select id="modelSelect" class="w-full border rounded-md py-2 px-3">
+                                <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash 8B</option>
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Exp</option>
+                                <option value="gemini-2.0-flash-thinking-exp-1219">Gemini 2.0 Flash Thinking Exp 1219</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Autofill buttons -->
+                    <div class="flex flex-wrap gap-4">
+                        <button id="autoFillWeekThemesBtn" disabled
+                            class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded disabled:opacity-50">
+                            Автозаповнення тем тижнів
+                        </button>
+                        <button id="autoFillDayThemesBtn" disabled
+                            class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded disabled:opacity-50">
+                            Автозаповнення тем днів
+                        </button>
+                        <button id="autoFillBtn" disabled
+                            class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded disabled:opacity-50">
+                            Автозаповнення (повна таблиця)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table container with horizontal scroll on mobile -->
+        <div class="overflow-x-auto">
+            <!-- Tables will be generated here -->
         </div>
     </div>
 
@@ -227,6 +224,7 @@
         <div>Заповнюю, очікуйте, будь ласка!</div>
     </div>
 
+    <!-- JavaScript Section -->
     <script>
         /****************************************************
          * Змінна для назв місяців українською
@@ -290,7 +288,7 @@
             // Відновлюємо збережений HTML (усіх .page разом), якщо було
             const savedPages = localStorage.getItem('allGeneratedPages');
             if (savedPages) {
-                document.body.insertAdjacentHTML('beforeend', savedPages);
+                document.querySelector('.overflow-x-auto').insertAdjacentHTML('beforeend', savedPages);
                 reattachTableHandlers();
                 reattachThemeInputHandlers();
             }
@@ -320,10 +318,10 @@
         useModelsCheck.addEventListener('change', function () {
             if (this.checked) {
                 // Показати селектор моделей
-                modelSelectContainer.style.display = "block";
+                modelSelectContainer.classList.remove('hidden');
             } else {
                 // Сховати селектор, скинути модель на дефолтну
-                modelSelectContainer.style.display = "none";
+                modelSelectContainer.classList.add('hidden');
                 modelSelect.value = 'gemini-2.0-flash-exp';
                 localStorage.setItem('selectedModel', 'gemini-2.0-flash-exp');
             }
@@ -436,29 +434,37 @@
                 return;
             }
 
+            const tableContainer = document.querySelector('.overflow-x-auto');
+
             weeks.forEach((daysArray, index) => {
                 const weekNumber = index + 1;
                 const firstDateStr = formatDateDDMM(daysArray[0]);
                 const lastDateStr = formatDateDDMM(daysArray[daysArray.length - 1]);
 
                 const pageDiv = document.createElement('div');
-                pageDiv.classList.add('page');
+                pageDiv.classList.add('page', 'mb-8');
 
-                const h2 = document.createElement('h2');
-                h2.innerHTML = `
-                Тиждень ${weekNumber} (${firstDateStr} – ${lastDateStr}).
-                <label> Тема тижня: <input type="text" class="week-theme-input" placeholder="Вкажіть тему тижня"> </label>
-            `;
-                pageDiv.appendChild(h2);
+                const header = document.createElement('h2');
+                header.classList.add('text-lg', 'font-semibold', 'mb-4');
+                header.innerHTML = `
+                    Тиждень ${weekNumber} (${firstDateStr} – ${lastDateStr}).
+                    <div class="mt-2">
+                        <label class="inline-flex items-center">
+                            Тема тижня:
+                            <input type="text" class="week-theme-input border rounded-md ml-2 py-1 px-2" placeholder="Вкажіть тему тижня">
+                        </label>
+                    </div>
+                `;
+                pageDiv.appendChild(header);
 
                 const noPrintDiv = document.createElement('div');
-                noPrintDiv.classList.add('no-print');
+                noPrintDiv.classList.add('no-print', 'flex', 'space-x-2', 'mb-4');
                 const editBtn = document.createElement('button');
                 editBtn.textContent = 'Редагувати';
-                editBtn.classList.add('editBtn');
+                editBtn.classList.add('editBtn', 'bg-yellow-500', 'hover:bg-yellow-600', 'text-white', 'px-4', 'py-2', 'rounded');
                 const saveBtn = document.createElement('button');
                 saveBtn.textContent = 'Зберегти';
-                saveBtn.classList.add('saveBtn');
+                saveBtn.classList.add('saveBtn', 'bg-green-500', 'hover:bg-green-600', 'text-white', 'px-4', 'py-2', 'rounded');
 
                 const tableId = `weekTable${weekNumber}`;
                 editBtn.setAttribute('data-table', tableId);
@@ -470,19 +476,23 @@
 
                 const table = document.createElement('table');
                 table.id = tableId;
-                table.classList.add('editable-table');
+                table.classList.add('min-w-full', 'bg-white', 'shadow-md', 'rounded', 'overflow-hidden');
                 table.innerHTML = `
-                <tr>
-                    <th>Дні тижня (Тема дня)</th>
-                    <th>Освітня лінія «Особистість дитини»</th>
-                    <th>Освітня лінія «Дитина в соціумі»</th>
-                    <th>Освітня лінія «Дитина в природному довкіллі»</th>
-                    <th>Освітня лінія «Дитина у світі культури»</th>
-                    <th>Освітня лінія «Мовлення дитини»</th>
-                    <th>Освітня лінія «Дитина в сенсорно-математичному просторі»</th>
-                    <th>Освітня лінія «Гра дитини»</th>
-                </tr>
-            `;
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2">Дні тижня (Тема дня)</th>
+                            <th class="px-4 py-2">Освітня лінія «Особистість дитини»</th>
+                            <th class="px-4 py-2">Освітня лінія «Дитина в соціумі»</th>
+                            <th class="px-4 py-2">Освітня лінія «Дитина в природному довкіллі»</th>
+                            <th class="px-4 py-2">Освітня лінія «Дитина у світі культури»</th>
+                            <th class="px-4 py-2">Освітня лінія «Мовлення дитини»</th>
+                            <th class="px-4 py-2">Освітня лінія «Дитина в сенсорно-математичному просторі»</th>
+                            <th class="px-4 py-2">Освітня лінія «Гра дитини»</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                `;
 
                 daysArray.forEach(dayDate => {
                     const ddMM = formatDateDDMM(dayDate);
@@ -490,24 +500,24 @@
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                    <td>
-                        <strong>${ddMM} (${dayOfWeekName})</strong>
-                        <br>
-                        Тема дня: <input type="text" class="day-theme-input" placeholder="Вкажіть тему дня">
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                `;
-                    table.appendChild(row);
+                        <td class="border px-4 py-2">
+                            <strong>${ddMM} (${dayOfWeekName})</strong>
+                            <br>
+                            Тема дня: <input type="text" class="day-theme-input border rounded-md mt-1 py-1 px-2" placeholder="Вкажіть тему дня">
+                        </td>
+                        <td class="border px-4 py-2"></td>
+                        <td class="border px-4 py-2"></td>
+                        <td class="border px-4 py-2"></td>
+                        <td class="border px-4 py-2"></td>
+                        <td class="border px-4 py-2"></td>
+                        <td class="border px-4 py-2"></td>
+                        <td class="border px-4 py-2"></td>
+                    `;
+                    table.querySelector('tbody').appendChild(row);
                 });
 
                 pageDiv.appendChild(table);
-                document.body.appendChild(pageDiv);
+                tableContainer.appendChild(pageDiv);
             });
 
             reattachTableHandlers();
@@ -816,7 +826,7 @@
 Свята повинні відповідати Григоріанському календарю. 
 Кожну тему подай з нового рядка (без нумерації) та без додаткових пояснень. 
 Ось перелік дат для контексту:
-${JSON.stringify(datesList, null, 2)}
+${datesList.join('\n')}
                 `.trim();
 
                 const selectedModel = getSelectedModel();
