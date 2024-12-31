@@ -143,16 +143,16 @@
                     </div>
                 </div>
 
-                <button id="generateWeeksBtn" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
-                    Згенерувати таблиці
+                <button id="generateWeeksBtn"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                    Стрворити порожні таблиці
                 </button>
             </div>
 
             <!-- AI Settings section -->
             <div class="space-y-4">
                 <label class="flex items-center space-x-2">
-                    <input type="checkbox" id="useAICheck" class="h-5 w-5 text-blue-600"
-                           >
+                    <input type="checkbox" id="useAICheck" class="h-5 w-5 text-blue-600">
                     <span class="text-gray-700">Використовувати ШІ для автозаповнення</span>
                 </label>
 
@@ -162,15 +162,8 @@
                         <label for="apiKeyInput" class="block text-sm font-medium text-gray-700">
                             Google Gemini API Key:
                         </label>
-                        <div class="flex space-x-2">
-                            <input type="text" id="apiKeyInput"
-                                class="flex-1 border rounded-md py-2 px-3"
-                                placeholder="Введіть ваш ключ...">
-                            <button id="saveApiKeyBtn"
-                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                                Зберегти ключ
-                            </button>
-                        </div>
+                        <input type="text" id="apiKeyInput" class="w-full border rounded-md py-2 px-3"
+                            placeholder="Введіть ваш ключ..." autocomplete="off">
                     </div>
 
                     <!-- Model selection -->
@@ -179,7 +172,7 @@
                             <input type="checkbox" id="useModelsCheck" class="h-5 w-5 text-blue-600">
                             <span class="text-gray-700">Використати іншу модель ШІ</span>
                         </label>
-                    
+
                         <!-- Change this div's class -->
                         <div id="modelSelectContainer" style="display: none;">
                             <label for="modelSelect" class="block text-sm font-medium text-gray-700">
@@ -190,7 +183,8 @@
                                 <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
                                 <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
                                 <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Exp</option>
-                                <option value="gemini-2.0-flash-thinking-exp-1219">Gemini 2.0 Flash Thinking Exp 1219</option>
+                                <option value="gemini-2.0-flash-thinking-exp-1219">Gemini 2.0 Flash Thinking Exp 1219
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -236,10 +230,39 @@
             "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
         ];
 
+        function setDefaultNextMonth() {
+            const today = new Date();
+            const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+
+            const yearSelect = document.getElementById('yearSelect');
+            const monthSelect = document.getElementById('monthSelect');
+
+            // Set default year
+            const nextYear = nextMonth.getFullYear().toString();
+            if (yearSelect.querySelector(`option[value="${nextYear}"]`)) {
+                yearSelect.value = nextYear;
+            }
+
+            // Set default month (1-12)
+            const nextMonthNumber = (nextMonth.getMonth() + 1).toString();
+            if (monthSelect.querySelector(`option[value="${nextMonthNumber}"]`)) {
+                monthSelect.value = nextMonthNumber;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('selectedYear', nextYear);
+            localStorage.setItem('selectedMonth', nextMonthNumber);
+        }
+
         /****************************************************
          * ВІДНОВЛЕННЯ ДАНИХ З LOCALSTORAGE
          ****************************************************/
         document.addEventListener('DOMContentLoaded', function () {
+            // Set default next month if no saved values exist
+            if (!localStorage.getItem('selectedYear') || !localStorage.getItem('selectedMonth')) {
+                setDefaultNextMonth();
+            }
+
             // Відновлюємо збережений ключ, якщо є
             const savedApiKey = localStorage.getItem('geminiApiKey');
             if (savedApiKey) {
@@ -317,17 +340,17 @@
         const modelSelectContainer = document.getElementById('modelSelectContainer');
         const modelSelect = document.getElementById('modelSelect');
 
-            useModelsCheck.addEventListener('change', function () {
-                if (this.checked) {
-                    // Show the model selector container by setting display to block
-                    modelSelectContainer.style.display = 'block';
-                } else {
-                    // Hide the selector container and reset to default model
-                    modelSelectContainer.style.display = 'none';
-                    modelSelect.value = 'gemini-2.0-flash-exp';
-                    localStorage.setItem('selectedModel', 'gemini-2.0-flash-exp');
-                }
-            });
+        useModelsCheck.addEventListener('change', function () {
+            if (this.checked) {
+                // Show the model selector container by setting display to block
+                modelSelectContainer.style.display = 'block';
+            } else {
+                // Hide the selector container and reset to default model
+                modelSelectContainer.style.display = 'none';
+                modelSelect.value = 'gemini-2.0-flash-exp';
+                localStorage.setItem('selectedModel', 'gemini-2.0-flash-exp');
+            }
+        });
 
         // Коли користувач змінює модель у селекторі
         modelSelect.addEventListener('change', function () {
@@ -395,12 +418,15 @@
 
         function reattachTableHandlers() {
             document.querySelectorAll('.editBtn').forEach(btn => {
+                btn.disabled = false; // Ensure edit buttons are enabled
                 btn.onclick = function () {
                     const tableId = this.getAttribute('data-table');
                     editTableContent(tableId);
                 };
             });
+
             document.querySelectorAll('.saveBtn').forEach(btn => {
+                btn.disabled = false; // Ensure save buttons are enabled
                 btn.onclick = function () {
                     const tableId = this.getAttribute('data-table');
                     saveTableContent(tableId);
@@ -645,16 +671,19 @@
         /****************************************************
          * ЗБЕРЕЖЕННЯ API-КЛЮЧА
          ****************************************************/
-        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
-        saveApiKeyBtn.addEventListener('click', () => {
-            const keyInput = document.getElementById('apiKeyInput').value.trim();
-            if (keyInput) {
+        const apiKeyInput = document.getElementById('apiKeyInput');
+
+        // Add input event listener with debouncing
+        let saveTimeout;
+        apiKeyInput.addEventListener('input', function () {
+            clearTimeout(saveTimeout);
+            const keyInput = this.value.trim();
+
+            // Set a timeout to save after user stops typing for 500ms
+            saveTimeout = setTimeout(() => {
                 localStorage.setItem('geminiApiKey', keyInput);
-                alert('API ключ збережено успішно!');
-            } else {
-                alert('Введіть дійсний API ключ!');
-            }
-            checkAutoFillAvailability();
+                checkAutoFillAvailability();
+            }, 500);
         });
 
         /****************************************************
@@ -672,9 +701,17 @@
             });
         }
         function enableAllButtons() {
-            document.querySelectorAll('.no-print button, .no-print select, .no-print input').forEach(el => {
+            // First enable all buttons except edit/save buttons
+            document.querySelectorAll('.no-print button:not(.editBtn):not(.saveBtn), .no-print select, .no-print input').forEach(el => {
                 el.disabled = false;
             });
+
+            // Always enable edit/save buttons
+            document.querySelectorAll('.editBtn, .saveBtn').forEach(el => {
+                el.disabled = false;
+            });
+
+            // Check availability for autofill buttons
             checkAutoFillAvailability();
         }
 
@@ -790,8 +827,7 @@
             const monthIndex = parseInt(monthSelect, 10) - 1;
             const monthName = monthNamesUkr[monthIndex] || "";
 
-            try
-            {
+            try {
                 const allDayData = [];
                 const pages = document.querySelectorAll('.page');
                 for (let page of pages) {
