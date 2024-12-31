@@ -159,10 +159,15 @@
         <!-- Control panel -->
         <div class="no-print space-y-6 mb-8">
             <!-- Action buttons -->
-            <div class="flex flex-wrap gap-4">
-                <button id="btnPrint" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                    Друк
-                </button>
+            <div class="flex flex-wrap gap-4 justify-between">
+                <div class="flex gap-4">
+                    <button id="btnInstructions" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                        Інструкція
+                    </button>
+                    <button id="btnPrint" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                        Друк
+                    </button>
+                </div>
                 <div class="flex items-center gap-2">
                     <button id="btnClearAll" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
                         Очистити Все
@@ -172,11 +177,7 @@
                         <span class="ml-2 text-gray-700">Видалити API ключ</span>
                     </label>
                 </div>
-                <button id="btnInstructions" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
-                    Інструкція
-                </button>
             </div>
-
             <!-- Settings section -->
             <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
                 <h3 class="text-xl font-semibold mb-4">Налаштування місяця, року та автозаповнення</h3>
