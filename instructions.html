@@ -1,103 +1,257 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Інструкція користування інструментом планування</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .expandable-button {
+            transition: all 0.3s ease;
+        }
+
+        .expandable-button:hover {
+            transform: translateX(5px);
+        }
+
+        .expandable-content {
+            transition: all 0.3s ease;
+        }
+
+        /* Custom list markers */
+        .custom-list {
+            counter-reset: step;
+        }
+
+        .custom-list > li {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 1.5rem;
+            counter-increment: step;
+        }
+
+        .custom-list > li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.75rem;
+            height: 1.75rem;
+            background-color: #E5E7EB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #4B5563;
+        }
+
+        /* Hover effect for list items */
+        .hover-highlight:hover {
+            background-color: #F3F4F6;
+            border-radius: 0.5rem;
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <div class="bg-white shadow-lg rounded-lg p-8">
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl font-bold text-gray-800">Інструкція користування інструментом для генерації тижневих планів навчання</h1>
-                <button onclick="window.close();" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition duration-200">
+        <div class="bg-white shadow-xl rounded-2xl p-8">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-10 pb-6 border-b border-gray-200">
+                <h1 class="text-3xl font-bold text-gray-800 leading-tight">
+                    Інструкція користування інструментом для генерації тижневих планів навчання
+                </h1>
+                <button onclick="window.close();"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl transition duration-200 font-medium shadow-sm hover:shadow">
                     Закрити
                 </button>
             </div>
 
             <div class="prose max-w-none">
-                <p class="text-gray-600 mb-6">
-                    Цей інструмент дозволяє генерувати тижневі плани навчання для дошкільнят, враховуючи обраний рік та місяць. 
-                    Ви можете використовувати можливості штучного інтелекту для автоматичного заповнення тем тижнів, днів та навіть повного плану занять.
-                </p>
+                <!-- Introduction -->
+                <div class="bg-green-50 p-6 rounded-xl mb-10">
+                    <p class="text-gray-700 text-lg leading-relaxed">
+                        Цей інструмент дозволяє генерувати тижневі плани навчання для дошкільнят, враховуючи обраний рік та місяць. 
+                        Ви можете використовувати можливості штучного інтелекту для автоматичного заповнення тем тижнів,
+                        днів та навіть повного плану занять.
+                    </p>
+                </div>
 
-                <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Основні кроки:</h2>
-                <ol class="space-y-6 list-decimal list-outside ml-6">
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Вибір року та місяця:</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>У блоці "Налаштування місяця, року та автозаповнення" оберіть потрібний рік</li>
-                            <li>Оберіть потрібний місяць</li>
+                <!-- Main Steps -->
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Основні кроки:</h2>
+                <ol class="custom-list space-y-8">
+                    <!-- Step 1 -->
+                    <li class="hover-highlight p-4">
+                        <strong class="text-xl text-gray-900 block mb-3">Вибір року та місяця</strong>
+                        <ul class="space-y-2 text-gray-600 ml-4">
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                У блоці "Налаштування місяця, року та автозаповнення" оберіть потрібний рік
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                Оберіть потрібний місяць
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                За замовчуванням буде обрано наступний місяць від поточної дати
+                            </li>
                         </ul>
                     </li>
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Генерація таблиць:</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>Натисніть кнопку "Згенерувати таблиці"</li>
+
+                    <!-- Step 2 -->
+                    <li class="hover-highlight p-4">
+                        <strong class="text-xl text-gray-900 block mb-3">Створення таблиць</strong>
+                        <ul class="space-y-2 text-gray-600 ml-4">
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                Натисніть кнопку "Створити порожні таблиці"
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                Після створення таблиць кнопка змінить колір на помаранчевий та текст на "Перестворити порожні таблиці"
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                Повторне натискання видалить існуючі таблиці та створить нові
+                            </li>
                         </ul>
                     </li>
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Введення API-ключа (для автозаповнення):</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>Введіть ваш Google Gemini API Key</li>
-                            <li>Натисніть "Зберегти ключ"</li>
+
+                    <!-- Step 3 -->
+                    <li class="hover-highlight p-4">
+                        <strong class="text-xl text-gray-900 block mb-3">Активація автозаповнення (опціонально)</strong>
+                        <ul class="space-y-2 text-gray-600 ml-4">
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                Встановіть позначку "Використовувати ШІ для автозаповнення" (доступно тільки після створення таблиць)
+                            </li>
+                            <li class="flex items-start flex-col">
+                                <div class="flex items-start">
+                                    <span class="text-green-500 mr-2">•</span>
+                                    <span>Введіть ваш Google Gemini API Key</span>
+                                </div>
+                                <div class="ml-6 mt-2">
+                                    <button onclick="this.nextElementSibling.classList.toggle('hidden')"
+                                        class="expandable-button inline-flex items-center text-green-600 hover:text-green-700 text-sm font-medium focus:outline-none bg-green-50 hover:bg-green-100 px-4 py-2 rounded-lg transition-all duration-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Детальніше про Gemini API Key
+                                    </button>
+                                    <div class="hidden mt-4 p-6 bg-white rounded-xl shadow-lg border border-green-100 expandable-content">
+                                        <p class="mb-4 text-gray-700">
+                                            Google Gemini API Key - це спеціальний ключ доступу, який дозволяє нашому
+                                            додатку використовувати штучний інтелект від Google для автоматичного заповнення планів.
+                                        </p>
+                                        <div class="bg-green-50 p-4 rounded-lg mb-4">
+                                            <p class="font-medium text-gray-900 mb-3">Щоб отримати цей ключ:</p>
+                                            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                                <li class="pl-2">Перейдіть на сайт Google AI Studio (aistudio.google.com)</li>
+                                                <li class="pl-2">Увійдіть у свій Google-акаунт</li>
+                                                <li class="pl-2">У верхньому лівому куті натисніть на значок профілю</li>
+                                                <li class="pl-2">Оберіть "Get API key"</li>
+                                                <li class="pl-2">Створіть новий ключ або використайте існуючий</li>
+                                                <li class="pl-2">Скопіюйте ключ та вставте його в поле вводу на нашій сторінці</li>
+                                            </ol>
+                                        </div>
+                                        <div class="bg-blue-50 p-4 rounded-lg">
+                                            <p class="font-medium text-gray-900 mb-3">Важливо знати:</p>
+                                            <ul class="space-y-2 text-gray-700">
+                                                <li class="flex items-start">
+                                                    <span class="text-blue-500 mr-2">•</span>
+                                                    Ключ схожий на довгий набір букв і цифр
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <span class="text-blue-500 mr-2">•</span>
+                                                    Зберігайте ключ у безпечному місці і не діліться ним з іншими
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <span class="text-blue-500 mr-2">•</span>
+                                                    Ключ можна використовувати повторно
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <span class="text-blue-500 mr-2">•</span>
+                                                    Для користувачів з України сервіс безкоштовний
+                                                </li>
+                                                <li class="flex items-start font-semibold">
+                                                    <span class="text-blue-500 mr-2">•</span>
+                                                    Ключ зберігається виключно на Вашому пристрої і тільки Ви маєте до нього доступ
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <span class="text-blue-500 mr-2">•</span>
+                                                    При бажанні ключ можна видалити з додатку, використовуючи відповідну позначку біля кнопки "Очистити все"
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                API ключ буде автоматично збережено
+                            </li>
                         </ul>
                     </li>
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Використання інших моделей ШІ:</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>Встановіть позначку "Використати іншу модель ШІ"</li>
-                            <li>Оберіть бажану модель зі списку</li>
-                            <li>Моделі відсортовані від найшвидшої до найрозумнішої</li>
+
+                    <!-- Step 4 -->
+                    <li class="hover-highlight p-4">
+                        <strong class="text-xl text-gray-900 block mb-3">Вибір моделі ШІ (опціонально)</strong>
+                        <ul class="space-y-2 text-gray-600 ml-4">
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                Встановіть позначку "Використати іншу модель ШІ"
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                Оберіть бажану модель зі списку (від найшвидшої до найрозумнішої)
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                За замовчуванням використовується оптимальна модель
+                            </li>
                         </ul>
                     </li>
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Автозаповнення тем тижнів:</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>Натисніть "Автозаповнення тем тижнів"</li>
+
+                    <!-- Step 5 -->
+                    <li class="hover-highlight p-4">
+                        <strong class="text-xl text-gray-900 block mb-3">Автоматичне заповнення</strong>
+                        <ul class="space-y-2 text-gray-600 ml-4">
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                "Автозаповнення тем тижнів" - заповнює лише теми тижнів
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                "Автозаповнення тем днів" - заповнює теми днів (доступно після заповнення тем тижнів)
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">•</span>
+                                "Автозаповнення (повна таблиця)" - заповнює всю таблицю (доступно після заповнення всіх тем)
+                            </li>
                         </ul>
                     </li>
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Автозаповнення тем днів:</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>Натисніть "Автозаповнення тем днів"</li>
-                        </ul>
-                    </li>
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Повне автозаповнення:</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>Натисніть "Автозаповнення (повна таблиця)"</li>
-                        </ul>
-                    </li>
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Редагування таблиць:</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>Використовуйте кнопки "Редагувати" та "Зберегти"</li>
-                        </ul>
-                    </li>
-                    <li class="text-gray-700">
-                        <strong class="text-gray-900">Друк:</strong>
-                        <ul class="mt-2 space-y-2 list-disc list-outside ml-6">
-                            <li>Натисніть кнопку "Друк" для друку планів</li>
-                        </ul>
-                    </li>
+
+                    <!-- Additional steps... -->
                 </ol>
 
-                <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Поради:</h2>
-                <ul class="space-y-2 list-disc list-outside ml-6 text-gray-700">
-                    <li>Переконайтеся, що ваш API-ключ є дійсним</li>
-                    <li>Перевіряйте згенерований контент</li>
-                    <li>Функція друку оптимізована для альбомної орієнтації A4</li>
-                </ul>
-            </div>
-
-            <div class="mt-8 text-center">
-                <button onclick="window.close();" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg transition duration-200">
-                    Закрити інструкцію
-                </button>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+                <!-- Important Notes -->
+                <div class="mt-12 p-6 bg-yellow-50 rounded-xl">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Важливі примітки:</h2>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-yellow-500 mr-2">•</span>
+                            Усі дані автоматично зберігаються у браузері
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-yellow-500 mr-2">•</span>
+                            При оновленні сторінки
