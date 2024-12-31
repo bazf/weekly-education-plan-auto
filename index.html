@@ -36,6 +36,11 @@
             font-size: 14px;
             cursor: pointer;
         }
+        select {
+            padding: 5px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
         input {
             padding: 5px;
             font-size: 14px;
@@ -102,13 +107,39 @@
 </head>
 <body>
 
-<!-- Блок налаштувань: вибір місяця, API ключа та автозаповнення -->
+<!-- Блок налаштувань: вибір місяця, року, API ключа та автозаповнення -->
 <div class="no-print">
-    <h3>Налаштування місяця, API-ключа та автозаповнення</h3>
+    <h3>Налаштування місяця, року, API-ключа та автозаповнення</h3>
 
-    <!-- Вибір року-місяця -->
-    <label for="monthYearInput">Оберіть рік та місяць:</label>
-    <input type="month" id="monthYearInput">
+    <!-- Вибір року -->
+    <label for="yearSelect">Оберіть рік:</label>
+    <select id="yearSelect">
+        <!-- Додайте необхідні роки -->
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+    </select>
+
+    <!-- Вибір місяця українською -->
+    <label for="monthSelect">Оберіть місяць:</label>
+    <select id="monthSelect">
+        <option value="1">Січень</option>
+        <option value="2">Лютий</option>
+        <option value="3">Березень</option>
+        <option value="4">Квітень</option>
+        <option value="5">Травень</option>
+        <option value="6">Червень</option>
+        <option value="7">Липень</option>
+        <option value="8">Серпень</option>
+        <option value="9">Вересень</option>
+        <option value="10">Жовтень</option>
+        <option value="11">Листопад</option>
+        <option value="12">Грудень</option>
+    </select>
+
     <button id="generateWeeksBtn">Згенерувати таблиці</button>
     <br><br>
 
@@ -153,10 +184,16 @@
             document.getElementById('apiKeyInput').value = savedApiKey;
         }
 
-        // NEW: Відновлюємо збережений рік-місяць, якщо є
-        const savedMonthYear = localStorage.getItem('selectedMonthYear');
-        if (savedMonthYear) {
-            document.getElementById('monthYearInput').value = savedMonthYear;
+        // NEW: Відновлюємо збережений рік і місяць, якщо є
+        const savedSelectedYear = localStorage.getItem('selectedYear');
+        const savedSelectedMonth = localStorage.getItem('selectedMonth');
+        if (savedSelectedYear) {
+            const yearSelect = document.getElementById('yearSelect');
+            yearSelect.value = savedSelectedYear;
+        }
+        if (savedSelectedMonth) {
+            const monthSelect = document.getElementById('monthSelect');
+            monthSelect.value = savedSelectedMonth;
         }
 
         // Відновлюємо збережений HTML (усіх .page разом)
@@ -249,14 +286,17 @@
      ****************************************************/
     const generateWeeksBtn = document.getElementById('generateWeeksBtn');
     generateWeeksBtn.addEventListener('click', () => {
-        const monthInput = document.getElementById('monthYearInput').value;
-        if (!monthInput) {
-            alert('Будь ласка, виберіть рік та місяць!');
+        const yearSelect = document.getElementById('yearSelect').value;
+        const monthSelect = document.getElementById('monthSelect').value;
+
+        if (!yearSelect || !monthSelect) {
+            alert('Будь ласка, оберіть рік та місяць!');
             return;
         }
 
-        // NEW: зберігаємо вибраний рік-місяць
-        localStorage.setItem('selectedMonthYear', monthInput);
+        // NEW: зберігаємо вибраний рік і місяць
+        localStorage.setItem('selectedYear', yearSelect);
+        localStorage.setItem('selectedMonth', monthSelect);
 
         // Видаляємо усі поточні сторінки .page
         document.querySelectorAll('.page').forEach(page => page.remove());
@@ -264,8 +304,8 @@
         localStorage.removeItem('allGeneratedPages');
 
         // Парсимо обраний рік і місяць
-        const [year, monthStr] = monthInput.split('-');
-        const monthIndex = parseInt(monthStr, 10) - 1;
+        const year = parseInt(yearSelect, 10);
+        const monthIndex = parseInt(monthSelect, 10) - 1;
 
         // Отримаємо "тижні" (масив масивів), де кожен тиждень складається тільки з робочих днів (пн–пт).
         const weeks = getWorkingWeeksOfMonth(year, monthIndex);
@@ -525,13 +565,13 @@
     }
     function disableAllButtons() {
         // Disable only main control buttons within .no-print
-        document.querySelectorAll('.no-print button, .no-print input').forEach(el => {
+        document.querySelectorAll('.no-print button, .no-print select, .no-print input').forEach(el => {
             el.disabled = true;
         });
     }
     function enableAllButtons() {
         // Enable only main control buttons within .no-print
-        document.querySelectorAll('.no-print button, .no-print input').forEach(el => {
+        document.querySelectorAll('.no-print button, .no-print select, .no-print input').forEach(el => {
             el.disabled = false;
         });
         checkAutoFillAvailability(); // re-check states
@@ -549,8 +589,9 @@
         }
 
         // Дістанемо вибраний місяць і рік
-        const monthInput = document.getElementById('monthYearInput').value;
-        if (!monthInput) {
+        const yearSelect = document.getElementById('yearSelect').value;
+        const monthSelect = document.getElementById('monthSelect').value;
+        if (!yearSelect || !monthSelect) {
             alert('Спочатку оберіть рік та місяць!');
             return;
         }
@@ -559,8 +600,8 @@
         disableAllButtons();
         showSpinner();
 
-        const [year, monthStr] = monthInput.split('-');
-        const monthIndex = parseInt(monthStr, 10) - 1;
+        const year = parseInt(yearSelect, 10);
+        const monthIndex = parseInt(monthSelect, 10) - 1;
         const monthName = monthNamesUkr[monthIndex] || "";
 
         try {
@@ -637,8 +678,9 @@
         }
 
         // Дістанемо вибраний місяць і рік
-        const monthInput = document.getElementById('monthYearInput').value;
-        if (!monthInput) {
+        const yearSelect = document.getElementById('yearSelect').value;
+        const monthSelect = document.getElementById('monthSelect').value;
+        if (!yearSelect || !monthSelect) {
             alert('Спочатку оберіть рік та місяць!');
             return;
         }
@@ -646,8 +688,8 @@
         disableAllButtons();
         showSpinner();
 
-        const [year, monthStr] = monthInput.split('-');
-        const monthIndex = parseInt(monthStr, 10) - 1;
+        const year = parseInt(yearSelect, 10);
+        const monthIndex = parseInt(monthSelect, 10) - 1;
         const monthName = monthNamesUkr[monthIndex] || "";
 
         try {
@@ -729,8 +771,9 @@
         }
 
         // Для більш точного prompt-а (місяць, рік)
-        const monthInput = document.getElementById('monthYearInput').value;
-        if (!monthInput) {
+        const yearSelect = document.getElementById('yearSelect').value;
+        const monthSelect = document.getElementById('monthSelect').value;
+        if (!yearSelect || !monthSelect) {
             alert('Спочатку оберіть рік та місяць!');
             return;
         }
@@ -738,8 +781,8 @@
         disableAllButtons();
         showSpinner();
 
-        const [year, monthStr] = monthInput.split('-');
-        const monthIndex = parseInt(monthStr, 10) - 1;
+        const year = parseInt(yearSelect, 10);
+        const monthIndex = parseInt(monthSelect, 10) - 1;
         const monthName = monthNamesUkr[monthIndex] || "";
 
         try {
@@ -758,7 +801,7 @@
                 if (!table) continue;
 
                 const rows = table.querySelectorAll('tr');
-                // Перший рядок – це заголовок, тому починаємо з i=1
+                // Перший рядок – це шапка, тому починаємо з i=1
                 const dayData = [];
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
@@ -883,7 +926,7 @@ ${JSON.stringify(promptObj.days, null, 2)}
     });
 
     /****************************************************
-     * Заміна інпутів на текст при друці і повернення назад
+     * Заміна інпутів на текст при друку і повернення назад
      ****************************************************/
     const printBtn = document.getElementById('btnPrint');
     printBtn.addEventListener('click', function() {
