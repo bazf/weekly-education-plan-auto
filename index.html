@@ -78,7 +78,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.8);
             color: #fff;
             text-align: center;
             padding-top: 20%;
@@ -154,9 +154,9 @@
         }
 
         // NEW: Відновлюємо збережений рік-місяць, якщо є
-        const savedMonthYear = localStorage.getItem('selectedMonthYear'); // <-- NEW
+        const savedMonthYear = localStorage.getItem('selectedMonthYear');
         if (savedMonthYear) {
-            document.getElementById('monthYearInput').value = savedMonthYear; // <-- NEW
+            document.getElementById('monthYearInput').value = savedMonthYear;
         }
 
         // Відновлюємо збережений HTML (усіх .page разом)
@@ -256,7 +256,7 @@
         }
 
         // NEW: зберігаємо вибраний рік-місяць
-        localStorage.setItem('selectedMonthYear', monthInput); // <-- NEW
+        localStorage.setItem('selectedMonthYear', monthInput);
 
         // Видаляємо усі поточні сторінки .page
         document.querySelectorAll('.page').forEach(page => page.remove());
@@ -265,7 +265,7 @@
 
         // Парсимо обраний рік і місяць
         const [year, monthStr] = monthInput.split('-');
-        const monthIndex = parseInt(monthStr, 10) - 1; // JS-місяці з 0
+        const monthIndex = parseInt(monthStr, 10) - 1;
 
         // Отримаємо "тижні" (масив масивів), де кожен тиждень складається тільки з робочих днів (пн–пт).
         const weeks = getWorkingWeeksOfMonth(year, monthIndex);
@@ -488,7 +488,7 @@
         // Кнопка автозаповнення тем тижнів: просто вимагає наявність ключа
         autoFillWeekThemesBtn.disabled = false;
 
-        // Кнопка автозаповнення тем днів: вимагає, щоб всі теми тижнів були заповнені (або згенеровані)
+        // Кнопка автозаповнення тем днів: вимагає, щоб всі теми тижнів були заповнені
         let allWeekThemesFilled = true;
         document.querySelectorAll('.week-theme-input').forEach(wi => {
             if (!wi.value.trim()) allWeekThemesFilled = false;
@@ -512,13 +512,6 @@
             alert('Введіть дійсний API ключ!');
         }
         checkAutoFillAvailability();
-    });
-
-    /****************************************************
-     * ДРУК
-     ****************************************************/
-    document.getElementById('btnPrint').addEventListener('click', function() {
-        window.print();
     });
 
     /****************************************************
@@ -555,16 +548,16 @@
             return;
         }
 
-        // Дістанемо вибраний місяць і рік, щоб сформувати більш точний prompt
+        // Дістанемо вибраний місяць і рік
         const monthInput = document.getElementById('monthYearInput').value;
         if (!monthInput) {
             alert('Спочатку оберіть рік та місяць!');
             return;
         }
 
-        // NEW: Disable UI and show spinner
-        disableAllButtons();  // <-- NEW
-        showSpinner();        // <-- NEW
+        // Disable UI and show spinner
+        disableAllButtons();
+        showSpinner();
 
         const [year, monthStr] = monthInput.split('-');
         const monthIndex = parseInt(monthStr, 10) - 1;
@@ -606,7 +599,7 @@
             const data = await response.json();
             let generatedText = data.candidates[0].content.parts[0].text;
             
-            // Розділимо результат на рядки (видаляємо можливу нумерацію на кшталт "1) ")
+            // Розділимо результат на рядки (видаляємо можливу нумерацію)
             const lines = generatedText
                 .split(/\r?\n/)
                 .map(l => l.replace(/^\d+\)\s*/, '').trim())
@@ -627,9 +620,8 @@
             console.error(error);
             alert("Не вдалося отримати дані від Gemini API: " + error.message);
         } finally {
-            // NEW: Re-enable UI and hide spinner
-            hideSpinner();      // <-- NEW
-            enableAllButtons(); // <-- NEW
+            hideSpinner();
+            enableAllButtons();
         }
     });
 
@@ -644,16 +636,15 @@
             return;
         }
 
-        // Дістанемо вибраний місяць і рік (для промпту)
+        // Дістанемо вибраний місяць і рік
         const monthInput = document.getElementById('monthYearInput').value;
         if (!monthInput) {
             alert('Спочатку оберіть рік та місяць!');
             return;
         }
 
-        // NEW: Disable UI and show spinner
-        disableAllButtons();  // <-- NEW
-        showSpinner();        // <-- NEW
+        disableAllButtons();
+        showSpinner();
 
         const [year, monthStr] = monthInput.split('-');
         const monthIndex = parseInt(monthStr, 10) - 1;
@@ -674,7 +665,7 @@
                 const howManyDays = dayInputs.length;
                 if (howManyDays === 0) continue;
 
-                // Prompt: "Придумай N коротких тем днів..."
+                // Prompt
                 const promptText = `
 Будь ласка, запропонуй ${howManyDays} актуальних коротких тем днів у дитячому садочку в Україні 
 за загальною темою: "${weekTheme}" 
@@ -721,8 +712,7 @@
             console.error(error);
             alert("Не вдалося отримати дані від Gemini API: " + error.message);
         } finally {
-            // NEW: Re-enable UI and hide spinner
-            hideSpinner();      
+            hideSpinner();
             enableAllButtons();
         }
     });
@@ -745,9 +735,8 @@
             return;
         }
 
-        // NEW: Disable UI and show spinner
-        disableAllButtons();  
-        showSpinner();        
+        disableAllButtons();
+        showSpinner();
 
         const [year, monthStr] = monthInput.split('-');
         const monthIndex = parseInt(monthStr, 10) - 1;
@@ -791,7 +780,6 @@
                     days: dayData
                 };
 
-                // Формуємо текст запиту
                 const promptText = `
 Будь ласка, згенеруй план занять для дитячого садочка в Україні на тиждень (період: ${monthName} ${year}) 
 за темою "${promptObj.weekTheme}". 
@@ -889,10 +877,49 @@ ${JSON.stringify(promptObj.days, null, 2)}
             console.error(error);
             alert("Не вдалося отримати дані від Gemini API: " + error.message);
         } finally {
-            // NEW: Re-enable UI and hide spinner
             hideSpinner();
             enableAllButtons();
         }
+    });
+
+    /****************************************************
+     * Заміна інпутів на текст при друці і повернення назад
+     ****************************************************/
+    const printBtn = document.getElementById('btnPrint');
+    printBtn.addEventListener('click', function() {
+        // 1. Зібрати всі інпути, перетворити їх на <span> з текстом
+        const dayInputs = document.querySelectorAll('.day-theme-input');
+        const weekInputs = document.querySelectorAll('.week-theme-input');
+
+        // Масив, де будемо зберігати, що чим замінили
+        const replacedElements = [];
+
+        // Функція, що замінює input на span
+        function replaceInputWithSpan(input) {
+            const span = document.createElement('span');
+            span.textContent = input.value.trim();
+            // зберігаємо пари {оригінал, заміна}
+            replacedElements.push({ original: input, temp: span });
+            // замінюємо в DOM
+            input.parentNode.replaceChild(span, input);
+        }
+
+        // Замінюємо всі dayTheme
+        dayInputs.forEach(input => {
+            replaceInputWithSpan(input);
+        });
+        // Замінюємо всі weekTheme
+        weekInputs.forEach(input => {
+            replaceInputWithSpan(input);
+        });
+
+        // 2. Викликаємо друк
+        window.print();
+
+        // 3. Після завершення друку — повертаємо все назад
+        replacedElements.forEach(({ original, temp }) => {
+            temp.parentNode.replaceChild(original, temp);
+        });
     });
 </script>
 
