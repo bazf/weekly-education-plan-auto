@@ -414,8 +414,10 @@
          ****************************************************/
         const useAICheck = document.getElementById('useAICheck');
         const aiAutofillSection = document.getElementById('aiAutofillSection');
+        // Event listener for the "Використовувати ШІ для автозаповнення" checkbox
         useAICheck.addEventListener('change', function () {
             const hasGeneratedTables = document.querySelectorAll('.page').length > 0;
+
             if (!hasGeneratedTables) {
                 this.checked = false;
                 alert('Спочатку створіть таблиці!');
@@ -424,6 +426,9 @@
 
             aiAutofillSection.style.display = this.checked ? 'block' : 'none';
             localStorage.setItem('useAICheck', this.checked);
+
+            // Immediately check and update button states
+            setTimeout(checkAutoFillAvailability, 0);
         });
 
         /****************************************************
@@ -764,18 +769,22 @@
         }
 
         function checkAutoFillAvailability() {
-            // Якщо немає чекбокса "Використовувати ШІ" або він не активний – відключаємо всі кнопки
-            if (!useAICheck.checked) {
-                document.getElementById('autoFillWeekThemesBtn').disabled = true;
-                document.getElementById('autoFillDayThemesBtn').disabled = true;
-                document.getElementById('autoFillBtn').disabled = true;
-                return;
-            }
-
             const autoFillWeekThemesBtn = document.getElementById('autoFillWeekThemesBtn');
             const autoFillDayThemesBtn = document.getElementById('autoFillDayThemesBtn');
             const autoFillBtn = document.getElementById('autoFillBtn');
 
+            // First check if tables exist
+            const tablesExist = document.querySelectorAll('.page').length > 0;
+
+            // If AI checkbox is not checked or no tables exist, disable all buttons
+            if (!useAICheck.checked || !tablesExist) {
+                autoFillWeekThemesBtn.disabled = true;
+                autoFillDayThemesBtn.disabled = true;
+                autoFillBtn.disabled = true;
+                return;
+            }
+
+            // Check if API key exists and is not empty
             const apiKey = localStorage.getItem('geminiApiKey') || '';
             if (!apiKey.trim()) {
                 autoFillWeekThemesBtn.disabled = true;
@@ -784,17 +793,17 @@
                 return;
             }
 
-            // Доступність автозаповнення тем тижнів
+            // Enable week themes button since we have tables and API key
             autoFillWeekThemesBtn.disabled = false;
 
-            // Автозаповнення тем днів – якщо всі теми тижнів не пусті
+            // Check week themes for enabling day themes button
             let allWeekThemesFilled = true;
             document.querySelectorAll('.week-theme-input').forEach(wi => {
                 if (!wi.value.trim()) allWeekThemesFilled = false;
             });
             autoFillDayThemesBtn.disabled = !allWeekThemesFilled;
 
-            // Повне автозаповнення (усі поля) – якщо усі теми тижнів та днів заповнені
+            // Enable full autofill only if all themes are filled
             autoFillBtn.disabled = !areAllThemesFilled();
         }
 
