@@ -14,7 +14,6 @@
     <!-- Tailwind CSS CDN -->
     <script src="3rd-party/js/tailwindcss.js"></script>
     <style>
-        /* Add this inside the <style> tags */
         [contenteditable="true"]:focus {
             outline: none;
             /* Remove default focus outline */
@@ -26,7 +25,6 @@
             /* Subtle blue glow */
         }
 
-        /* Keep original print styles */
         @media print {
             .no-print {
                 display: none !important;
@@ -35,7 +33,6 @@
             @page {
                 size: A4 landscape;
                 margin: 0;
-                /* Remove page margins completely */
             }
 
             body {
@@ -60,14 +57,12 @@
                 flex-direction: column;
             }
 
-            /* Title section */
             .page h2 {
                 margin: 0 0 4mm 0;
                 font-size: 11pt;
                 flex: 0 0 auto;
             }
 
-            /* Make table fill remaining space */
             table {
                 width: 100% !important;
                 table-layout: fixed;
@@ -90,43 +85,33 @@
                 vertical-align: top;
             }
 
-            /* Make first column wider */
             table td:first-child,
             table th:first-child {
                 width: 12%;
-                /* Increase from 8% to 12% */
                 min-width: 120px;
-                /* Ensure minimum width */
             }
 
-            /* Adjust other columns to distribute remaining width */
             table td:not(:first-child),
             table th:not(:first-child) {
                 width: 12.57%;
-                /* Recalculate to distribute remaining width: (100% - 12%) / 7 */
             }
 
-            /* Add these new styles for better text handling */
             table td:first-child .week-theme-container {
                 display: block;
-                /* Stack content vertically */
                 margin-top: 2mm;
             }
 
             table td:first-child input {
                 width: 90%;
-                /* Prevent input from overflowing */
                 margin-top: 1mm;
             }
 
-            /* Ensure text doesn't overflow */
             table td {
                 word-break: normal;
                 overflow-wrap: break-word;
                 white-space: normal;
             }
 
-            /* Handle inputs and text */
             input,
             span {
                 max-width: 100%;
@@ -134,7 +119,6 @@
                 font-size: 8pt;
             }
 
-            /* Theme inputs */
             .week-theme-input {
                 margin: 2px 0;
                 padding: 1px;
@@ -146,9 +130,12 @@
                 padding: 1px;
                 font-size: 8pt;
             }
+
+            .cell-spinner {
+                display: none !important;
+            }
         }
 
-        /* Spinner styles */
         #spinnerOverlay {
             display: none;
             position: fixed;
@@ -184,7 +171,6 @@
             }
         }
 
-        /* Hidden sections */
         #modelSelectContainer {
             display: none;
         }
@@ -207,7 +193,6 @@
             color: #2563eb;
         }
 
-        /* Show regenerate button on parent hover */
         .regenerate-btn,
         .week-theme-container:hover .regenerate-btn {
             opacity: 1;
@@ -225,7 +210,6 @@
 
         .cell-content-wrapper {
             min-height: 40px;
-            /* Prevent layout shift when showing spinner */
         }
 
         @media print {
@@ -234,7 +218,6 @@
             }
         }
 
-        /* Print styles */
         @media print {
             .regenerate-btn {
                 display: none !important;
@@ -244,6 +227,12 @@
         .week-theme-container {
             display: inline-flex;
             align-items: center;
+        }
+
+        /* Additional styles to visually disable the regenerate button */
+        .regenerate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -255,7 +244,6 @@
         <div class="no-print space-y-6 mb-8">
             <!-- Action buttons -->
             <div class="no-print space-y-4 sm:space-y-6 mb-8">
-                <!-- Action buttons with better mobile layout -->
                 <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 sm:justify-between">
                     <!-- Left group - Instructions and Print -->
                     <div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
@@ -314,6 +302,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- Settings section -->
             <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
                 <h3 class="text-xl font-semibold mb-4">Налаштуйте місяць плану</h3>
@@ -403,7 +392,6 @@
                             <span class="text-gray-700">Використати іншу модель ШІ</span>
                         </label>
 
-                        <!-- Change this div's class -->
                         <div id="modelSelectContainer" style="display: none;">
                             <label for="modelSelect" class="block text-sm font-medium text-gray-700">
                                 Оберіть модель (Оптимальна - для збалансованого результату; всі інші - від найшвидшої до
@@ -421,7 +409,6 @@
                     </div>
 
                     <!-- Autofill buttons -->
-                    <!-- Autofill buttons container with grid -->
                     <div class="grid grid-cols-1 gap-4">
                         <button id="autoFillWeekThemesBtn" disabled
                             class="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded flex items-center justify-center space-x-2 disabled:opacity-50">
@@ -470,7 +457,6 @@
         <div>Заповнюю, очікуйте, будь ласка!</div>
     </div>
 
-    <!-- JavaScript Section -->
     <script src="auth-config.js"></script>
     <script>
         /****************************************************
@@ -481,11 +467,6 @@
                 window.location.href = 'index.html';
             }
         })();
-
-        // Rest of your existing JavaScript code below...
-        /****************************************************
-         * Змінна для назв місяців українською
-         ****************************************************/
 
         /****************************************************
          * Змінна для назв місяців українською
@@ -518,24 +499,31 @@
             const yearSelect = document.getElementById('yearSelect');
             const monthSelect = document.getElementById('monthSelect');
 
-            // Set default year
             const nextYear = nextMonth.getFullYear().toString();
             if (yearSelect.querySelector(`option[value="${nextYear}"]`)) {
                 yearSelect.value = nextYear;
             }
 
-            // Set default month (1-12)
             const nextMonthNumber = (nextMonth.getMonth() + 1).toString();
             if (monthSelect.querySelector(`option[value="${nextMonthNumber}"]`)) {
                 monthSelect.value = nextMonthNumber;
             }
 
-            // Save to localStorage
             localStorage.setItem('selectedYear', nextYear);
             localStorage.setItem('selectedMonth', nextMonthNumber);
         }
 
         async function handleRegeneration(element) {
+            // If button is disabled, show modal and exit
+            if (element.disabled) {
+                if (element.dataset.type === 'day-theme') {
+                    showModal('Будь ласка, спочатку заповніть тему тижня!', 'Увага');
+                } else if (element.dataset.type === 'activity') {
+                    showModal('Будь ласка, спочатку заповніть тему дня!', 'Увага');
+                }
+                return;
+            }
+
             const apiKey = localStorage.getItem('geminiApiKey');
             if (!apiKey) {
                 showModal('API ключ не знайдено! Спочатку збережіть ключ.');
@@ -547,7 +535,6 @@
             const monthIndex = parseInt(document.getElementById('monthSelect').value) - 1;
             const monthName = monthNamesUkr[monthIndex] || "";
 
-            // Create spinner for the specific cell/input being updated
             const spinner = document.createElement('div');
             spinner.className = 'cell-spinner';
 
@@ -579,7 +566,7 @@
                     selectedModel = getSelectedModel('weekThemes');
                     promptText = `
                 Будь ласка, запропонуй одну актуальну тему для тижня у дитячому садочку в Україні 
-                на період: ${monthName} ${year}. 
+                на період: ${monthName} ${year}.
                 Тема має бути креативною, але враховувати сезон та особливості виховання дітей дошкільного віку.
                 Якщо в тижні є державне свято України чи велике міжнародне свято, будь ласка, врахуй його при формуванні теми тижня.
                 Надай лише тему, без коментарів.`.trim();
@@ -601,9 +588,8 @@
                     const weekTheme = weekThemeInput ? weekThemeInput.value : '';
                     const dayTheme = dayThemeInput ? dayThemeInput.value : '';
 
-                    // Collect all activities in the current week to avoid repetition
                     const weekActivities = Array.from(element.closest('tbody').querySelectorAll('td'))
-                        .slice(1) // Skip the first column with dates
+                        .slice(1)
                         .map(td => td.textContent.trim())
                         .filter(Boolean);
 
@@ -612,9 +598,11 @@
                 Запропонуй одну єдину унікальну активність для освітньої лінії ${lineNumber} у дитячому садочку.
                 ${weekTheme ? `Тема тижня: "${weekTheme}"` : ''}
                 ${dayTheme ? `Тема дня: "${dayTheme}"` : ''}                
-                Назва і суть активності має бути короткою, без додаткових пояснень що повинні робити діти. Активність має бути конкретною і не повторювати існуючі активності цього тижня:
+                Назва і суть активності має бути короткою, без додаткових пояснень що повинні робити діти. 
+                Активність має бути конкретною і не повторювати існуючі активності цього тижня:
                 ${weekActivities.join(', ')}
-                Надай лише опис активності, без коментарів. Активність повинна відображати освітню лінійю, може бути якась гра, руханка, танці чи інша діяльність яку ти вважаєш доцільною для дошкільнят`.trim();
+                Надай лише опис активності, без коментарів. Активність повинна відображати освітню лінію, 
+                може бути якась гра, руханка, танці чи інша діяльність, що ти вважаєш доцільною для дошкільнят.`.trim();
                 }
 
                 const response = await fetch(
@@ -651,11 +639,11 @@
 
                 saveGeneratedPages();
                 checkAutoFillAvailability();
+                updateRegenerateButtonsState();
 
             } catch (error) {
                 console.error(error);
                 showModal("Помилка генерації: " + error.message);
-                // Restore original content on error
                 if (type === 'week-theme' || type === 'day-theme') {
                     const container = element.closest('.cell-content-wrapper');
                     const input = container.querySelector('input');
@@ -668,30 +656,23 @@
                     span.style.display = '';
                 }
             } finally {
-                // Remove spinner and show regenerate button
                 if (spinner.parentNode) {
                     spinner.parentNode.removeChild(spinner);
                 }
-                element.style.display = ''; // Show regenerate button
+                element.style.display = '';
             }
         }
 
-        /****************************************************
-         * ВІДНОВЛЕННЯ ДАНИХ З LOCALSTORAGE
-         ****************************************************/
         document.addEventListener('DOMContentLoaded', function () {
-            // Set default next month if no saved values exist
             if (!localStorage.getItem('selectedYear') || !localStorage.getItem('selectedMonth')) {
                 setDefaultNextMonth();
             }
 
-            // Відновлюємо збережений ключ, якщо є
             const savedApiKey = localStorage.getItem('geminiApiKey');
             if (savedApiKey) {
                 document.getElementById('apiKeyInput').value = savedApiKey;
             }
 
-            // Відновлюємо збережений рік і місяць, якщо є
             const savedSelectedYear = localStorage.getItem('selectedYear');
             const savedSelectedMonth = localStorage.getItem('selectedMonth');
             if (savedSelectedYear) {
@@ -701,7 +682,6 @@
                 document.getElementById('monthSelect').value = savedSelectedMonth;
             }
 
-            // НОВЕ! – Відновлюємо статус чекбокса "Використовувати ШІ для автозаповнення"
             const savedUseAICheck = localStorage.getItem('useAICheck');
             const useAICheck = document.getElementById('useAICheck');
             const aiAutofillSection = document.getElementById('aiAutofillSection');
@@ -710,20 +690,17 @@
                 aiAutofillSection.style.display = 'block';
             }
 
-            // Відновлюємо вибрану модель (або ставимо за замовчуванням)
             const savedModel = localStorage.getItem('selectedModel');
             const useModelsCheck = document.getElementById('useModelsCheck');
             const modelSelectContainer = document.getElementById('modelSelectContainer');
             const modelSelect = document.getElementById('modelSelect');
 
-            // Якщо нічого не було збережено — ставимо "optimal" за замовчуванням
             if (!savedModel) {
                 localStorage.setItem('selectedModel', 'optimal');
                 useModelsCheck.checked = false;
                 modelSelectContainer.style.display = "none";
                 modelSelect.value = 'optimal';
             } else {
-                // Якщо модель була збережена і це не "optimal", показуємо селектор
                 if (savedModel !== 'optimal') {
                     useModelsCheck.checked = true;
                     modelSelectContainer.style.display = "block";
@@ -735,21 +712,16 @@
                 }
             }
 
-            // Відновлюємо збережений HTML (усіх .page разом), якщо було
             const savedPages = localStorage.getItem('allGeneratedPages');
             if (savedPages) {
                 document.querySelector('.overflow-x-auto').insertAdjacentHTML('beforeend', savedPages);
                 reattachTableHandlers();
                 reattachThemeInputHandlers();
+                updateRegenerateButtonsState();
             }
 
-            // Перевіряємо, чи можна активувати кнопки автозаповнення
             checkAutoFillAvailability();
-
-            // Add this to initialize the checkbox state
             updateClearApiKeyCheckbox();
-
-            // Update useAICheck initial state
             const hasGeneratedTables = document.querySelectorAll('.page').length > 0;
             if (!hasGeneratedTables) {
                 useAICheck.checked = false;
@@ -765,12 +737,8 @@
             }
         });
 
-        /****************************************************
-         * НОВЕ! – Логіка чекбокса "Використовувати ШІ для автозаповнення"
-         ****************************************************/
         const useAICheck = document.getElementById('useAICheck');
         const aiAutofillSection = document.getElementById('aiAutofillSection');
-        // Event listener for the "Використовувати ШІ для автозаповнення" checkbox
         useAICheck.addEventListener('change', function () {
             const hasGeneratedTables = document.querySelectorAll('.page').length > 0;
 
@@ -782,53 +750,33 @@
 
             aiAutofillSection.style.display = this.checked ? 'block' : 'none';
             localStorage.setItem('useAICheck', this.checked);
-
-            // Immediately check and update button states
             setTimeout(checkAutoFillAvailability, 0);
         });
 
-        /****************************************************
-         * ЛОГІКА ЧЕКБОКСА "ВИКОРИСТАТИ ІНШІ МОДЕЛІ"
-         ****************************************************/
         const useModelsCheck = document.getElementById('useModelsCheck');
         const modelSelectContainer = document.getElementById('modelSelectContainer');
         const modelSelect = document.getElementById('modelSelect');
 
         useModelsCheck.addEventListener('change', function () {
             if (this.checked) {
-                // Show the model selector container
                 modelSelectContainer.style.display = 'block';
             } else {
-                // Hide the selector container and reset to optimal model
                 modelSelectContainer.style.display = 'none';
                 modelSelect.value = 'optimal';
                 localStorage.setItem('selectedModel', 'optimal');
             }
         });
 
-        // Коли користувач змінює модель у селекторі
         modelSelect.addEventListener('change', function () {
             const selectedValue = this.value;
             localStorage.setItem('selectedModel', selectedValue);
-
-            // Update the display name in the UI if needed
-            const displayName = selectedValue === 'optimal'
-                ? MODEL_CONFIG.optimal.name
-                : MODEL_CONFIG.models[selectedValue];
         });
 
-        /**
-         * Допоміжна функція, яка повертає поточну (обрану) модель або дефолтну.
-         */
         function getSelectedModel(taskType = 'default') {
-            const savedModel = localStorage.getItem('selectedModel') || 'optimal';  // Changed default here
-
-            // If it's not the optimal model, return the actual model name
+            const savedModel = localStorage.getItem('selectedModel') || 'optimal';
             if (savedModel !== 'optimal') {
                 return savedModel.trim();
             }
-
-            // For optimal model, return different models based on task type
             switch (taskType) {
                 case 'weekThemes':
                     return MODEL_CONFIG.optimal.weekThemes;
@@ -841,12 +789,7 @@
             }
         }
 
-        /****************************************************
-         * КНОПКА "ОЧИСТИТИ ВСЕ"
-         ****************************************************/
         const clearApiKeyCheck = document.getElementById('clearApiKeyCheck');
-
-        // Add function to update checkbox state based on API key presence
         function updateClearApiKeyCheckbox() {
             const apiKey = localStorage.getItem('geminiApiKey');
             clearApiKeyCheck.disabled = !apiKey;
@@ -857,19 +800,16 @@
 
         btnClearAll.addEventListener('click', function () {
             if (confirm("Ви впевнені, що хочете видалити всі дані та перезавантажити сторінку?")) {
-                // Save authData and API key temporarily if needed
                 const authData = localStorage.getItem('authData');
                 const apiKey = localStorage.getItem('geminiApiKey');
 
                 localStorage.clear();
 
                 if (!clearApiKeyCheck.checked) {
-                    // Restore API key if checkbox is unchecked
                     if (apiKey) {
                         localStorage.setItem('geminiApiKey', apiKey);
                     }
                 }
-                // Restore authData
                 if (authData) {
                     localStorage.setItem('authData', authData);
                 }
@@ -877,36 +817,26 @@
             }
         });
 
-        /****************************************************
-         * ЗБЕРІГАННЯ / ВІДНОВЛЕННЯ КОНТЕНТУ
-         ****************************************************/
         function saveGeneratedPages() {
-            // Remove any lingering spinners before saving
             document.querySelectorAll('.cell-spinner').forEach(spinner => {
                 spinner.remove();
             });
 
-            // Show any hidden elements that might have been hidden during regeneration
             document.querySelectorAll('.cell-content-wrapper *').forEach(el => {
                 el.style.display = '';
             });
 
-            // Process all pages before saving
             document.querySelectorAll('.page').forEach(page => {
-                // Save input values
                 page.querySelectorAll('input').forEach(input => {
                     input.setAttribute('value', input.value);
                 });
 
-                // Ensure activity cells have proper structure
                 page.querySelectorAll('td').forEach((td, index) => {
-                    if (index > 0) { // Skip first column (dates/themes)
+                    if (index > 0) {
                         const contentWrapper = td.querySelector('.flex');
                         if (contentWrapper) {
                             const span = contentWrapper.querySelector('span');
                             const content = span ? span.textContent : '';
-
-                            // Recreate proper structure
                             td.innerHTML = `
                                 <div class="flex justify-between items-start">
                                     <span class="flex-grow">${content}</span>
@@ -921,20 +851,15 @@
                 });
             });
 
-            // Save all pages HTML
             const pagesHtml = Array.from(document.querySelectorAll('.page'))
                 .map(page => page.outerHTML)
                 .join('\n');
             localStorage.setItem('allGeneratedPages', pagesHtml);
         }
 
-        /****************************************************
-         * РЕДАГУВАННЯ / ЗБЕРЕЖЕННЯ ТАБЛИЦЬ (contentEditable)
-         ****************************************************/
         function editTableContent(tableId) {
             const table = document.getElementById(tableId);
             if (!table) return;
-            // Add red border class to table
             table.style.border = '3px solid orange';
             table.querySelectorAll('td, th').forEach(cell => {
                 cell.contentEditable = 'true';
@@ -946,7 +871,6 @@
         function saveTableContent(tableId) {
             const table = document.getElementById(tableId);
             if (!table) return;
-            // Remove red border from table
             table.style.border = '';
             table.querySelectorAll('td, th').forEach(cell => {
                 cell.contentEditable = 'false';
@@ -957,7 +881,7 @@
 
         function reattachTableHandlers() {
             document.querySelectorAll('.editBtn').forEach(btn => {
-                btn.disabled = false; // Ensure edit buttons are enabled
+                btn.disabled = false;
                 btn.onclick = function () {
                     const tableId = this.getAttribute('data-table');
                     editTableContent(tableId);
@@ -965,7 +889,7 @@
             });
 
             document.querySelectorAll('.saveBtn').forEach(btn => {
-                btn.disabled = false; // Ensure save buttons are enabled
+                btn.disabled = false;
                 btn.onclick = function () {
                     const tableId = this.getAttribute('data-table');
                     saveTableContent(tableId);
@@ -988,9 +912,6 @@
             }
         }
 
-        /****************************************************
-         * ГЕНЕРАЦІЯ "РОБОЧИХ ТИЖНІВ" МІСЯЦЯ
-         ****************************************************/
         const generateWeeksBtn = document.getElementById('generateWeeksBtn');
         generateWeeksBtn.addEventListener('click', () => {
             const yearSelect = document.getElementById('yearSelect').value;
@@ -1004,7 +925,6 @@
             localStorage.setItem('selectedYear', yearSelect);
             localStorage.setItem('selectedMonth', monthSelect);
 
-            // Видаляємо всі сторінки .page з DOM та localStorage
             document.querySelectorAll('.page').forEach(page => page.remove());
             localStorage.removeItem('allGeneratedPages');
 
@@ -1140,16 +1060,18 @@
 
             reattachTableHandlers();
             reattachThemeInputHandlers();
+            updateRegenerateButtonsState();
             saveGeneratedPages();
             checkAutoFillAvailability();
             updateGenerateButtonState();
+            updateRegenerateButtonsState();
         });
 
         function getWorkingWeeksOfMonth(year, month) {
             const allWorkDays = [];
             let d = new Date(year, month, 1);
             while (d.getMonth() === month) {
-                const dayOfWeek = d.getDay(); // 0=Нд, 1=Пн, ... 6=Сб
+                const dayOfWeek = d.getDay();
                 if (dayOfWeek !== 0 && dayOfWeek !== 6) {
                     allWorkDays.push(new Date(d));
                 }
@@ -1161,7 +1083,6 @@
             let currentWeek = [];
             for (let i = 0; i < allWorkDays.length; i++) {
                 const dayDate = allWorkDays[i];
-                // якщо наступний робочий день – це Понеділок, отже починається новий тиждень
                 if (dayDate.getDay() === 1 && currentWeek.length > 0) {
                     weeks.push(currentWeek);
                     currentWeek = [];
@@ -1193,18 +1114,23 @@
             return days[dayIndex] || '';
         }
 
-        /****************************************************
-         * ВВІД / КОНТРОЛЬ ТЕМ ТИЖНІВ ТА ДНІВ
-         ****************************************************/
         function reattachThemeInputHandlers() {
             const weekInputs = document.querySelectorAll('.week-theme-input');
             const dayInputs = document.querySelectorAll('.day-theme-input');
 
             weekInputs.forEach(input => {
-                input.addEventListener('input', checkAutoFillAvailability);
+                input.addEventListener('input', () => {
+                    checkAutoFillAvailability();
+                    updateRegenerateButtonsState();
+                    saveGeneratedPages();
+                });
             });
             dayInputs.forEach(input => {
-                input.addEventListener('input', checkAutoFillAvailability);
+                input.addEventListener('input', () => {
+                    checkAutoFillAvailability();
+                    updateRegenerateButtonsState();
+                    saveGeneratedPages();
+                });
             });
         }
 
@@ -1229,10 +1155,7 @@
             const autoFillDayThemesBtn = document.getElementById('autoFillDayThemesBtn');
             const autoFillBtn = document.getElementById('autoFillBtn');
 
-            // First check if tables exist
             const tablesExist = document.querySelectorAll('.page').length > 0;
-
-            // If AI checkbox is not checked or no tables exist, disable all buttons
             if (!useAICheck.checked || !tablesExist) {
                 autoFillWeekThemesBtn.disabled = true;
                 autoFillDayThemesBtn.disabled = true;
@@ -1240,7 +1163,6 @@
                 return;
             }
 
-            // Check if API key exists and is not empty
             const apiKey = localStorage.getItem('geminiApiKey') || '';
             if (!apiKey.trim()) {
                 autoFillWeekThemesBtn.disabled = true;
@@ -1249,26 +1171,48 @@
                 return;
             }
 
-            // Enable week themes button since we have tables and API key
             autoFillWeekThemesBtn.disabled = false;
 
-            // Check week themes for enabling day themes button
             let allWeekThemesFilled = true;
             document.querySelectorAll('.week-theme-input').forEach(wi => {
                 if (!wi.value.trim()) allWeekThemesFilled = false;
             });
             autoFillDayThemesBtn.disabled = !allWeekThemesFilled;
 
-            // Enable full autofill only if all themes are filled
             autoFillBtn.disabled = !areAllThemesFilled();
         }
 
         /****************************************************
-         * ЗБЕРЕЖЕННЯ API-КЛЮЧА
+         * NEW: Update (disable/enable) regenerate buttons based on presence of themes
          ****************************************************/
-        const apiKeyInput = document.getElementById('apiKeyInput');
+        function updateRegenerateButtonsState() {
+            // For each page (week):
+            document.querySelectorAll('.page').forEach(page => {
+                const weekThemeInput = page.querySelector('.week-theme-input');
+                const weekThemeFilled = (weekThemeInput?.value ?? "").trim().length > 0;
 
-        // Add input event listener with debouncing
+                // If week theme is not filled, disable day-theme regenerate
+                const dayThemeBtns = page.querySelectorAll('.regenerate-btn[data-type="day-theme"]');
+                dayThemeBtns.forEach(btn => {
+                    btn.disabled = !weekThemeFilled;
+                });
+
+                // For each row (day):
+                page.querySelectorAll('tr').forEach(row => {
+                    const dayThemeInput = row.querySelector('.day-theme-input');
+                    if (!dayThemeInput) return;
+                    const dayThemeFilled = dayThemeInput.value.trim().length > 0;
+
+                    // If day theme is not filled, disable activity regenerate
+                    const activityBtns = row.querySelectorAll('.regenerate-btn[data-type="activity"]');
+                    activityBtns.forEach(btn => {
+                        btn.disabled = !dayThemeFilled;
+                    });
+                });
+            });
+        }
+
+        const apiKeyInput = document.getElementById('apiKeyInput');
         let saveTimeout;
         apiKeyInput.addEventListener('input', function () {
             clearTimeout(saveTimeout);
@@ -1277,13 +1221,10 @@
             saveTimeout = setTimeout(() => {
                 localStorage.setItem('geminiApiKey', keyInput);
                 checkAutoFillAvailability();
-                updateClearApiKeyCheckbox(); // Add this line
+                updateClearApiKeyCheckbox();
             }, 500);
         });
 
-        /****************************************************
-         * Spinner / enable / disable main control buttons
-         ****************************************************/
         function showSpinner() {
             document.getElementById('spinnerOverlay').style.display = 'block';
         }
@@ -1296,23 +1237,15 @@
             });
         }
         function enableAllButtons() {
-            // First enable all buttons except edit/save buttons
             document.querySelectorAll('.no-print button:not(.editBtn):not(.saveBtn), .no-print select, .no-print input').forEach(el => {
                 el.disabled = false;
             });
-
-            // Always enable edit/save buttons
             document.querySelectorAll('.editBtn, .saveBtn').forEach(el => {
                 el.disabled = false;
             });
-
-            // Check availability for autofill buttons
             checkAutoFillAvailability();
         }
 
-        /****************************************************
-         * АВТОЗАПОВНЕННЯ ТЕМ ТИЖНІВ
-         ****************************************************/
         const autoFillWeekThemesBtn = document.getElementById('autoFillWeekThemesBtn');
         autoFillWeekThemesBtn.addEventListener('click', async () => {
             const apiKey = localStorage.getItem('geminiApiKey');
@@ -1343,7 +1276,6 @@
                 return;
             }
 
-            // Формуємо prompt
             const promptText = `
 Будь ласка, запропонуй ${howManyWeeks} актуальних тем для тижнів у дитячому садочку в Україні 
 на період: ${monthName} ${year}. 
@@ -1397,12 +1329,10 @@
             } finally {
                 hideSpinner();
                 enableAllButtons();
+                updateRegenerateButtonsState();
             }
         });
 
-        /****************************************************
-         * АВТОЗАПОВНЕННЯ ТЕМ ДНІВ (ЄДИНИЙ ЗАПИТ ДЛЯ ВСІХ)
-         ****************************************************/
         const autoFillDayThemesBtn = document.getElementById('autoFillDayThemesBtn');
         autoFillDayThemesBtn.addEventListener('click', async () => {
             const apiKey = localStorage.getItem('geminiApiKey');
@@ -1432,7 +1362,6 @@
                     const table = page.querySelector('table');
                     if (!table) continue;
                     const rows = table.querySelectorAll('tr');
-                    // First tr is header, start from i=1
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i];
                         const dayCell = row.querySelector('td');
@@ -1461,11 +1390,11 @@
 враховуючи усі ці дати (період: ${monthName} ${year}, українською мовою), 
 з огляду на те, що в Україні можуть бути офіційні державні свята та великі сучасні свята для України міжнародного рівня у деякі з цих дат. 
 Свята повинні відповідати Григоріанському календарю (Наприклад, 25 грудня - Різдво Христове, а не 7 січня - Різдво Христове, як у Юліанському календарі,
-або день Святого Миколая повинен бути 6 грудня, а не 19 грудня). 
+або день Святого Миколая повинен бути 6 грудня, а не 19 грудня).
 Не використовуй таких персонажів як Дід Мороз, Снігуронька, замість них використовуй українського Святого Миколая.
 Коли свято випадає на вихідний, тоді темою найближчого робочого дня може бути свято.
 Подай відповідь у вигляді простого списку тем, кожна тема з нового рядка.
-Не додавай нумерацію чи додаткові пояснення на початку чи в кінці теми (наприклад - не додавай "(1)" у кінці назви теми)!
+Не додавай нумерацію чи додаткові пояснення на початку чи в кінці теми!
 Ось перелік дат для контексту:
 ${datesList.join('\n')}`.trim();
 
@@ -1476,7 +1405,6 @@ ${datesList.join('\n')}`.trim();
                     }]
                 };
 
-                // Add JSON schema only for models that support it
                 if (!selectedModel.includes('thinking-exp')) {
                     requestBody.generationConfig = {
                         temperature: 1,
@@ -1513,14 +1441,11 @@ ${datesList.join('\n')}`.trim();
                 const data = await response.json();
                 let themes = [];
 
-                // Try to parse as JSON first
                 try {
                     const responseText = data.candidates[0].content.parts[0].text;
                     const parsedResponse = JSON.parse(responseText);
                     themes = parsedResponse.response;
                 } catch (e) {
-                    // Fallback to line-by-line parsing if JSON parsing fails
-                    console.log("Falling back to line-by-line parsing");
                     const generatedText = data.candidates[0].content.parts.at(-1).text || "";
                     themes = generatedText
                         .split(/\r?\n/)
@@ -1528,7 +1453,6 @@ ${datesList.join('\n')}`.trim();
                         .filter(Boolean);
                 }
 
-                // Apply themes to inputs
                 for (let i = 0; i < allDayData.length; i++) {
                     if (i < themes.length) {
                         allDayData[i].dayInput.value = themes[i];
@@ -1543,12 +1467,10 @@ ${datesList.join('\n')}`.trim();
             } finally {
                 hideSpinner();
                 enableAllButtons();
+                updateRegenerateButtonsState();
             }
         });
 
-        /****************************************************
-         * АВТОЗАПОВНЕННЯ (ПОВНА ТАБЛИЦЯ)
-         ****************************************************/
         const autoFillBtn = document.getElementById('autoFillBtn');
         autoFillBtn.addEventListener('click', async () => {
             const apiKey = localStorage.getItem('geminiApiKey');
@@ -1620,7 +1542,7 @@ ${datesList.join('\n')}`.trim();
 - Активності повинні бути короткими, не повторюватися
 - Включати різні ігри, руханки, танці та інші види активностей для дошкільнят
 - Відповідати темі тижня та темі дня
-- У відповіді з назвою активності не потрібно явно прописувати назву освітнтої лінії
+- У відповіді з назвою активності не потрібно явно прописувати назву освітньої лінії
 
 Ось перелік днів тижня і теми днів для плану:
 ${JSON.stringify(promptObj.days, null, 2)}`.trim();
@@ -1632,7 +1554,6 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
                         }]
                     };
 
-                    // Add JSON schema for structured response
                     if (!selectedModel.includes('thinking-exp')) {
                         requestBody.generationConfig = {
                             temperature: 1,
@@ -1666,7 +1587,6 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
                         };
                     }
 
-                    // Function to validate and fill data
                     function validateAndFillData(data) {
                         let allFilled = true;
                         if (!data || !data.tableData) return false;
@@ -1690,7 +1610,6 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
                                 for (let colIndex = 1; colIndex < columns.length && colIndex <= 7; colIndex++) {
                                     if (dayEntry.lines[colIndex - 1]) {
                                         const td = columns[colIndex];
-                                        // Preserve the existing structure while updating content
                                         let contentWrapper = td.querySelector('.flex');
                                         if (!contentWrapper) {
                                             contentWrapper = document.createElement('div');
@@ -1744,29 +1663,22 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
                         const data = await response.json();
                         let parsedData = null;
 
-                        // Try to parse structured response first
                         try {
                             const responseText = data.candidates[0].content.parts[0].text;
                             parsedData = JSON.parse(responseText);
                         } catch (e) {
-                            // Fallback to parsing raw text response
-                            console.log("Falling back to raw text parsing");
                             const generatedText = data.candidates[0].content.parts.at(-1).text || "";
-
-                            // Try to extract JSON from the text
                             try {
                                 let jsonStr = generatedText.match(/\{[\s\S]*\}/);
                                 if (jsonStr) {
                                     parsedData = JSON.parse(jsonStr[0]);
                                 }
                             } catch (e2) {
-                                // If JSON extraction fails, create structured data from raw text
                                 const lines = generatedText
                                     .split(/\r?\n/)
                                     .map(line => line.replace(/^\d+[\.\)]\s*/, '').trim())
                                     .filter(Boolean);
 
-                                // Group lines into days (7 lines per day)
                                 parsedData = {
                                     tableData: promptObj.days.map((day, index) => ({
                                         dateAndDay: day.dateAndDay,
@@ -1777,12 +1689,9 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
                             }
                         }
 
-                        // Try to fill data and validate
                         let fillSuccess = validateAndFillData(parsedData);
 
-                        // If first attempt failed, try one more time
                         if (!fillSuccess) {
-                            console.log("First fill attempt failed, trying again...");
                             const retryResponse = await fetch(
                                 `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`,
                                 {
@@ -1824,12 +1733,10 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
             } finally {
                 hideSpinner();
                 enableAllButtons();
+                updateRegenerateButtonsState();
             }
         });
 
-        /****************************************************
-         * Заміна input на текст при друку, а потім відновлення
-         ****************************************************/
         const printBtn = document.getElementById('btnPrint');
         printBtn.addEventListener('click', function () {
             const dayInputs = document.querySelectorAll('.day-theme-input');
@@ -1853,17 +1760,11 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
             });
         });
 
-        /****************************************************
-         * КНОПКА ІНСТРУКЦІЇ
-         ****************************************************/
         const btnInstructions = document.getElementById('btnInstructions');
         btnInstructions.addEventListener('click', function () {
             window.open('instructions.html', '_blank');
         });
 
-        /****************************************************
-        * КНОПКА "ВИЙТИ"
-        ****************************************************/
         const btnLogout = document.getElementById('btnLogout');
         btnLogout.addEventListener('click', function () {
             if (confirm('Ви впевнені, що хочете вийти?')) {
@@ -1873,19 +1774,15 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
         });
     </script>
 
-    <!-- Add this HTML right before the closing </body> tag -->
     <!-- Modal Component -->
     <div id="customModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full transform transition-all">
-            <!-- Modal Header -->
             <div class="border-b px-6 py-4">
                 <h3 id="modalTitle" class="text-lg font-medium text-gray-900"></h3>
             </div>
-            <!-- Modal Body -->
             <div class="px-6 py-4">
                 <p id="modalMessage" class="text-gray-600"></p>
             </div>
-            <!-- Modal Footer -->
             <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
                 <button id="modalOkBtn"
                     class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -1895,9 +1792,7 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
         </div>
     </div>
 
-    <!-- Add this JavaScript right before the closing </body> tag -->
     <script>
-        // Modal functionality
         const modal = {
             element: document.getElementById('customModal'),
             titleElement: document.getElementById('modalTitle'),
@@ -1915,7 +1810,6 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
                         this.okButton.removeEventListener('click', handleClick);
                         resolve(true);
                     };
-
                     this.okButton.addEventListener('click', handleClick);
                 });
             },
@@ -1925,7 +1819,6 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
             }
         };
 
-        // Helper function to replace alerts
         async function showModal(message, title = 'Повідомлення') {
             return modal.show(title, message);
         }
@@ -1937,7 +1830,7 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg flex items-center space-x-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
-                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 01.707-.293.999.999 0 01.707.293l3 3a1 1 0 01-1.414 1.414l-3-3z"
                     clip-rule="evenodd" />
             </svg>
             <span>Інсталювати додаток</span>
@@ -1979,7 +1872,6 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
     </div>
 
     <script>
-        // Installation handling
         let deferredPrompt;
         const installContainer = document.getElementById('installContainer');
         const installButton = document.getElementById('installButton');
@@ -1987,65 +1879,46 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
         const closeInstallModal = document.getElementById('closeInstallModal');
         const installSuccess = document.getElementById('installSuccess');
 
-        // Check if app is already installed
         function isPWAInstalled() {
             return window.matchMedia('(display-mode: standalone)').matches ||
                 window.navigator.standalone === true;
         }
 
-        // Show install prompt
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
-            // Stash the event so it can be triggered later
             deferredPrompt = e;
 
-            // Don't show install button if app is already installed
             if (!isPWAInstalled()) {
                 installContainer.classList.remove('hidden');
             }
         });
 
-        // Handle install button click
         installButton.addEventListener('click', async () => {
             if (!deferredPrompt) {
-                // Show installation instructions if PWA can't be installed automatically
                 installModal.classList.remove('hidden');
                 return;
             }
 
-            // Show install prompt
             deferredPrompt.prompt();
-
-            // Wait for the user to respond to the prompt
             const { outcome } = await deferredPrompt.userChoice;
 
             if (outcome === 'accepted') {
-                console.log('User accepted the install prompt');
                 showInstallSuccess();
-            } else {
-                console.log('User dismissed the install prompt');
             }
-
-            // Clear the deferredPrompt variable
             deferredPrompt = null;
-            // Hide install button
             installContainer.classList.add('hidden');
         });
 
-        // Close modal button handler
         closeInstallModal.addEventListener('click', () => {
             installModal.classList.add('hidden');
         });
 
-        // Close modal when clicking outside
         installModal.addEventListener('click', (e) => {
             if (e.target === installModal) {
                 installModal.classList.add('hidden');
             }
         });
 
-        // Show success message
         function showInstallSuccess() {
             installSuccess.classList.remove('hidden');
             setTimeout(() => {
@@ -2053,14 +1926,12 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
             }, 3000);
         }
 
-        // Hide install button if app is launched in standalone mode
         window.addEventListener('DOMContentLoaded', () => {
             if (isPWAInstalled()) {
                 installContainer.classList.add('hidden');
             }
         });
 
-        // Handle app installed event
         window.addEventListener('appinstalled', (evt) => {
             installContainer.classList.add('hidden');
             showInstallSuccess();
@@ -2079,7 +1950,6 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
         }
     </script>
     <script>
-        // Check for service worker updates
         function checkForUpdates() {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.ready.then(registration => {
@@ -2088,19 +1958,14 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
             }
         }
 
-        // Check for updates every hour
         setInterval(checkForUpdates, 60 * 60 * 1000);
 
-        // Add update notification
         if ('serviceWorker' in navigator) {
             let refreshing = false;
 
-            // Handle update found
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) {
                     refreshing = true;
-
-                    // Show update notification
                     const updateNotification = document.createElement('div');
                     updateNotification.className = 'fixed bottom-4 left-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 z-50';
                     updateNotification.innerHTML = `
