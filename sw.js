@@ -1,5 +1,5 @@
-// Increment this version when you want to force an update
-const CACHE_VERSION = 'v3.5';
+// sw.js - Modified service worker code
+const CACHE_VERSION = 'v3.6';
 const CACHE_NAME = `planuvannya-${CACHE_VERSION}`;
 const BASE_PATH = '/weekly-education-plan-auto';
 
@@ -17,14 +17,13 @@ const urlsToCache = [
 
 // Install Service Worker
 self.addEventListener('install', event => {
+  // Don't activate the new service worker automatically
+  event.preventDefault();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Installing new cache version:', CACHE_VERSION);
         return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        return self.skipWaiting();
       })
   );
 });
@@ -33,10 +32,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     Promise.all([
-      // Take control of all clients
-      self.clients.claim(),
-      
-      // Remove old caches
+      // Don't take control of clients automatically
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
@@ -48,11 +44,11 @@ self.addEventListener('activate', event => {
         );
       })
     ]).then(() => {
-      // Notify all clients about the update
+      // Notify clients about available update
       self.clients.matchAll().then(clients => {
         clients.forEach(client => {
           client.postMessage({
-            type: 'CACHE_UPDATED',
+            type: 'UPDATE_AVAILABLE',
             version: CACHE_VERSION
           });
         });
@@ -61,7 +57,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch Event with network-first strategy and proper request filtering
+// Fetch Event with network-first strategy
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
@@ -84,14 +80,7 @@ self.addEventListener('fetch', event => {
 
         caches.open(CACHE_NAME)
           .then(cache => {
-            try {
-              cache.put(event.request, responseToCache);
-            } catch (error) {
-              console.warn('Failed to cache response:', error);
-            }
-          })
-          .catch(error => {
-            console.warn('Failed to open cache:', error);
+            cache.put(event.request, responseToCache);
           });
 
         return response;
@@ -101,3 +90,69 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+
+// Add message handler for update requests
+self.addEventListener('message', event => {
+  if (event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
+
+// Client-side update handling code (add to both app.html and index.html)
+function initializeUpdateHandling() {
+  let refreshing = false;
+
+  // Check for new service worker
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+
+  // Listen for update messages from service worker
+  navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data.type === 'UPDATE_AVAILABLE') {
+      showUpdateNotification();
+    }
+  });
+}
+
+function showUpdateNotification() {
+  const updateNotification = document.createElement('div');
+  updateNotification.className = 'fixed bottom-4 left-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 z-50';
+  updateNotification.innerHTML = `
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="font-bold">Оновлення доступне!</p>
+        <p>Нова версія додатку готова.</p>
+      </div>
+      <button id="updateButton" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-600">
+        Оновити
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(updateNotification);
+  
+  document.getElementById('updateButton').addEventListener('click', () => {
+    // Clear data while preserving essential items
+    const authData = localStorage.getItem('authData');
+    const apiKey = localStorage.getItem('geminiApiKey');
+    
+    localStorage.clear();
+    
+    if (apiKey) localStorage.setItem('geminiApiKey', apiKey);
+    if (authData) localStorage.setItem('authData', authData);
+    
+    // Tell service worker to skip waiting and activate new version
+    navigator.serviceWorker.ready.then(registration => {
+      registration.waiting.postMessage({ action: 'skipWaiting' });
+    });
+  });
+}
+
+// Initialize update handling when the page loads
+if ('serviceWorker' in navigator) {
+  initializeUpdateHandling();
+}

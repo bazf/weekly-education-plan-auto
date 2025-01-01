@@ -505,31 +505,6 @@
     </script>
 
     <script>
-        // Function to clear data while preserving essential items
-        function clearDataOnUpdate() {
-            const authData = localStorage.getItem('authData');
-            const apiKey = localStorage.getItem('geminiApiKey');
-
-            localStorage.clear();
-
-            // Restore essential data
-            if (apiKey) {
-                localStorage.setItem('geminiApiKey', apiKey);
-            }
-            if (authData) {
-                localStorage.setItem('authData', authData);
-            }
-        }
-
-        // Check for service worker updates
-        function checkForUpdates() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.update();
-                });
-            }
-        }
-
         // Listen for messages from service worker
         navigator.serviceWorker.addEventListener('message', (event) => {
             if (event.data.type === 'CACHE_UPDATED') {
@@ -537,16 +512,16 @@
                 const updateNotification = document.createElement('div');
                 updateNotification.className = 'fixed bottom-4 left-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 z-50';
                 updateNotification.innerHTML = `
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="font-bold">Оновлення доступне!</p>
-                    <p>Нова версія додатку готова.</p>
-                </div>
-                <button id="updateAndReloadBtn" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-600">
-                    Оновити
-                </button>
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="font-bold">Оновлення доступне!</p>
+                <p>Нова версія застосунку готова.</p>
             </div>
-        `;
+            <button id="updateAndReloadBtn" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-600">
+                Оновити
+            </button>
+        </div>
+    `;
                 document.body.appendChild(updateNotification);
 
                 // Handle update button click
@@ -557,19 +532,62 @@
             }
         });
 
-        // Check for updates every hour
-        setInterval(checkForUpdates, 60 * 60 * 1000);
-
-        // Handle service worker controller change
-        if ('serviceWorker' in navigator) {
+        function initializeUpdateHandling() {
             let refreshing = false;
+
+            // Check for new service worker
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) {
                     refreshing = true;
-                    clearDataOnUpdate();
                     window.location.reload();
                 }
             });
+
+            // Listen for update messages from service worker
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data.type === 'UPDATE_AVAILABLE') {
+                    showUpdateNotification();
+                }
+            });
+        }
+
+        function showUpdateNotification() {
+            const updateNotification = document.createElement('div');
+            updateNotification.className = 'fixed bottom-4 left-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 z-50';
+            updateNotification.innerHTML = `
+    <div class="flex items-center justify-between">
+        <div>
+            <p class="font-bold">Оновлення доступне!</p>
+            <p>Нова версія застосунку готова.</p>
+        </div>
+        <button id="updateButton" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-600">
+            Оновити
+        </button>
+    </div>
+`;
+
+            document.body.appendChild(updateNotification);
+
+            document.getElementById('updateButton').addEventListener('click', () => {
+                // Clear data while preserving essential items
+                const authData = localStorage.getItem('authData');
+                const apiKey = localStorage.getItem('geminiApiKey');
+
+                localStorage.clear();
+
+                if (apiKey) localStorage.setItem('geminiApiKey', apiKey);
+                if (authData) localStorage.setItem('authData', authData);
+
+                // Tell service worker to skip waiting and activate new version
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.waiting.postMessage({ action: 'skipWaiting' });
+                });
+            });
+        }
+
+        // Initialize update handling when the page loads
+        if ('serviceWorker' in navigator) {
+            initializeUpdateHandling();
         }
     </script>
 </body>
