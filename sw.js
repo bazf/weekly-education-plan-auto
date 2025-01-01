@@ -1,5 +1,5 @@
 // Increment this version when you want to force an update
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v3.1';
 const CACHE_NAME = `planuvannya-${CACHE_VERSION}`;
 const BASE_PATH = '/weekly-education-plan-auto';
 
@@ -52,14 +52,27 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch Event with network-first strategy for HTML files
+// Fetch Event with network-first strategy and proper request filtering
 self.addEventListener('fetch', event => {
+  // Only handle GET requests that we can cache
+  if (event.request.method !== 'GET') return;
+
+  // Check if the request URL is eligible for caching
+  const requestURL = new URL(event.request.url);
+  
+  // Only cache same-origin requests or specific CDN resources
+  const shouldCache = 
+    requestURL.origin === location.origin || 
+    requestURL.hostname === 'cdnjs.cloudflare.com';
+
+  if (!shouldCache) return;
+
   event.respondWith(
     fetch(event.request)
       .then(response => {
         // Check if we received a valid response
-        if (!response || response.status !== 200) {
-          throw new Error('Network response was not ok');
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
         }
 
         // Clone the response
@@ -68,7 +81,14 @@ self.addEventListener('fetch', event => {
         // Update cache
         caches.open(CACHE_NAME)
           .then(cache => {
-            cache.put(event.request, responseToCache);
+            try {
+              cache.put(event.request, responseToCache);
+            } catch (error) {
+              console.warn('Failed to cache response:', error);
+            }
+          })
+          .catch(error => {
+            console.warn('Failed to open cache:', error);
           });
 
         return response;
