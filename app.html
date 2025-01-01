@@ -609,12 +609,12 @@
 
                     selectedModel = getSelectedModel('activities');
                     promptText = `
-                Запропонуй одну унікальну активність для освітньої лінії ${lineNumber} у дитячому садочку.
-                Тема тижня: "${weekTheme}"
-                Тема дня: "${dayTheme}"
-                Активність має бути короткою, конкретною і не повторювати існуючі активності цього тижня:
+                Запропонуй одну єдину унікальну активність для освітньої лінії ${lineNumber} у дитячому садочку.
+                ${weekTheme ? `Тема тижня: "${weekTheme}"` : ''}
+                ${dayTheme ? `Тема дня: "${dayTheme}"` : ''}                
+                Активність має бути короткою, без пояснень. Активність має бути конкретною і не повторювати існуючі активності цього тижня:
                 ${weekActivities.join(', ')}
-                Надай лише опис активності, без коментарів.`.trim();
+                Надай лише опис активності, без коментарів. Активність повинна відображати освітню лінійю, може бути якась гра, руханка, танці чи інша діяльність яку ти вважаєш доцільною для дошкільнят`.trim();
                 }
 
                 const response = await fetch(
@@ -635,7 +635,7 @@
                 }
 
                 const data = await response.json();
-                const generatedText = data.candidates[0].content.parts[0].text.trim();
+                const generatedText = data.candidates[0].content.parts.at(-1).text.trim();
 
                 if (type === 'week-theme' || type === 'day-theme') {
                     const container = element.closest('.cell-content-wrapper');
@@ -648,7 +648,6 @@
                     span.textContent = generatedText;
                     span.style.display = '';
                 }
-
 
                 saveGeneratedPages();
                 checkAutoFillAvailability();
@@ -881,7 +880,7 @@
         /****************************************************
          * ЗБЕРІГАННЯ / ВІДНОВЛЕННЯ КОНТЕНТУ
          ****************************************************/
-        function saveGeneratedPages() {
+         function saveGeneratedPages() {
             // Remove any lingering spinners before saving
             document.querySelectorAll('.cell-spinner').forEach(spinner => {
                 spinner.remove();
@@ -892,14 +891,37 @@
                 el.style.display = '';
             });
 
-            // У кожного інпуту проставити value
+            // Process all pages before saving
             document.querySelectorAll('.page').forEach(page => {
+                // Save input values
                 page.querySelectorAll('input').forEach(input => {
                     input.setAttribute('value', input.value);
                 });
+
+                // Ensure activity cells have proper structure
+                page.querySelectorAll('td').forEach((td, index) => {
+                    if (index > 0) { // Skip first column (dates/themes)
+                        const contentWrapper = td.querySelector('.flex');
+                        if (contentWrapper) {
+                            const span = contentWrapper.querySelector('span');
+                            const content = span ? span.textContent : '';
+                            
+                            // Recreate proper structure
+                            td.innerHTML = `
+                                <div class="flex justify-between items-start">
+                                    <span class="flex-grow">${content}</span>
+                                    <button class="regenerate-btn flex-shrink-0" data-type="activity" data-line="${index}" title="Згенерувати нову активність">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>`;
+                        }
+                    }
+                });
             });
 
-            // Зчитуємо всі .page і зберігаємо їхній HTML
+            // Save all pages HTML
             const pagesHtml = Array.from(document.querySelectorAll('.page'))
                 .map(page => page.outerHTML)
                 .join('\n');
@@ -1698,7 +1720,9 @@ ${JSON.stringify(promptObj.days, null, 2)}
                 }
 
                 saveGeneratedPages();
-                showModal("Повне автозаповнення таблиць завершено! Виберіть ручне редагування, якщо потрібно внести зміни або одразу друкуйте.");
+                showModal("Повне автозаповнення таблиць завершено!\n" +
+                    "Ви можете перезаповнити все ще раз або кожну комірку таблиці окремо клікнувши на кнопку повторної генерації.\n" + 
+                    "Або ж виберіть ручне редагування, якщо потрібно внести зміни або одразу друкуйте.\n");
             } catch (error) {
                 console.error(error);
                 showModal("Не вдалося отримати дані від Gemini API: " + error.message);
