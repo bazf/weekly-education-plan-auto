@@ -16,6 +16,21 @@
         .auth-form.visible {
             opacity: 1;
         }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .field-error input {
+            border-color: #dc2626;
+        }
+
+        .field-error .error-message {
+            display: block;
+        }
     </style>
 </head>
 
@@ -27,43 +42,43 @@
     </div>
 
     <div class="container mx-auto px-4 py-8 max-w-md">
-        <!-- Add autocomplete="on" and proper form attributes -->
         <form id="authForm" class="auth-form bg-white p-8 rounded-lg shadow-md space-y-6" style="display: none;"
-            method="POST" autocomplete="on">
+            method="POST" autocomplete="on" novalidate>
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Авторизація</h2>
 
-            <!-- Add hidden username field to trigger browser autofill -->
             <input type="text" name="username" autocomplete="username" style="display:none">
 
             <div class="space-y-4">
                 <div>
                     <label for="lastname" class="block text-sm font-medium text-gray-700">Прізвище</label>
                     <input type="text" id="lastname" name="lastname" autocomplete="section-personal family-name"
-                        required data-error="Будь ласка, введіть прізвище"
+                        required
                         class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <div class="error-message">Будь ласка, введіть прізвище</div>
                 </div>
 
                 <div>
                     <label for="firstname" class="block text-sm font-medium text-gray-700">Імʼя</label>
                     <input type="text" id="firstname" name="firstname" autocomplete="section-personal given-name"
-                        required data-error="Будь ласка, введіть ім'я"
+                        required
                         class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <div class="error-message">Будь ласка, введіть ім'я</div>
                 </div>
 
                 <div>
                     <label for="patronym" class="block text-sm font-medium text-gray-700">По батькові</label>
                     <input type="text" id="patronym" name="patronym" autocomplete="section-personal additional-name"
-                        required data-error="Будь ласка, введіть по батькові"
+                        required
                         class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <div class="error-message">Будь ласка, введіть по батькові</div>
                 </div>
 
                 <div>
                     <label for="birthdate" class="block text-sm font-medium text-gray-700">Дата народження</label>
                     <input type="date" id="birthdate" name="birthdate" autocomplete="section-personal bday" required
                         min="1940-01-01" max="2024-12-31" lang="uk"
-                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        oninvalid="this.setCustomValidity('Будь ласка, введіть дату народження')"
-                        oninput="this.setCustomValidity('')">
+                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <div class="error-message">Будь ласка, введіть дату народження</div>
                 </div>
             </div>
 
@@ -74,7 +89,6 @@
                 </button>
             </div>
 
-            <!-- Hash Generation Section -->
             <div id="hashGenSection" class="hidden space-y-4 mt-4 pt-4 border-t border-gray-200">
                 <button type="button" id="generateHashBtn"
                     class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
@@ -100,6 +114,34 @@
 
     <script src="auth-config.js"></script>
     <script>
+        // Form validation
+        function validateForm() {
+            const form = document.getElementById('authForm');
+            const inputs = form.querySelectorAll('input[required]');
+            let isValid = true;
+
+            // Clear all previous errors first
+            clearAllErrors();
+
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.parentElement.classList.add('field-error');
+                }
+            });
+
+            return isValid;
+        }
+
+        function clearAllErrors() {
+            const form = document.getElementById('authForm');
+            const errorFields = form.querySelectorAll('.field-error');
+            errorFields.forEach(field => {
+                field.classList.remove('field-error');
+            });
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
         // Format birthdate from input
         function formatDateForHash(dateStr) {
             const date = new Date(dateStr);
@@ -116,7 +158,7 @@
             const birthdate = formatDateForHash(document.getElementById('birthdate').value);
 
             if (!firstname || !lastname || !patronym || !birthdate) {
-                showError("Будь ласка, заповніть усі поля");
+                showError("Будь ласка, заповніть усі поля коректно");
                 return null;
             }
 
@@ -129,7 +171,7 @@
             const loadingIndicator = document.getElementById('loadingIndicator');
             const authForm = document.getElementById('authForm');
 
-            if (isAuthValid()) {
+            if (typeof isAuthValid === 'function' && isAuthValid()) {
                 window.location.href = 'app.html';
                 return;
             }
@@ -158,11 +200,18 @@
         document.getElementById('authForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
+            if (!validateForm()) {
+                showError("Будь ласка, заповніть усі обов'язкові поля");
+                return;
+            }
+
             const hash = generateHash();
             if (!hash) return;
 
-            if (authorizedHashes.includes(hash)) {
-                storeAuthData(hash);
+            if (typeof authorizedHashes !== 'undefined' && authorizedHashes.includes(hash)) {
+                if (typeof storeAuthData === 'function') {
+                    storeAuthData(hash);
+                }
                 window.location.href = 'app.html';
             } else {
                 showError("На жаль, ви не маєте доступу до цього додатку");
@@ -170,9 +219,15 @@
         });
 
         // Handle hash generation in setup mode
-        if (document.getElementById('generateHashBtn')) {
-            document.getElementById('generateHashBtn').addEventListener('click', function (e) {
+        const generateHashBtn = document.getElementById('generateHashBtn');
+        if (generateHashBtn) {
+            generateHashBtn.addEventListener('click', function (e) {
                 e.preventDefault();
+
+                if (!validateForm()) {
+                    showError("Будь ласка, заповніть усі обов'язкові поля");
+                    return;
+                }
 
                 const hash = generateHash();
                 if (!hash) return;
@@ -209,23 +264,29 @@
 
         // Set default date placeholder
         birthdateInput.addEventListener('focus', function (e) {
-            if (!this.showPicker) {  // Check if browser supports showPicker
+            if (!this.showPicker) {
                 this.setAttribute('placeholder', 'ДД.ММ.РРРР');
             }
         });
 
-        // Custom date validation message
+        // Custom date validation
         birthdateInput.addEventListener('change', function (e) {
             const date = new Date(this.value);
             const now = new Date();
+            const minDate = new Date('1940-01-01');
+
             if (date > now) {
                 this.setCustomValidity('Дата народження не може бути в майбутньому');
+                showError('Дата народження не може бути в майбутньому');
+            } else if (date < minDate) {
+                this.setCustomValidity('Дата народження не може бути раніше 1940 року');
+                showError('Дата народження не може бути раніше 1940 року');
             } else {
                 this.setCustomValidity('');
             }
         });
 
-        // Format date to Ukrainian locale when displayed
+        // Format date to Ukrainian locale
         birthdateInput.addEventListener('change', function (e) {
             if (this.value) {
                 const date = new Date(this.value);
@@ -236,6 +297,14 @@
                 });
                 this.setAttribute('data-formatted', formattedDate);
             }
+        });
+
+        // Clear errors when user starts typing
+        document.querySelectorAll('input[required]').forEach(input => {
+            input.addEventListener('input', function () {
+                this.parentElement.classList.remove('field-error');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
         });
     </script>
 </body>
