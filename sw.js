@@ -7,8 +7,8 @@ const urlsToCache = [
   `${BASE_PATH}/instructions.html`,
   `${BASE_PATH}/auth-config.js`,
   `${BASE_PATH}/manifest.json`,
-  `${BASE_PATH}/tailwindcss.js`,
-  `${BASE_PATH}/crypto-js.js`,
+  `${BASE_PATH}/3rd-party/js/tailwindcss.js`,
+  `${BASE_PATH}/3rd-party/js/crypto-js.js`,
   `${BASE_PATH}/icons/icon-152x152.png`
 ];
 
