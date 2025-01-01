@@ -213,6 +213,27 @@
             opacity: 1;
         }
 
+        .cell-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        .cell-content-wrapper {
+            min-height: 40px;
+            /* Prevent layout shift when showing spinner */
+        }
+
+        @media print {
+            .cell-spinner {
+                display: none !important;
+            }
+        }
+
         /* Print styles */
         @media print {
             .regenerate-btn {
@@ -526,8 +547,29 @@
             const monthIndex = parseInt(document.getElementById('monthSelect').value) - 1;
             const monthName = monthNamesUkr[monthIndex] || "";
 
-            showSpinner();
-            disableAllButtons();
+            // Create spinner for the specific cell/input being updated
+            const spinner = document.createElement('div');
+            spinner.className = 'cell-spinner';
+
+            let originalContent;
+            let contentContainer;
+            if (type === 'week-theme' || type === 'day-theme') {
+                const container = element.closest('.cell-content-wrapper');
+                const input = container.querySelector('input');
+                originalContent = input.value;
+                container.querySelectorAll('*').forEach(el => el.style.display = 'none');
+                contentContainer = container;
+                container.appendChild(spinner);
+            } else if (type === 'activity') {
+                const cell = element.closest('td');
+                const span = cell.querySelector('span');
+                originalContent = span.textContent;
+                span.style.display = 'none';
+                contentContainer = span.parentElement;
+                contentContainer.insertBefore(spinner, element);
+            }
+
+            element.style.display = 'none'; // Hide regenerate button while processing
 
             try {
                 let promptText = '';
@@ -570,7 +612,7 @@
                 Запропонуй одну унікальну активність для освітньої лінії ${lineNumber} у дитячому садочку.
                 Тема тижня: "${weekTheme}"
                 Тема дня: "${dayTheme}"
-                Активність має бути короткою без пояснень, якщо зрозуміло зназви. Активність має бути конкретною і не повторювати існуючі активності цього тижня:
+                Активність має бути короткою, конкретною і не повторювати існуючі активності цього тижня:
                 ${weekActivities.join(', ')}
                 Надай лише опис активності, без коментарів.`.trim();
                 }
@@ -595,17 +637,18 @@
                 const data = await response.json();
                 const generatedText = data.candidates[0].content.parts[0].text.trim();
 
-                if (type === 'week-theme') {
-                    const input = element.previousElementSibling;
+                if (type === 'week-theme' || type === 'day-theme') {
+                    const container = element.closest('.cell-content-wrapper');
+                    const input = container.querySelector('input');
                     input.value = generatedText;
-                } else if (type === 'day-theme') {
-                    const input = element.previousElementSibling;
-                    input.value = generatedText;
+                    container.querySelectorAll('*').forEach(el => el.style.display = '');
                 } else if (type === 'activity') {
                     const cell = element.closest('td');
-                    const textSpan = cell.querySelector('span');
-                    textSpan.textContent = generatedText;
+                    const span = cell.querySelector('span');
+                    span.textContent = generatedText;
+                    span.style.display = '';
                 }
+
 
                 saveGeneratedPages();
                 checkAutoFillAvailability();
@@ -613,9 +656,24 @@
             } catch (error) {
                 console.error(error);
                 showModal("Помилка генерації: " + error.message);
+                // Restore original content on error
+                if (type === 'week-theme' || type === 'day-theme') {
+                    const container = element.closest('.cell-content-wrapper');
+                    const input = container.querySelector('input');
+                    input.value = originalContent;
+                    container.querySelectorAll('*').forEach(el => el.style.display = '');
+                } else if (type === 'activity') {
+                    const cell = element.closest('td');
+                    const span = cell.querySelector('span');
+                    span.textContent = originalContent;
+                    span.style.display = '';
+                }
             } finally {
-                hideSpinner();
-                enableAllButtons();
+                // Remove spinner and show regenerate button
+                if (spinner.parentNode) {
+                    spinner.parentNode.removeChild(spinner);
+                }
+                element.style.display = ''; // Show regenerate button
             }
         }
 
@@ -824,6 +882,16 @@
          * ЗБЕРІГАННЯ / ВІДНОВЛЕННЯ КОНТЕНТУ
          ****************************************************/
         function saveGeneratedPages() {
+            // Remove any lingering spinners before saving
+            document.querySelectorAll('.cell-spinner').forEach(spinner => {
+                spinner.remove();
+            });
+
+            // Show any hidden elements that might have been hidden during regeneration
+            document.querySelectorAll('.cell-content-wrapper *').forEach(el => {
+                el.style.display = '';
+            });
+
             // У кожного інпуту проставити value
             document.querySelectorAll('.page').forEach(page => {
                 page.querySelectorAll('input').forEach(input => {
@@ -942,8 +1010,8 @@
     Тиждень ${weekNumber} (${firstDateStr} – ${lastDateStr}).
     <div class="mt-2">
         <label class="inline-flex items-center">
-            <div class="week-theme-container">
-                Тема тижня: 
+            <div class="week-theme-container cell-content-wrapper">
+                <span>Тема тижня:</span>
                 <input type="text" class="week-theme-input border rounded-md ml-2 py-1 px-2" placeholder="Вкажіть тему тижня">
                 <button class="regenerate-btn" data-type="week-theme" title="Згенерувати нову тему тижня">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -1013,8 +1081,9 @@
     <td class="border px-4 py-2">
         <strong>${ddMM} (${dayOfWeekName})</strong>
         <br>
-        <div class="week-theme-container">
-            Тема дня: <input type="text" class="day-theme-input border rounded-md mt-1 py-1 px-2" placeholder="Вкажіть тему дня">
+        <div class="week-theme-container cell-content-wrapper">
+            <span>Тема дня:</span>
+            <input type="text" class="day-theme-input border rounded-md mt-1 py-1 px-2" placeholder="Вкажіть тему дня">
             <button class="regenerate-btn" data-type="day-theme" title="Згенерувати нову тему дня">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
