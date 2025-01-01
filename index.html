@@ -16,44 +16,6 @@
         .auth-form.visible {
             opacity: 1;
         }
-
-        .date-input-container {
-            position: relative;
-        }
-
-        .date-input-container input[type="date"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0;
-            z-index: 1;
-            cursor: pointer;
-        }
-
-        .date-input-container input[type="text"] {
-            background-color: white;
-            cursor: pointer;
-        }
-
-        /* Hide the clear button in Edge */
-        .date-input-container input[type="date"]::-ms-clear {
-            display: none;
-        }
-
-        /* Hide the calendar picker indicator */
-        .date-input-container input[type="date"]::-webkit-calendar-picker-indicator {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
     </style>
 </head>
 
@@ -65,10 +27,12 @@
     </div>
 
     <div class="container mx-auto px-4 py-8 max-w-md">
+        <!-- Add autocomplete="on" and proper form attributes -->
         <form id="authForm" class="auth-form bg-white p-8 rounded-lg shadow-md space-y-6" style="display: none;"
-            method="POST" autocomplete="on" novalidate>
+            method="POST" autocomplete="on">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Авторизація</h2>
 
+            <!-- Add hidden username field to trigger browser autofill -->
             <input type="text" name="username" autocomplete="username" style="display:none">
 
             <div class="space-y-4">
@@ -93,14 +57,13 @@
                         class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                 </div>
 
-                <div class="date-input-container">
+                <div>
                     <label for="birthdate" class="block text-sm font-medium text-gray-700">Дата народження</label>
-                    <div class="relative mt-1">
-                        <input type="text" id="birthdate-display" placeholder="ДД.ММ.РРРР" readonly
-                            class="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
-                        <input type="date" id="birthdate" name="birthdate" required min="1940-01-01" max="2024-12-31"
-                            data-error="Будь ласка, введіть дату народження" class="cursor-pointer">
-                    </div>
+                    <input type="date" id="birthdate" name="birthdate" autocomplete="section-personal bday" required
+                        min="1940-01-01" max="2024-12-31" lang="uk"
+                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        oninvalid="this.setCustomValidity('Будь ласка, введіть дату народження')"
+                        oninput="this.setCustomValidity('')">
                 </div>
             </div>
 
@@ -135,13 +98,9 @@
         </form>
     </div>
 
+    <script src="auth-config.js"></script>
     <script>
-        // Initialize form elements
-        const birthdateInput = document.getElementById('birthdate');
-        const birthdateDisplay = document.getElementById('birthdate-display');
-        const authForm = document.getElementById('authForm');
-
-        // Format date for hash calculation
+        // Format birthdate from input
         function formatDateForHash(dateStr) {
             const date = new Date(dateStr);
             const day = String(date.getDate()).padStart(2, '0');
@@ -150,29 +109,27 @@
             return `${day}.${month}.${year}`;
         }
 
-        // Hash generation
         function generateHash() {
             const firstname = document.getElementById('firstname').value.trim().toLowerCase();
             const lastname = document.getElementById('lastname').value.trim().toLowerCase();
             const patronym = document.getElementById('patronym').value.trim().toLowerCase();
-            const birthdate = birthdateInput.value;
+            const birthdate = formatDateForHash(document.getElementById('birthdate').value);
 
             if (!firstname || !lastname || !patronym || !birthdate) {
                 showError("Будь ласка, заповніть усі поля");
                 return null;
             }
 
-            // Format date as DD.MM.YYYY
-            const formattedDate = formatDateForHash(birthdate);
-            const dataString = `${firstname}|${lastname}|${patronym}|${formattedDate}`;
+            const dataString = `${firstname}|${lastname}|${patronym}|${birthdate}`;
             return CryptoJS.SHA256(dataString).toString();
         }
 
         // Initialize the form
         function initializeForm() {
             const loadingIndicator = document.getElementById('loadingIndicator');
+            const authForm = document.getElementById('authForm');
 
-            if (typeof isAuthValid === 'function' && isAuthValid()) {
+            if (isAuthValid()) {
                 window.location.href = 'app.html';
                 return;
             }
@@ -190,66 +147,31 @@
             }
         }
 
-        // Custom validation messages
-        document.querySelectorAll('input[required]').forEach(input => {
-            input.addEventListener('invalid', function (e) {
-                e.preventDefault();
-                this.setCustomValidity(this.dataset.error || 'Будь ласка, заповніть це поле');
-            });
-
-            input.addEventListener('input', function (e) {
-                this.setCustomValidity('');
-            });
-        });
-
-        // Date input handling
-        birthdateInput.addEventListener('change', function (e) {
-            if (this.value) {
-                const date = new Date(this.value);
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                birthdateDisplay.value = `${day}.${month}.${year}`;
-
-                // Validate future dates
-                const today = new Date();
-                if (date > today) {
-                    this.setCustomValidity('Дата народження не може бути в майбутньому');
-                    showError('Дата народження не може бути в майбутньому');
-                } else {
-                    this.setCustomValidity('');
-                }
-            } else {
-                birthdateDisplay.value = '';
-            }
-        });
-
-        // Open date picker when clicking the display input
-        birthdateDisplay.addEventListener('click', function () {
-            birthdateInput.showPicker();
-        });
+        // Initialize as soon as the page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeForm);
+        } else {
+            initializeForm();
+        }
 
         // Handle form submission
-        authForm.addEventListener('submit', function (e) {
+        document.getElementById('authForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const hash = generateHash();
             if (!hash) return;
 
-            if (typeof authorizedHashes !== 'undefined' && authorizedHashes.includes(hash.toLowerCase())) {
-                if (typeof storeAuthData === 'function') {
-                    storeAuthData(hash);
-                }
+            if (authorizedHashes.includes(hash)) {
+                storeAuthData(hash);
                 window.location.href = 'app.html';
             } else {
                 showError("На жаль, ви не маєте доступу до цього додатку");
             }
         });
 
-        // Hash generation in setup mode
-        const generateHashBtn = document.getElementById('generateHashBtn');
-        if (generateHashBtn) {
-            generateHashBtn.addEventListener('click', function (e) {
+        // Handle hash generation in setup mode
+        if (document.getElementById('generateHashBtn')) {
+            document.getElementById('generateHashBtn').addEventListener('click', function (e) {
                 e.preventDefault();
 
                 const hash = generateHash();
@@ -260,7 +182,7 @@
                 document.getElementById('hashResult').classList.remove('hidden');
             });
 
-            // Hash copying
+            // Handle hash copying
             document.getElementById('copyHashBtn').addEventListener('click', function () {
                 const hashOutput = document.getElementById('hashOutput');
                 hashOutput.select();
@@ -282,12 +204,39 @@
             }, 5000);
         }
 
-        // Initialize form on page load
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeForm);
-        } else {
-            initializeForm();
-        }
+        // Localize date picker
+        const birthdateInput = document.getElementById('birthdate');
+
+        // Set default date placeholder
+        birthdateInput.addEventListener('focus', function (e) {
+            if (!this.showPicker) {  // Check if browser supports showPicker
+                this.setAttribute('placeholder', 'ДД.ММ.РРРР');
+            }
+        });
+
+        // Custom date validation message
+        birthdateInput.addEventListener('change', function (e) {
+            const date = new Date(this.value);
+            const now = new Date();
+            if (date > now) {
+                this.setCustomValidity('Дата народження не може бути в майбутньому');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Format date to Ukrainian locale when displayed
+        birthdateInput.addEventListener('change', function (e) {
+            if (this.value) {
+                const date = new Date(this.value);
+                const formattedDate = date.toLocaleDateString('uk-UA', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+                this.setAttribute('data-formatted', formattedDate);
+            }
+        });
     </script>
 </body>
 
