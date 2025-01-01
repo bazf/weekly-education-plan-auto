@@ -554,13 +554,13 @@
 
         useModelsCheck.addEventListener('change', function () {
             if (this.checked) {
-                // Show the model selector container by setting display to block
+                // Show the model selector container
                 modelSelectContainer.style.display = 'block';
             } else {
-                // Hide the selector container and reset to default model
+                // Hide the selector container and reset to optimal model
                 modelSelectContainer.style.display = 'none';
-                modelSelect.value = 'gemini-2.0-flash-exp';
-                localStorage.setItem('selectedModel', 'gemini-2.0-flash-exp');
+                modelSelect.value = 'optimal';
+                localStorage.setItem('selectedModel', 'optimal');
             }
         });
 
