@@ -1,14 +1,15 @@
 const CACHE_NAME = 'planuvannya-v1';
+const BASE_PATH = '/weekly-education-plan-auto';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/app.html',
-  '/instructions.html',
-  '/auth-config.js',
-  '/manifest.json',
+  `${BASE_PATH}/`,
+  `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/app.html`,
+  `${BASE_PATH}/instructions.html`,
+  `${BASE_PATH}/auth-config.js`,
+  `${BASE_PATH}/manifest.json`,
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js',
-  '/icons/icon-152x152.png'
+  `${BASE_PATH}/icons/icon-152x152.png`
 ];
 
 // Install Service Worker

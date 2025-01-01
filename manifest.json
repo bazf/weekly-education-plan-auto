@@ -2,7 +2,7 @@
   "name": "Планування занять",
   "short_name": "Планування",
   "description": "Інструмент для планування занять у групах дитсадків",
-  "start_url": "/index.html",
+  "start_url": "/weekly-education-plan-auto/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
