@@ -642,34 +642,37 @@
 
             // Зчитуємо всі .page і зберігаємо їхній HTML
             const pagesHtml = Array.from(document.querySelectorAll('.page'))
-                .map(page => page.outerHTML)
-                .join('\n');
-            localStorage.setItem('allGeneratedPages', pagesHtml);
-        }
+                        .map(page => page.outerHTML)
+                        .join('\n');
+                    localStorage.setItem('allGeneratedPages', pagesHtml);
+                }
 
-        /****************************************************
-         * РЕДАГУВАННЯ / ЗБЕРЕЖЕННЯ ТАБЛИЦЬ (contentEditable)
-         ****************************************************/
-        function editTableContent(tableId) {
-            const table = document.getElementById(tableId);
-            if (!table) return;
-            table.querySelectorAll('td, th').forEach(cell => {
-                cell.contentEditable = 'true';
-            });
-        }
+                /****************************************************
+                 * РЕДАГУВАННЯ / ЗБЕРЕЖЕННЯ ТАБЛИЦЬ (contentEditable)
+                 ****************************************************/
+                function editTableContent(tableId) {
+                    const table = document.getElementById(tableId);
+                    if (!table) return;
+                    // Add red border class to table
+                    table.style.border = '3px solid orange';
+                    table.querySelectorAll('td, th').forEach(cell => {
+                        cell.contentEditable = 'true';
+                        cell.style.border = '2px solid orange';
+                    });
+                }
 
-        function saveTableContent(tableId) {
-            const table = document.getElementById(tableId);
-            if (!table) return;
-            table.querySelectorAll('td, th').forEach(cell => {
-                cell.contentEditable = 'false';
-            });
+                function saveTableContent(tableId) {
+                    const table = document.getElementById(tableId);
+                    if (!table) return;
+                    // Remove red border from table
+                    table.style.border = '';
+                    table.querySelectorAll('td, th').forEach(cell => {
+                        cell.contentEditable = 'false';
+                        cell.style.border = '';
+                    });
+                }
 
-            saveGeneratedPages();
-            alert('Дані збережено успішно!');
-        }
-
-        function reattachTableHandlers() {
+                function reattachTableHandlers() {
             document.querySelectorAll('.editBtn').forEach(btn => {
                 btn.disabled = false; // Ensure edit buttons are enabled
                 btn.onclick = function () {
