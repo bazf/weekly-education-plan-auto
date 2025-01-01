@@ -1,5 +1,5 @@
 // Increment this version when you want to force an update
-const CACHE_VERSION = 'v3.2';
+const CACHE_VERSION = 'v3.3';
 const CACHE_NAME = `planuvannya-${CACHE_VERSION}`;
 const BASE_PATH = '/weekly-education-plan-auto';
 
@@ -20,21 +20,20 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Installing new cache version');
+        console.log('Installing new cache version:', CACHE_VERSION);
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        // Force activation by skipping waiting
         return self.skipWaiting();
       })
   );
 });
 
-// Activate Event (Clean up old caches)
+// Activate Event
 self.addEventListener('activate', event => {
   event.waitUntil(
     Promise.all([
-      // Take control of all clients immediately
+      // Take control of all clients
       self.clients.claim(),
       
       // Remove old caches
@@ -48,19 +47,26 @@ self.addEventListener('activate', event => {
           })
         );
       })
-    ])
+    ]).then(() => {
+      // Notify all clients about the update
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'CACHE_UPDATED',
+            version: CACHE_VERSION
+          });
+        });
+      });
+    })
   );
 });
 
 // Fetch Event with network-first strategy and proper request filtering
 self.addEventListener('fetch', event => {
-  // Only handle GET requests that we can cache
   if (event.request.method !== 'GET') return;
 
-  // Check if the request URL is eligible for caching
   const requestURL = new URL(event.request.url);
   
-  // Only cache same-origin requests or specific CDN resources
   const shouldCache = 
     requestURL.origin === location.origin || 
     requestURL.hostname === 'cdnjs.cloudflare.com';
@@ -70,15 +76,12 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Check if we received a valid response
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
 
-        // Clone the response
         const responseToCache = response.clone();
 
-        // Update cache
         caches.open(CACHE_NAME)
           .then(cache => {
             try {
@@ -94,7 +97,6 @@ self.addEventListener('fetch', event => {
         return response;
       })
       .catch(() => {
-        // If network fails, try cache
         return caches.match(event.request);
       })
   );
