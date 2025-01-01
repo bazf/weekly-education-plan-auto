@@ -90,16 +90,40 @@
                 vertical-align: top;
             }
 
-            /* Make date column smaller */
+            /* Make first column wider */
             table td:first-child,
             table th:first-child {
-                width: 8%;
+                width: 12%;
+                /* Increase from 8% to 12% */
+                min-width: 120px;
+                /* Ensure minimum width */
             }
 
-            /* Distribute remaining width */
+            /* Adjust other columns to distribute remaining width */
             table td:not(:first-child),
             table th:not(:first-child) {
-                width: 13.14%;
+                width: 12.57%;
+                /* Recalculate to distribute remaining width: (100% - 12%) / 7 */
+            }
+
+            /* Add these new styles for better text handling */
+            table td:first-child .week-theme-container {
+                display: block;
+                /* Stack content vertically */
+                margin-top: 2mm;
+            }
+
+            table td:first-child input {
+                width: 90%;
+                /* Prevent input from overflowing */
+                margin-top: 1mm;
+            }
+
+            /* Ensure text doesn't overflow */
+            table td {
+                word-break: normal;
+                overflow-wrap: break-word;
+                white-space: normal;
             }
 
             /* Handle inputs and text */
@@ -1000,8 +1024,8 @@
     </td>
 `;
 
-for (let i = 1; i <= 7; i++) {
-    row.innerHTML += `
+                    for (let i = 1; i <= 7; i++) {
+                        row.innerHTML += `
         <td class="border px-4 py-2">
             <div class="flex justify-between items-start">
                 <span class="flex-grow"></span>
@@ -1013,7 +1037,7 @@ for (let i = 1; i <= 7; i++) {
             </div>
         </td>
     `;
-}
+                    }
                     table.querySelector('tbody').appendChild(row);
                 });
 
@@ -1570,37 +1594,37 @@ ${JSON.stringify(promptObj.days, null, 2)}
                         });
 
                         if (dayEntry && Array.isArray(dayEntry.lines)) {
-    const columns = row.querySelectorAll('td');
-    for (let colIndex = 1; colIndex < columns.length; colIndex++) {
-        if (dayEntry.lines[colIndex - 1]) {
-            const td = columns[colIndex];
-            // Preserve the existing structure while updating content
-            let contentWrapper = td.querySelector('.flex');
-            if (!contentWrapper) {
-                // If structure doesn't exist, create it
-                contentWrapper = document.createElement('div');
-                contentWrapper.className = 'flex justify-between items-start';
-                const span = document.createElement('span');
-                span.className = 'flex-grow';
-                const button = td.querySelector('.regenerate-btn') || 
-                    document.createElement('button');
-                button.className = 'regenerate-btn flex-shrink-0';
-                button.setAttribute('data-type', 'activity');
-                button.setAttribute('data-line', colIndex.toString());
-                button.setAttribute('title', 'Згенерувати нову активність');
-                button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            const columns = row.querySelectorAll('td');
+                            for (let colIndex = 1; colIndex < columns.length; colIndex++) {
+                                if (dayEntry.lines[colIndex - 1]) {
+                                    const td = columns[colIndex];
+                                    // Preserve the existing structure while updating content
+                                    let contentWrapper = td.querySelector('.flex');
+                                    if (!contentWrapper) {
+                                        // If structure doesn't exist, create it
+                                        contentWrapper = document.createElement('div');
+                                        contentWrapper.className = 'flex justify-between items-start';
+                                        const span = document.createElement('span');
+                                        span.className = 'flex-grow';
+                                        const button = td.querySelector('.regenerate-btn') ||
+                                            document.createElement('button');
+                                        button.className = 'regenerate-btn flex-shrink-0';
+                                        button.setAttribute('data-type', 'activity');
+                                        button.setAttribute('data-line', colIndex.toString());
+                                        button.setAttribute('title', 'Згенерувати нову активність');
+                                        button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg>`;
-                contentWrapper.appendChild(span);
-                contentWrapper.appendChild(button);
-                td.innerHTML = '';
-                td.appendChild(contentWrapper);
-            }
-            // Update the content
-            const span = contentWrapper.querySelector('span');
-            span.textContent = dayEntry.lines[colIndex - 1];
-        }
-    }
-}
+                                        contentWrapper.appendChild(span);
+                                        contentWrapper.appendChild(button);
+                                        td.innerHTML = '';
+                                        td.appendChild(contentWrapper);
+                                    }
+                                    // Update the content
+                                    const span = contentWrapper.querySelector('span');
+                                    span.textContent = dayEntry.lines[colIndex - 1];
+                                }
+                            }
+                        }
                     }
                 }
 
