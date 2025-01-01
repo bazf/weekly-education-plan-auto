@@ -633,15 +633,21 @@
 
         btnClearAll.addEventListener('click', function () {
             if (confirm("Ви впевнені, що хочете видалити всі дані та перезавантажити сторінку?")) {
+                // Save authData and API key temporarily if needed
+                const authData = localStorage.getItem('authData');
+                const apiKey = localStorage.getItem('geminiApiKey');
+
+                localStorage.clear();
+
                 if (!clearApiKeyCheck.checked) {
-                    // Save the API key temporarily
-                    const apiKey = localStorage.getItem('geminiApiKey');
-                    localStorage.clear();
+                    // Restore API key if checkbox is unchecked
                     if (apiKey) {
                         localStorage.setItem('geminiApiKey', apiKey);
                     }
-                } else {
-                    localStorage.clear();
+                }
+                // Restore authData
+                if (authData) {
+                    localStorage.setItem('authData', authData);
                 }
                 window.location.reload();
             }
