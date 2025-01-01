@@ -471,19 +471,19 @@
                 });
             }
         }
-        
+
         // Check for updates every hour
         setInterval(checkForUpdates, 60 * 60 * 1000);
-        
+
         // Add update notification
         if ('serviceWorker' in navigator) {
             let refreshing = false;
-        
+
             // Handle update found
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) {
                     refreshing = true;
-                    
+
                     // Show update notification
                     const updateNotification = document.createElement('div');
                     updateNotification.className = 'fixed bottom-4 left-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 z-50';
@@ -502,7 +502,7 @@
                 }
             });
         }
-        </script>
+    </script>
 </body>
 
 </html>
