@@ -552,7 +552,7 @@
 
             if (!hasGeneratedTables) {
                 this.checked = false;
-                alert('Спочатку створіть таблиці!');
+                showModal('Спочатку створіть таблиці!', 'Увага');
                 return;
             }
 
@@ -740,7 +740,7 @@
             const monthSelect = document.getElementById('monthSelect').value;
 
             if (!yearSelect || !monthSelect) {
-                alert('Будь ласка, оберіть рік та місяць!');
+                showModal('Будь ласка, оберіть рік та місяць!');
                 return;
             }
 
@@ -755,7 +755,7 @@
             const monthIndex = parseInt(monthSelect, 10) - 1;
             const weeks = getWorkingWeeksOfMonth(year, monthIndex);
             if (weeks.length === 0) {
-                alert('У цьому місяці немає робочих днів (за логікою getWorkingWeeksOfMonth).');
+                showModal('У цьому місяці немає робочих днів (за логікою getWorkingWeeksOfMonth).');
                 return;
             }
 
@@ -1037,14 +1037,14 @@
         autoFillWeekThemesBtn.addEventListener('click', async () => {
             const apiKey = localStorage.getItem('geminiApiKey');
             if (!apiKey) {
-                alert('API ключ не знайдено! Спочатку збережіть ключ.');
+                showModal('API ключ не знайдено! Спочатку збережіть ключ.', 'Помилка');
                 return;
             }
 
             const yearSelect = document.getElementById('yearSelect').value;
             const monthSelect = document.getElementById('monthSelect').value;
             if (!yearSelect || !monthSelect) {
-                alert('Спочатку оберіть рік та місяць!');
+                showModal('Спочатку оберіть рік та місяць!', 'Увага');
                 return;
             }
 
@@ -1057,7 +1057,7 @@
             const pages = document.querySelectorAll('.page');
             const howManyWeeks = pages.length;
             if (howManyWeeks === 0) {
-                alert("Спочатку створіть тижні!");
+                showModal("Спочатку створіть тижні!");
                 hideSpinner();
                 enableAllButtons();
                 return;
@@ -1110,10 +1110,10 @@
                 }
 
                 saveGeneratedPages();
-                alert("Автозаповнення тем тижнів завершено!");
+                showModal("Автозаповнення тем тижнів завершено!");
             } catch (error) {
                 console.error(error);
-                alert("Не вдалося отримати дані від Gemini API: " + error.message);
+                showModal("Не вдалося отримати дані від Gemini API: " + error.message);
             } finally {
                 hideSpinner();
                 enableAllButtons();
@@ -1127,14 +1127,14 @@
         autoFillDayThemesBtn.addEventListener('click', async () => {
             const apiKey = localStorage.getItem('geminiApiKey');
             if (!apiKey) {
-                alert('API ключ не знайдено! Спочатку збережіть ключ.');
+                showModal('API ключ не знайдено! Спочатку збережіть ключ.');
                 return;
             }
 
             const yearSelect = document.getElementById('yearSelect').value;
             const monthSelect = document.getElementById('monthSelect').value;
             if (!yearSelect || !monthSelect) {
-                alert('Спочатку оберіть рік та місяць!');
+                showModal('Спочатку оберіть рік та місяць!');
                 return;
             }
 
@@ -1167,7 +1167,7 @@
                     }
                 }
                 if (allDayData.length === 0) {
-                    alert("Немає робочих днів для автозаповнення!");
+                    showModal("Немає робочих днів для автозаповнення!");
                     hideSpinner();
                     enableAllButtons();
                     return;
@@ -1256,10 +1256,10 @@ ${datesList.join('\n')}`.trim();
                 }
 
                 saveGeneratedPages();
-                alert("Автозаповнення тем днів завершено!");
+                showModal("Автозаповнення тем днів завершено!");
             } catch (error) {
                 console.error(error);
-                alert("Не вдалося отримати дані від Gemini API: " + error.message);
+                showModal("Не вдалося отримати дані від Gemini API: " + error.message);
             } finally {
                 hideSpinner();
                 enableAllButtons();
@@ -1273,14 +1273,14 @@ ${datesList.join('\n')}`.trim();
         autoFillBtn.addEventListener('click', async () => {
             const apiKey = localStorage.getItem('geminiApiKey');
             if (!apiKey) {
-                alert('API ключ не знайдено! Спочатку збережіть ключ.');
+                showModal('API ключ не знайдено! Спочатку збережіть ключ.');
                 return;
             }
 
             const yearSelect = document.getElementById('yearSelect').value;
             const monthSelect = document.getElementById('monthSelect').value;
             if (!yearSelect || !monthSelect) {
-                alert('Спочатку оберіть рік та місяць!');
+                showModal('Спочатку оберіть рік та місяць!');
                 return;
             }
 
@@ -1416,10 +1416,10 @@ ${JSON.stringify(promptObj.days, null, 2)}
                 }
 
                 saveGeneratedPages();
-                alert("Повне автозаповнення таблиць завершено!");
+                showModal("Повне автозаповнення таблиць завершено! Виберіть ручне редагування, якщо потрібно внести зміни або одразу друкуйте.");
             } catch (error) {
                 console.error(error);
-                alert("Не вдалося отримати дані від Gemini API: " + error.message);
+                showModal("Не вдалося отримати дані від Gemini API: " + error.message);
             } finally {
                 hideSpinner();
                 enableAllButtons();
@@ -1472,6 +1472,64 @@ ${JSON.stringify(promptObj.days, null, 2)}
         });
     </script>
 
+    <!-- Add this HTML right before the closing </body> tag -->
+    <!-- Modal Component -->
+    <div id="customModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full transform transition-all">
+            <!-- Modal Header -->
+            <div class="border-b px-6 py-4">
+                <h3 id="modalTitle" class="text-lg font-medium text-gray-900"></h3>
+            </div>
+            <!-- Modal Body -->
+            <div class="px-6 py-4">
+                <p id="modalMessage" class="text-gray-600"></p>
+            </div>
+            <!-- Modal Footer -->
+            <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
+                <button id="modalOkBtn"
+                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this JavaScript right before the closing </body> tag -->
+    <script>
+        // Modal functionality
+        const modal = {
+            element: document.getElementById('customModal'),
+            titleElement: document.getElementById('modalTitle'),
+            messageElement: document.getElementById('modalMessage'),
+            okButton: document.getElementById('modalOkBtn'),
+
+            show(title, message) {
+                this.titleElement.textContent = title;
+                this.messageElement.textContent = message;
+                this.element.classList.remove('hidden');
+
+                return new Promise((resolve) => {
+                    const handleClick = () => {
+                        this.hide();
+                        this.okButton.removeEventListener('click', handleClick);
+                        resolve(true);
+                    };
+
+                    this.okButton.addEventListener('click', handleClick);
+                });
+            },
+
+            hide() {
+                this.element.classList.add('hidden');
+            }
+        };
+
+        // Helper function to replace alerts
+        async function showModal(message, title = 'Повідомлення') {
+            return modal.show(title, message);
+        }
+    </script>
+
     <!-- Installation button (hidden by default) -->
     <div id="installContainer" class="no-print hidden fixed bottom-4 right-4 z-50">
         <button id="installButton"
@@ -1486,7 +1544,8 @@ ${JSON.stringify(promptObj.days, null, 2)}
     </div>
 
     <!-- Installation instructions modal -->
-    <div id="installModal" class="no-print hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div id="installModal"
+        class="no-print hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">Як інсталювати додаток</h3>
