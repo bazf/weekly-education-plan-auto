@@ -8,6 +8,18 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Add this inside the <style> tags */
+        [contenteditable="true"]:focus {
+            outline: none;
+            /* Remove default focus outline */
+            border: 3px solid #2563eb !important;
+            /* Blue border, adjust color/thickness as needed */
+            background-color: rgba(37, 99, 235, 0.05);
+            /* Light blue background */
+            box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+            /* Subtle blue glow */
+        }
+
         /* Keep original print styles */
         @media print {
             .no-print {
@@ -642,39 +654,39 @@
 
             // Зчитуємо всі .page і зберігаємо їхній HTML
             const pagesHtml = Array.from(document.querySelectorAll('.page'))
-                        .map(page => page.outerHTML)
-                        .join('\n');
-                    localStorage.setItem('allGeneratedPages', pagesHtml);
-                }
+                .map(page => page.outerHTML)
+                .join('\n');
+            localStorage.setItem('allGeneratedPages', pagesHtml);
+        }
 
-                /****************************************************
-                 * РЕДАГУВАННЯ / ЗБЕРЕЖЕННЯ ТАБЛИЦЬ (contentEditable)
-                 ****************************************************/
-                function editTableContent(tableId) {
-                    const table = document.getElementById(tableId);
-                    if (!table) return;
-                    // Add red border class to table
-                    table.style.border = '3px solid orange';
-                    table.querySelectorAll('td, th').forEach(cell => {
-                        cell.contentEditable = 'true';
-                        cell.style.border = '2px solid orange';
-                        cell.style.color = 'orange';
-                    });
-                }
+        /****************************************************
+         * РЕДАГУВАННЯ / ЗБЕРЕЖЕННЯ ТАБЛИЦЬ (contentEditable)
+         ****************************************************/
+        function editTableContent(tableId) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            // Add red border class to table
+            table.style.border = '3px solid orange';
+            table.querySelectorAll('td, th').forEach(cell => {
+                cell.contentEditable = 'true';
+                cell.style.border = '2px solid orange';
+                cell.style.color = 'orange';
+            });
+        }
 
-                function saveTableContent(tableId) {
-                    const table = document.getElementById(tableId);
-                    if (!table) return;
-                    // Remove red border from table
-                    table.style.border = '';
-                    table.querySelectorAll('td, th').forEach(cell => {
-                        cell.contentEditable = 'false';
-                        cell.style.border = '';
-                        cell.style.color = '';
-                    });
-                }
+        function saveTableContent(tableId) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            // Remove red border from table
+            table.style.border = '';
+            table.querySelectorAll('td, th').forEach(cell => {
+                cell.contentEditable = 'false';
+                cell.style.border = '';
+                cell.style.color = '';
+            });
+        }
 
-                function reattachTableHandlers() {
+        function reattachTableHandlers() {
             document.querySelectorAll('.editBtn').forEach(btn => {
                 btn.disabled = false; // Ensure edit buttons are enabled
                 btn.onclick = function () {
