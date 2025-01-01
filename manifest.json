@@ -4,6 +4,7 @@
   "description": "Інструмент для планування занять у групах дитсадків",
   "start_url": "/weekly-education-plan-auto/index.html",
   "display": "standalone",
+  "prefer_related_applications": false,
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
   "icons": [
