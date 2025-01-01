@@ -1,5 +1,5 @@
 // sw.js - Modified service worker code
-const CACHE_VERSION = 'v3.7';
+const CACHE_VERSION = 'v3.8';
 const CACHE_NAME = `planuvannya-${CACHE_VERSION}`;
 const BASE_PATH = '/weekly-education-plan-auto';
 
@@ -125,7 +125,7 @@ function showUpdateNotification() {
     <div class="flex items-center justify-between">
       <div>
         <p class="font-bold">Оновлення доступне!</p>
-        <p>Нова версія додатку готова.</p>
+        <p>Нова версія застосунку готова.</p>
       </div>
       <button id="updateButton" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-600">
         Оновити
