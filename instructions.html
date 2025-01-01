@@ -13,19 +13,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .expandable-button {
-            transition: all 0.3s ease;
-        }
-
-        .expandable-button:hover {
-            transform: translateX(5px);
-        }
-
-        .expandable-content {
-            transition: all 0.3s ease;
-        }
-
-        /* Custom list markers */
         .custom-list {
             counter-reset: step;
         }
@@ -54,7 +41,29 @@
             color: #4B5563;
         }
 
-        /* Hover effect for list items */
+        @media (max-width: 640px) {
+            .custom-list > li {
+                padding-left: 2rem;
+            }
+            
+            .custom-list > li::before {
+                width: 1.5rem;
+                height: 1.5rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        .expandable-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .expandable-section.expanded {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+
         .hover-highlight:hover {
             background-color: #F3F4F6;
             border-radius: 0.5rem;
@@ -63,195 +72,163 @@
 </head>
 
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <div class="bg-white shadow-xl rounded-2xl p-8">
+    <div class="container mx-auto px-4 py-4 sm:py-8 max-w-4xl">
+        <div class="bg-white shadow-xl rounded-2xl p-4 sm:p-8">
             <!-- Header -->
-            <div class="flex justify-between items-center mb-10 pb-6 border-b border-gray-200">
-                <h1 class="text-3xl font-bold text-gray-800 leading-tight">
-                    Інструкція користування інструментом для генерації тижневих планів навчання
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-10 pb-4 sm:pb-6 border-b border-gray-200 gap-4">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 leading-tight">
+                    Інструкція користування інструментом для планування занять у групі "Казка"
                 </h1>
                 <button onclick="window.close();"
-                    class="bg-red-400 hover:bg-red-500 text-white-500 px-6 py-3 rounded-xl transition duration-200 font-medium shadow-sm hover:shadow">
+                    class="bg-red-400 hover:bg-red-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition duration-200 font-medium shadow-sm hover:shadow w-full sm:w-auto">
                     Закрити
                 </button>
             </div>
 
             <div class="prose max-w-none">
                 <!-- Introduction -->
-                <div class="bg-green-50 p-6 rounded-xl mb-10">
-                    <p class="text-gray-700 text-lg leading-relaxed">
-                        Цей інструмент дозволяє генерувати тижневі плани навчання для дошкільнят, враховуючи обраний рік та місяць. 
-                        Ви можете використовувати можливості штучного інтелекту для автоматичного заповнення тем тижнів,
-                        днів та навіть повного плану занять.
+                <div class="bg-green-50 p-4 sm:p-6 rounded-xl mb-6 sm:mb-10">
+                    <p class="text-gray-700 text-base sm:text-lg leading-relaxed">
+                        Цей інструмент призначений для створення та управління планами занять у групі "Казка". 
+                        Він дозволяє генерувати тижневі плани з урахуванням освітніх ліній та використовувати 
+                        штучний інтелект для автоматичного заповнення тем і активностей.
                     </p>
                 </div>
 
                 <!-- Main Steps -->
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Основні кроки:</h2>
-                <ol class="custom-list space-y-8">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Основні кроки роботи з інструментом:</h2>
+                <ol class="custom-list space-y-6 sm:space-y-8">
                     <!-- Step 1 -->
-                    <li class="hover-highlight p-4">
-                        <strong class="text-xl text-gray-900 block mb-3">Вибір року та місяця</strong>
-                        <ul class="space-y-2 text-gray-600 ml-4">
+                    <li class="hover-highlight p-3 sm:p-4">
+                        <strong class="text-lg sm:text-xl text-gray-900 block mb-2 sm:mb-3">Налаштування періоду планування</strong>
+                        <ul class="space-y-2 text-gray-600 ml-2 sm:ml-4">
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                У блоці "Налаштування місяця, року та автозаповнення" оберіть потрібний рік
+                                <span>У розділі "Налаштуйте місяць плану" оберіть потрібний рік та місяць</span>
                             </li>
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                Оберіть потрібний місяць
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-green-500 mr-2">•</span>
-                                За замовчуванням буде обрано наступний місяць від поточної дати
+                                <span>За замовчуванням обрано наступний місяць від поточної дати</span>
                             </li>
                         </ul>
                     </li>
 
                     <!-- Step 2 -->
-                    <li class="hover-highlight p-4">
-                        <strong class="text-xl text-gray-900 block mb-3">Створення таблиць</strong>
-                        <ul class="space-y-2 text-gray-600 ml-4">
+                    <li class="hover-highlight p-3 sm:p-4">
+                        <strong class="text-lg sm:text-xl text-gray-900 block mb-2 sm:mb-3">Генерація таблиць</strong>
+                        <ul class="space-y-2 text-gray-600 ml-2 sm:ml-4">
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                Натисніть кнопку "Створити порожні таблиці"
+                                <span>Натисніть "Створити порожні таблиці" для генерації тижневих планів</span>
                             </li>
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                Після створення таблиць кнопка змінить колір на помаранчевий та текст на "Перестворити порожні таблиці"
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-green-500 mr-2">•</span>
-                                Повторне натискання видалить існуючі таблиці та створить нові
+                                <span>Після створення таблиць кнопка змінить колір на помаранчевий</span>
                             </li>
                         </ul>
                     </li>
 
                     <!-- Step 3 -->
-                    <li class="hover-highlight p-4">
-                        <strong class="text-xl text-gray-900 block mb-3">Активація автозаповнення (опціонально)</strong>
-                        <ul class="space-y-2 text-gray-600 ml-4">
+                    <li class="hover-highlight p-3 sm:p-4">
+                        <strong class="text-lg sm:text-xl text-gray-900 block mb-2 sm:mb-3">Налаштування автозаповнення</strong>
+                        <ul class="space-y-2 text-gray-600 ml-2 sm:ml-4">
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                Встановіть позначку "Використовувати ШІ для автозаповнення" (доступно тільки після створення таблиць)
+                                <span>Відмітьте "Використовувати ШІ для автозаповнення" (доступно після створення таблиць)</span>
                             </li>
                             <li class="flex items-start flex-col">
                                 <div class="flex items-start">
                                     <span class="text-green-500 mr-2">•</span>
                                     <span>Введіть ваш Google Gemini API Key</span>
                                 </div>
-                                <div class="ml-6 mt-2">
-                                    <button onclick="this.nextElementSibling.classList.toggle('hidden')"
-                                        class="expandable-button inline-flex items-center text-green-600 hover:text-green-700 text-sm font-medium focus:outline-none bg-green-50 hover:bg-green-100 px-4 py-2 rounded-lg transition-all duration-200">
+                                <div class="ml-6 mt-2 w-full">
+                                    <button onclick="toggleSection('apiKeyInfo')"
+                                        class="w-full sm:w-auto text-left bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium focus:outline-none flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        Детальніше про Gemini API Key
+                                        Як отримати Gemini API Key?
                                     </button>
-                                    <div class="hidden mt-4 p-6 bg-white rounded-xl shadow-lg border border-green-100 expandable-content">
-                                        <p class="mb-4 text-gray-700">
-                                            Google Gemini API Key - це спеціальний ключ доступу, який дозволяє нашому
-                                            додатку використовувати штучний інтелект від Google для автоматичного заповнення планів.
-                                        </p>
-                                        <div class="bg-green-50 p-4 rounded-lg mb-4">
-                                            <p class="font-medium text-gray-900 mb-3">Щоб отримати цей ключ:</p>
-                                            <ol class="list-decimal list-inside space-y-2 text-gray-700">
-                                                <li class="pl-2">Перейдіть на сайт Google AI Studio <a href="https://aistudio.google.com">(aistudio.google.com)</a></li>
-                                                <li class="pl-2">Увійдіть у свій Google-акаунт</li>
-                                                <li class="pl-2">У верхньому лівому куті натисніть на значок профілю</li>
-                                                <li class="pl-2">Оберіть "Get API key"</li>
-                                                <li class="pl-2">Створіть новий ключ або використайте існуючий</li>
-                                                <li class="pl-2">Скопіюйте ключ та вставте його в поле вводу на нашій сторінці</li>
-                                            </ol>
-                                        </div>
-                                        <div class="bg-blue-50 p-4 rounded-lg">
-                                            <p class="font-medium text-gray-900 mb-3">Важливо знати:</p>
-                                            <ul class="space-y-2 text-gray-700">
-                                                <li class="flex items-start">
-                                                    <span class="text-blue-500 mr-2">•</span>
-                                                    Ключ схожий на довгий набір букв і цифр
-                                                </li>
-                                                <li class="flex items-start">
-                                                    <span class="text-blue-500 mr-2">•</span>
-                                                    Зберігайте ключ у безпечному місці і не діліться ним з іншими
-                                                </li>
-                                                <li class="flex items-start">
-                                                    <span class="text-blue-500 mr-2">•</span>
-                                                    Ключ можна використовувати повторно
-                                                </li>
-                                                <li class="flex items-start">
-                                                    <span class="text-blue-500 mr-2">•</span>
-                                                    Для користувачів з України сервіс безкоштовний
-                                                </li>
-                                                <li class="flex items-start font-semibold">
-                                                    <span class="text-blue-500 mr-2">•</span>
-                                                    Ключ зберігається виключно на Вашому пристрої і тільки Ви маєте до нього доступ
-                                                </li>
-                                                <li class="flex items-start">
-                                                    <span class="text-blue-500 mr-2">•</span>
-                                                    При бажанні ключ можна видалити з додатку, використовуючи відповідну позначку біля кнопки "Очистити все"
-                                                </li>
-                                            </ul>
+                                    <div id="apiKeyInfo" class="expandable-section mt-4 bg-white rounded-xl shadow-lg border border-green-100">
+                                        <div class="p-4 sm:p-6">
+                                            <p class="mb-4 text-gray-700">
+                                                Google Gemini API Key надає доступ до можливостей штучного інтелекту Google 
+                                                для автоматичного заповнення планів занять.
+                                            </p>
+                                            <div class="bg-green-50 p-4 rounded-lg mb-4">
+                                                <p class="font-medium text-gray-900 mb-3">Отримання ключа:</p>
+                                                <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                                    <li class="pl-2">Відвідайте <a href="https://aistudio.google.com/" class="text-blue-600 hover:text-blue-800 underline">Google AI Studio</a></li>
+                                                    <li class="pl-2">Увійдіть у свій Google-акаунт</li>
+                                                    <li class="pl-2">Оберіть "Get API key" (зверху зліва)</li>
+                                                    <li class="pl-2">Створіть новий або використайте існуючий ключ</li>
+                                                </ol>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-green-500 mr-2">•</span>
-                                API ключ буде автоматично збережено
                             </li>
                         </ul>
                     </li>
 
                     <!-- Step 4 -->
-                    <li class="hover-highlight p-4">
-                        <strong class="text-xl text-gray-900 block mb-3">Вибір моделі ШІ (опціонально)</strong>
-                        <ul class="space-y-2 text-gray-600 ml-4">
+                    <li class="hover-highlight p-3 sm:p-4">
+                        <strong class="text-lg sm:text-xl text-gray-900 block mb-2 sm:mb-3">Автоматичне заповнення</strong>
+                        <ul class="space-y-2 text-gray-600 ml-2 sm:ml-4">
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                Встановіть позначку "Використати іншу модель ШІ"
+                                <span>"Заповнити теми тижнів" - генерує теми для кожного тижня</span>
                             </li>
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                Оберіть бажану модель зі списку (від найшвидшої до найрозумнішої)
+                                <span>"Заповнити теми днів" - створює теми для кожного дня</span>
                             </li>
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                За замовчуванням використовується оптимальна модель
+                                <span>"Заповнити таблиці активностями" - формує повний план занять</span>
                             </li>
                         </ul>
                     </li>
 
                     <!-- Step 5 -->
-                    <li class="hover-highlight p-4">
-                        <strong class="text-xl text-gray-900 block mb-3">Автоматичне заповнення</strong>
-                        <ul class="space-y-2 text-gray-600 ml-4">
+                    <li class="hover-highlight p-3 sm:p-4">
+                        <strong class="text-lg sm:text-xl text-gray-900 block mb-2 sm:mb-3">Редагування та друк</strong>
+                        <ul class="space-y-2 text-gray-600 ml-2 sm:ml-4">
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                "Автозаповнення тем тижнів" - заповнює лише теми тижнів
+                                <span>Використовуйте кнопки "Редагувати" та "Зберегти" для зміни змісту таблиць</span>
                             </li>
                             <li class="flex items-start">
                                 <span class="text-green-500 mr-2">•</span>
-                                "Автозаповнення тем днів" - заповнює теми днів (доступно після заповнення тем тижнів)
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-green-500 mr-2">•</span>
-                                "Автозаповнення (повна таблиця)" - заповнює всю таблицю (доступно після заповнення всіх тем)
+                                <span>Натисніть "Друк" для отримання друкованої версії планів</span>
                             </li>
                         </ul>
                     </li>
-
-                    <!-- Additional steps... -->
                 </ol>
 
                 <!-- Important Notes -->
-                <div class="mt-12 p-6 bg-yellow-50 rounded-xl">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Важливі примітки:</h2>
+                <div class="mt-8 sm:mt-12 p-4 sm:p-6 bg-yellow-50 rounded-xl">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Додаткова інформація:</h2>
                     <ul class="space-y-3 text-gray-700">
                         <li class="flex items-start">
                             <span class="text-yellow-500 mr-2">•</span>
-                            Усі дані автоматично зберігаються у браузері
+                            <span>Всі дані автоматично зберігаються у браузері</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-yellow-500 mr-2">•</span>
-                            При оновленні сторінки
+                            <span>Для видалення всіх даних використовуйте кнопку "Очистити все"</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSection(id) {
+            const section = document.getElementById(id);
+            section.classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>
