@@ -7,8 +7,8 @@ const urlsToCache = [
   `${BASE_PATH}/instructions.html`,
   `${BASE_PATH}/auth-config.js`,
   `${BASE_PATH}/manifest.json`,
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js',
+  `${BASE_PATH}/tailwindcss.js`,
+  `${BASE_PATH}/crypto-js.js`,
   `${BASE_PATH}/icons/icon-152x152.png`
 ];
 
