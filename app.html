@@ -2078,6 +2078,47 @@ ${JSON.stringify(promptObj.days, null, 2)}`.trim();
             });
         }
     </script>
+    <script>
+        // Check for service worker updates
+        function checkForUpdates() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.update();
+                });
+            }
+        }
+        
+        // Check for updates every hour
+        setInterval(checkForUpdates, 60 * 60 * 1000);
+        
+        // Add update notification
+        if ('serviceWorker' in navigator) {
+            let refreshing = false;
+        
+            // Handle update found
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    
+                    // Show update notification
+                    const updateNotification = document.createElement('div');
+                    updateNotification.className = 'fixed bottom-4 left-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 z-50';
+                    updateNotification.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-bold">Оновлення доступне!</p>
+                                <p>Нова версія додатку готова.</p>
+                            </div>
+                            <button onclick="window.location.reload()" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-600">
+                                Оновити
+                            </button>
+                        </div>
+                    `;
+                    document.body.appendChild(updateNotification);
+                }
+            });
+        }
+        </script>
 </body>
 
 </html>
