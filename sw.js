@@ -1,5 +1,5 @@
 // Increment this version when you want to force an update
-const CACHE_VERSION = 'v3.1';
+const CACHE_VERSION = 'v3.2';
 const CACHE_NAME = `planuvannya-${CACHE_VERSION}`;
 const BASE_PATH = '/weekly-education-plan-auto';
 
