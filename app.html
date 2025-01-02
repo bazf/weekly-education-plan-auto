@@ -643,7 +643,13 @@
 
             } catch (error) {
                 console.error(error);
-                showModal("Помилка генерації: " + error.message);
+
+                if(error.message.includes("429")) {
+                    showModal("Будь ласка, не поспішайте! Зачекайте хвильку і нові генерації стануть доступні. У вас багато часу, Ви усе встигнете!", "Ви занадто швидкі");                    
+                } else {
+                    showModal("Помилка генерації: " + error.message);
+                }
+
                 if (type === 'week-theme' || type === 'day-theme') {
                     const container = element.closest('.cell-content-wrapper');
                     const input = container.querySelector('input');
