@@ -908,11 +908,11 @@
             const generateWeeksBtn = document.getElementById('generateWeeksBtn');
 
             if (hasGeneratedTables) {
-                generateWeeksBtn.textContent = 'Стерти дані таблиць';
+                generateWeeksBtn.textContent = 'Створити порожні таблиці для обраного місяця (існуючі перетрутся)';;
                 generateWeeksBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
                 generateWeeksBtn.classList.add('bg-orange-500', 'hover:bg-orange-600');
             } else {
-                generateWeeksBtn.textContent = 'Створити порожні таблиці';
+                generateWeeksBtn.textContent = 'Створити порожні таблиці для обраного місяця';
                 generateWeeksBtn.classList.remove('bg-orange-500', 'hover:bg-orange-600');
                 generateWeeksBtn.classList.add('bg-green-500', 'hover:bg-green-600');
             }
