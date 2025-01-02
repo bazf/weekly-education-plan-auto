@@ -4,6 +4,7 @@ const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
 // List of authorized user hashes (all in lowercase)
 const authorizedHashes = [
+    "5e88ae63d7aab46a285c71d851637d934cb05fd7efb8502bb9d836c36cba6a14", // my; name; testl 01.01.2021
     "ebf453b51f6e7d0ddcbdf00dc9f1fa704dd79f4c38d8df18457610b16e1c633a"
     // Add more authorized hashes here
 ];
