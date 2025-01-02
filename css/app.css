@@ -1,0 +1,221 @@
+[contenteditable="true"]:focus {
+    outline: none;
+    /* Remove default focus outline */
+    border: 3px solid #2563eb !important;
+    /* Blue border, adjust color/thickness as needed */
+    background-color: rgba(37, 99, 235, 0.05);
+    /* Light blue background */
+    box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+    /* Subtle blue glow */
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    @page {
+        size: A4 landscape;
+        margin: 0;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+    }
+
+    .container {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .page {
+        width: 100%;
+        margin: 0;
+        page-break-after: always;
+        break-inside: avoid;
+        page-break-inside: avoid !important;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .page h2 {
+        margin: 0 0 4mm 0;
+        font-size: 11pt;
+        flex: 0 0 auto;
+    }
+
+    table {
+        width: 100% !important;
+        table-layout: fixed;
+        border-collapse: collapse;
+        font-size: 8pt;
+        margin: 0;
+        flex: 1;
+    }
+
+    thead {
+        height: 12%;
+    }
+
+    th,
+    td {
+        padding: 2mm !important;
+        word-wrap: break-word;
+        font-size: 8pt;
+        line-height: 1.2;
+        vertical-align: top;
+    }
+
+    table td:first-child,
+    table th:first-child {
+        width: 12%;
+        min-width: 120px;
+    }
+
+    table td:not(:first-child),
+    table th:not(:first-child) {
+        width: 12.57%;
+    }
+
+    table td:first-child .week-theme-container {
+        display: block;
+        margin-top: 2mm;
+    }
+
+    table td:first-child input {
+        width: 90%;
+        margin-top: 1mm;
+    }
+
+    table td {
+        word-break: normal;
+        overflow-wrap: break-word;
+        white-space: normal;
+    }
+
+    input,
+    span {
+        max-width: 100%;
+        word-wrap: break-word;
+        font-size: 8pt;
+        border: 0;
+    }
+
+    .week-theme-input {
+        margin: 2px 0;
+        padding: 1px;
+        font-size: 8pt;
+    }
+
+    .day-theme-input {
+        margin: 1px 0;
+        padding: 1px;
+        font-size: 8pt;
+    }
+
+    .cell-spinner {
+        display: none !important;
+    }
+}
+
+#spinnerOverlay {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    text-align: center;
+    padding-top: 20%;
+    font-size: 24px;
+}
+
+.spinnerIcon {
+    border: 6px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 6px solid #3498db;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#modelSelectContainer {
+    display: none;
+}
+
+#aiAutofillSection {
+    display: none;
+}
+
+.regenerate-btn {
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    padding: 2px;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.regenerate-btn:hover {
+    color: #2563eb;
+}
+
+.regenerate-btn,
+.week-theme-container:hover .regenerate-btn {
+    opacity: 1;
+}
+
+.cell-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #3498db;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+}
+
+.cell-content-wrapper {
+    min-height: 40px;
+}
+
+@media print {
+    .cell-spinner {
+        display: none !important;
+    }
+}
+
+@media print {
+    .regenerate-btn {
+        display: none !important;
+    }
+}
+
+.week-theme-container {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Additional styles to visually disable the regenerate button */
+.regenerate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
