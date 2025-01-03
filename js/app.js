@@ -461,12 +461,18 @@ autoFillWeekThemesBtn.addEventListener('click', async () => {
             .map(l => l.replace(/^\d+\)\s*/, '').trim())
             .filter(Boolean);
 
-        const weekInputs = document.querySelectorAll('.week-theme-input');
-        for (let i = 0; i < weekInputs.length; i++) {
-            if (i < lines.length) {
-                weekInputs[i].value = lines[i].replace(/^[\*\"]|[\*\"]$/g, '').trim();
+            const weekInputs = document.querySelectorAll('.week-theme-input');
+            const skipFilled = document.getElementById('skipFilledCheck').checked;
+            
+            for (let i = 0; i < weekInputs.length; i++) {
+                if (i < lines.length) {
+                    // Skip if checkbox is checked and input already has content
+                    if (skipFilled && weekInputs[i].value.trim()) {
+                        continue;
+                    }
+                    weekInputs[i].value = lines[i].replace(/^[\*\"]|[\*\"]$/g, '').trim();
+                }
             }
-        }
 
         saveGeneratedPages();
         showModal?.("Автозаповнення тем тижнів завершено!");
@@ -602,9 +608,13 @@ ${datesList.join('\n')}
                         .filter(Boolean);
                 }
 
-                // 5) Fill each day’s .day-theme-input
+                const skipFilled = document.getElementById('skipFilledCheck').checked;
+                
                 for (let i = 0; i < dayData.length; i++) {
-                    if (i < themes.length) {
+                    if (i < themes.length) {                        
+                        if (skipFilled && dayData[i].dayInput.value.trim()) {
+                            continue;
+                        }
                         dayData[i].dayInput.value = themes[i].replace(/^["*]|["*]$/g, '').trim();
                     }
                 }
@@ -839,7 +849,11 @@ ${JSON.stringify(promptObj.days, null, 2)}
 
                                 const span = contentWrapper.querySelector('span');
                                 if (span) {
-                                    span.textContent = dayEntry.lines[colIndex - 1];
+                                    const skipFilled = document.getElementById('skipFilledCheck').checked;
+                                    
+                                    if (!(skipFilled && span.textContent.trim())) {
+                                        span.textContent = dayEntry.lines[colIndex - 1];
+                                    }
                                 } else {
                                     allFilled = false;
                                 }
