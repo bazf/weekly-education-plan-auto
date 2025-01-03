@@ -1,5 +1,5 @@
 // sw.js - Modified service worker code
-const CACHE_VERSION = 'v4.1';
+const CACHE_VERSION = 'v4.2';
 const CACHE_NAME = `planuvannya-${CACHE_VERSION}`;
 const BASE_PATH = '/weekly-education-plan-auto';
 
