@@ -416,10 +416,16 @@ autoFillWeekThemesBtn.addEventListener('click', async () => {
     }
 
     const promptText = `
-    Будь ласка, запропонуй ${howManyWeeks} актуальних тем для тижнів у дитячому садочку в Україні 
-    на період: ${monthName} ${year}. 
-    Кожну тему подай з нового рядка... (rest of prompt) ...
-    `.trim();
+Будь ласка, запропонуй ${howManyWeeks} актуальних тем для тижнів у дитячому садочку в Україні 
+на період: ${monthName} ${year}. 
+Кожну тему подай з нового рядка. 
+Теми мають бути креативними, але враховувати сезон та особливості виховання дітей дошкільного віку.
+Якщо в тижні є державне свято України чи велике міжнародне свято, будь ласка, врахуй його при формуванні теми тижня, але не зазначай факт врахування у назві.
+Свята повинні відповідати Григоріанському календарю (Наприклад, 25 грудня - Різдво Христове, а не 7 січня - Різдво Христове, як у Юліанському календарі,
+або день Святого Миколая повинен бути 6 грудня, а не 19 грудня).
+Не використовуй таких персонажів як Дід Мороз, Снігуронька, замість них використовуй українського Святого Миколая.
+Надай лише список тем, без нумерації, без коментарів.
+            `.trim();
 
     try {
         const selectedModel = getSelectedModel('weekThemes');
@@ -450,7 +456,7 @@ autoFillWeekThemesBtn.addEventListener('click', async () => {
         const weekInputs = document.querySelectorAll('.week-theme-input');
         for (let i = 0; i < weekInputs.length; i++) {
             if (i < lines.length) {
-                weekInputs[i].value = lines[i];
+                weekInputs[i].value = lines[i].replace(/^[\*\"]|[\*\"]$/g, '').trim();
             }
         }
 
@@ -467,7 +473,7 @@ autoFillWeekThemesBtn.addEventListener('click', async () => {
 });
 
 /****************************************************
-* #2 AUTO-FILL DAY THEMES
+* #2 AUTO-FILL DAY THEMES (WITH WEEK THEME)
 ****************************************************/
 const autoFillDayThemesBtn = document.getElementById('autoFillDayThemesBtn');
 autoFillDayThemesBtn.addEventListener('click', async () => {
@@ -492,15 +498,27 @@ autoFillDayThemesBtn.addEventListener('click', async () => {
     const monthName = monthNamesUkr[monthIndex] || "";
 
     try {
-        // Collect every row’s day cell
-        const allDayData = [];
+        // Get all "pages" (weeks)
         const pages = document.querySelectorAll('.page');
+        if (pages.length === 0) {
+            showModal("Немає створених тижнів для автозаповнення!");
+            hideSpinner();
+            enableAllButtons();
+            return;
+        }
+
+        // For each page (week), build and send a separate prompt that includes the week's theme
         for (let page of pages) {
+            // 1) Find the week theme input for this week
+            const weekThemeInput = page.querySelector('.week-theme-input');
+            const weekTheme = (weekThemeInput?.value || "").trim();
+
+            // 2) Collect all day data for this week only
             const table = page.querySelector('table');
             if (!table) continue;
-
             const rows = table.querySelectorAll('tr');
-            // Row 0 is <thead>, so start from 1
+
+            const dayData = [];
             for (let i = 1; i < rows.length; i++) {
                 const row = rows[i];
                 const dayCell = row.querySelector('td');
@@ -509,108 +527,89 @@ autoFillDayThemesBtn.addEventListener('click', async () => {
                 if (!strong || !dayInput) continue;
 
                 const dateAndDayText = strong.textContent.trim();
-                allDayData.push({
+                dayData.push({
                     dateAndDay: dateAndDayText,
                     dayInput: dayInput
                 });
             }
-        }
 
-        // If no working days found
-        if (allDayData.length === 0) {
-            showModal("Немає робочих днів для автозаповнення!");
-            hideSpinner();
-            enableAllButtons();
-            return;
-        }
+            if (dayData.length === 0) {
+                // No working days in this week? Skip
+                continue;
+            }
 
-        const howManyDays = allDayData.length;
-        const datesList = allDayData.map(item => item.dateAndDay);
+            // 3) Build a prompt that references the week theme
+            const howManyDays = dayData.length;
+            const datesList = dayData.map(item => item.dateAndDay);
 
-        // Build AI prompt
-        const promptText = `
-Будь ласка, запропонуй ${howManyDays} різних, актуальних тем днів для дитячого садочка 
-враховуючи усі ці дати (період: ${monthName} ${year}, українською мовою), 
-з огляду на те, що в Україні можуть бути офіційні державні свята та великі сучасні свята для України міжнародного рівня у деякі з цих дат. 
-Свята повинні відповідати Григоріанському календарю (Наприклад, 25 грудня - Різдво Христове, а не 7 січня - Різдво Христове, як у Юліанському календарі,
-або день Святого Миколая повинен бути 6 грудня, а не 19 грудня).
-Не використовуй таких персонажів як Дід Мороз, Снігуронька, замість них використовуй українського Святого Миколая.
-Коли свято випадає на вихідний, тоді темою найближчого робочого дня може бути свято.
-Подай відповідь у вигляді простого списку тем, кожна тема з нового рядка.
-Не додавай нумерацію чи додаткові пояснення на початку чи в кінці теми!
-Ось перелік дат для контексту:
+            const promptText = `
+Будь ласка, запропонуй ${howManyDays} різних, актуальних тем днів 
+для дитячого садочка (період: ${monthName} ${year}, українською мовою), 
+з огляду на те, що в Україні можуть бути офіційні державні свята та великі сучасні свята. 
+Свята повинні відповідати Григоріанському календарю (25 грудня - Різдво Христове, 6 грудня - День Святого Миколая, тощо). 
+Не використовуй персонажів Дід Мороз, Снігуронька, замість них — українського Святого Миколая чи інших міжнародних.
+Якщо свято випадає на вихідний, можна перенести тему на найближчий робочий день.
+Деякі теми днів повинні співвідноситися з темою тижня: "${weekTheme}, а інші можуть бути більш різноманітними, якщо немає свята на цей день."
+Подай відповідь у вигляді простого списку тем, кожна тема з нового рядка, без нумерації.
+
+Ось дати та дні тижня для контексту:
 ${datesList.join('\n')}
-`.trim();
+            `.trim();
 
-        const selectedModel = getSelectedModel('dayThemes');
-        const requestBody = {
-            contents: [{
-                parts: [{ text: promptText }]
-            }]
-        };
+            // 4) Send the request for just this week
+            const selectedModel = getSelectedModel('dayThemes');
+            const requestBody = {
+                contents: [{
+                    parts: [{ text: promptText }]
+                }]
+            };
 
-        // Example advanced config if you want to differentiate:
-        if (!selectedModel.includes('thinking-exp')) {
-            requestBody.generationConfig = {
-                temperature: 1,
-                topK: 40,
-                topP: 0.95,
-                maxOutputTokens: 8192,
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: "object",
-                    properties: {
-                        response: {
-                            type: "array",
-                            items: {
-                                type: "string"
-                            }
-                        }
+            let themes = [];
+            try {
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody)
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Помилка від API: ${response.status}`);
+                }
+                const data = await response.json();
+
+                // Attempt JSON parse first
+                try {
+                    const responseText = data.candidates[0].content.parts[0].text;
+                    const parsedResponse = JSON.parse(responseText);
+                    themes = parsedResponse.response || [];
+                } catch (e) {
+                    // Fallback: split lines
+                    const generatedText = data.candidates[0].content.parts.at(-1).text || "";
+                    themes = generatedText
+                        .split(/\r?\n/)
+                        .map(line => line.replace(/^\d+[\.\)]\s*/, '').trim())
+                        .filter(Boolean);
+                }
+
+                // 5) Fill each day’s .day-theme-input
+                for (let i = 0; i < dayData.length; i++) {
+                    if (i < themes.length) {
+                        dayData[i].dayInput.value = themes[i].replace(/^["*]|["*]$/g, '').trim();
                     }
                 }
-            };
-        }
-
-        // Call Gemini
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
+            } catch (error) {
+                console.error(error);
+                showModal("Не вдалося отримати дані від Gemini API: " + error.message);
+                // Go on to next week (page)
             }
-        );
+        } // end for each page
 
-        if (!response.ok) {
-            throw new Error(`Помилка від API: ${response.status}`);
-        }
-
-        const data = await response.json();
-        let themes = [];
-
-        try {
-            // Some models might return parseable JSON
-            const responseText = data.candidates[0].content.parts[0].text;
-            const parsedResponse = JSON.parse(responseText);
-            themes = parsedResponse.response;
-        } catch (e) {
-            // If JSON parse fails, fallback to line-splitting
-            const generatedText = data.candidates[0].content.parts.at(-1).text || "";
-            themes = generatedText
-                .split(/\r?\n/)
-                .map(line => line.replace(/^\d+[\.\)]\s*/, '').trim())
-                .filter(Boolean);
-        }
-
-        // Fill the .day-theme-input fields
-        for (let i = 0; i < allDayData.length; i++) {
-            if (i < themes.length) {
-                allDayData[i].dayInput.value = themes[i];
-            }
-        }
-
+        // After all weeks
         saveGeneratedPages();
-        showModal("Автозаповнення тем днів завершено!");
+        showModal("Автозаповнення тем днів із урахуванням теми тижня завершено!");
     } catch (error) {
         console.error(error);
         showModal("Не вдалося отримати дані від Gemini API: " + error.message);
@@ -620,7 +619,6 @@ ${datesList.join('\n')}
         updateRegenerateButtonsState();
     }
 });
-
 
 /****************************************************
  * #3 AUTO-FILL ACTIVITIES
@@ -697,15 +695,29 @@ autoFillBtn.addEventListener('click', async () => {
 7. «Гра дитини»
 
 Активності мають враховувати:
-- Пору року та державні свята України
-- Відповідність Григоріанському календарю (25 грудня - Різдво Христове, 6 грудня - день Святого Миколая)
-- Використання українського Святого Миколая замість Діда Мороза чи Снігуроньки
-- Активності повинні бути короткими, не повторюватися
-- Включати різні ігри, руханки, танці та інші види активностей для дошкільнят
-- Відповідати темі тижня та темі дня
+- Пору року та державні свята України, як Пасха чи інші свята, міжнародні значні дати, як День чаю чи День дитини, або інші тобі відомі.
+- Відповідність Григоріанському календарю (наприклад, 25 грудня - Різдво Христове, 6 грудня - день Святого Миколая).
+- Використання українського Святого Миколая замість Діда Мороза чи Снігуроньки.
+- Можеш використовувати інших відомих міжнародних персонажів.
+- Активності повинні бути короткими, цікавими, різноманітними та не повторюватися.
+- Включати різні ігри, руханки, танці, творчі завдання, сенсорні активності, заняття на свіжому повітрі та інші види діяльності для дошкільнят.
+- Відповідати темі тижня та темі дня.
+- Одна активність може стосуватися одразу кількох освітніх ліній, враховуючи, що діяльність однієї лінії доцільна і для іншої.
+- У назві активності не потрібно явно прописувати назву освітньої лінії, але вони повинні відповідати зазначеним лініям.
+
+Додатковий перелік можливих активностей для орієнтування:
+- Для «Особистість дитини»: малювання, емоційні ігри, вправи на самовираження, створення колажів, квест-ігри, рольові ігри, тощо.
+- Для «Дитина в соціумі»: командні ігри, обговорення казок, соціальні проєкти, театралізовані вистави, вправи для розвитку комунікації, співпраця у вирішенні завдань, тощо.
+- Для «Дитина в природному довкіллі»: спостереження за природою, догляд за рослинами, творчі майстер-класи з природних матеріалів, екологічні ігри, експерименти з водою, організація міні-саду, тощо.
+- Для «Дитина у світі культури»: танці, слухання музики, перегляд розвиваючих відеороликів, створення аплікацій, ліплення з глини, гра на музичних інструментах, тощо.
+- Для «Мовлення дитини»: читання вголос, розповідання історій, лексичні ігри, скоромовки, загадки, вивчення віршів, тощо.
+- Для «Дитина в сенсорно-математичному просторі»: математичні ігри, пазли, конструювання, сортування об'єктів, інтерактивні математичні завдання, тощо.
+- Для «Гра дитини»: рухливі ігри, настільні ігри, творчі ігри з уявою, ігри з піском, будівництво з кубиків, тощо.
+
 Ось перелік днів тижня і теми днів для плану:
 ${JSON.stringify(promptObj.days, null, 2)}
-      `.trim();
+`.trim();
+
 
             const selectedModel = getSelectedModel('activities');
             const requestBody = {
