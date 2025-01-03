@@ -13,17 +13,25 @@
  * DOMContentLoaded logic
  ****************************************************/
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize UI state, load from localStorage, etc.
     initYearMonthSelections();
     restoreApiKey();
     restoreSelectedModel();
     restoreUseAI();
     restoreGeneratedTables();
 
+    // Make sure new changes to API key are saved
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    apiKeyInput.addEventListener('input', function() {
+        localStorage.setItem('geminiApiKey', this.value);
+        checkAutoFillAvailability();
+    });
+
     // Keep "Clear All" checkbox in sync
     updateClearApiKeyCheckbox();
     updateGenerateButtonState();
+    checkAutoFillAvailability();
 });
+
 
 /****************************************************
  * RESTORE UI / LOCALSTORAGE
