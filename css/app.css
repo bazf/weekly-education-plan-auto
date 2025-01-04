@@ -1,4 +1,9 @@
-/* Regular content editing styles */
+:root {
+    --print-left-margin: 1mm;
+    --print-page-width: calc(297mm - var(--print-left-margin));  /* A4 landscape width minus margin */
+    --print-column-width: calc((297mm - var(--print-left-margin)) / 8);  /* Divide by number of columns */
+}
+
 [contenteditable="true"]:focus {
     outline: none;
     border: 3px solid #2563eb !important;
@@ -6,7 +11,6 @@
     box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
 }
 
-/* Spinner and overlay styles */
 #spinnerOverlay {
     display: none;
     position: fixed;
@@ -37,7 +41,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Model select container */
 #modelSelectContainer {
     display: none;
 }
@@ -46,7 +49,6 @@
     display: none;
 }
 
-/* Regenerate button styles */
 .regenerate-btn {
     opacity: 0;
     transition: opacity 0.2s;
@@ -66,7 +68,6 @@
     opacity: 1;
 }
 
-/* Cell spinner styles */
 .cell-spinner {
     width: 20px;
     height: 20px;
@@ -81,19 +82,16 @@
     min-height: 40px;
 }
 
-/* Week theme container styles */
 .week-theme-container {
     display: inline-flex;
     align-items: center;
 }
 
-/* Disabled regenerate button */
 .regenerate-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-/* Print styles */
 @media print {
     .no-print {
         display: none !important;
@@ -101,28 +99,28 @@
 
     @page {
         size: A4 landscape;
-        margin: 0;
+        margin: 4mm 0 0 var(--print-left-margin);
     }
 
     body {
-        margin: 0 !important;
+        width: var(--print-page-width) !important;
+        margin: 0 0 0 var(--print-left-margin) !important;
         padding: 0 !important;
-        width: 100vw !important;
-        min-width: 100% !important;
     }
 
     .container {
-        margin: 0 !important;
+        margin: 0 0 0 var(--print-left-margin) !important;
         padding: 0 !important;
-        width: 100% !important;
+        width: var(--print-page-width) !important;
         max-width: none !important;
     }
 
     .page {
-        width: 100%;
-        margin: 0;
-        padding: 0;
+        width: var(--print-page-width) !important;
+        margin: 0 0 0 var(--print-left-margin) !important;
+        padding: 0 !important;
         page-break-after: always;
+        break-inside: avoid;
         page-break-inside: avoid !important;
         display: flex;
         flex-direction: column;
@@ -134,9 +132,8 @@
         flex: 0 0 auto;
     }
 
-    /* Table styles */
     table {
-        width: 100% !important;
+        width: var(--print-page-width) !important;
         margin: 0 !important;
         table-layout: fixed !important;
         border-collapse: collapse;
@@ -149,20 +146,18 @@
         height: 12%;
     }
 
-    /* Column widths */
     table td:first-child,
     table th:first-child {
-        width: 15% !important;
-        min-width: 100px !important;
+        width: var(--print-column-width) !important;
+        min-width: var(--print-column-width) !important;
         word-break: break-word !important;
     }
 
     table td:not(:first-child),
     table th:not(:first-child) {
-        width: 12.14% !important;
+        width: var(--print-column-width) !important;
     }
 
-    /* Cell styles */
     th, td {
         padding: 2mm !important;
         word-wrap: break-word !important;
@@ -174,7 +169,6 @@
         vertical-align: top;
     }
 
-    /* Theme inputs */
     input.week-theme-input,
     input.day-theme-input {
         border: none !important;
@@ -201,19 +195,22 @@
         overflow-wrap: break-word !important;
     }
 
-    /* Week theme specific styles */
     table td:first-child .week-theme-container {
         display: block;
         margin-top: 2mm;
     }
 
-    /* Hide elements in print */
+    table td {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
     .cell-spinner,
     .regenerate-btn {
         display: none !important;
     }
 
-    /* Force proper color printing */
     * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
@@ -221,16 +218,46 @@
 }
 
 /* Safari-specific print styles */
+@media print and (-webkit-min-device-pixel-ratio:0) {
+    body {
+        width: var(--print-page-width) !important;
+        margin: 0 0 0 var(--print-left-margin) !important;
+        padding: 0 !important;
+    }
+    
+    table {
+        transform-origin: left top;
+        transform: scale(0.98);
+    }
+
+    .container {
+        width: var(--print-page-width) !important;
+        margin: 0 0 0 var(--print-left-margin) !important;
+        padding: 0 !important;
+    }
+
+    .page {
+        width: var(--print-page-width) !important;
+        margin: 0 0 0 var(--print-left-margin) !important;
+        padding: 0 !important;
+    }
+}
+
+/* Additional Safari-specific print fixes */
 @media print and (min-width: 0\0) {
     .safari-print {
-        margin: 0 !important;
+        margin: 10mm 0 0 var(--print-left-margin) !important;
         padding: 0 !important;
-        width: 100% !important;
+        width: var(--print-page-width) !important;
     }
 
     .safari-print .container {
-        margin: 0 !important;
+        margin: 0 0 0 var(--print-left-margin) !important;
         padding: 0 !important;
-        width: 100% !important;
+        width: var(--print-page-width) !important;
+    }
+
+    .safari-print table {
+        width: var(--print-page-width) !important;
     }
 }
