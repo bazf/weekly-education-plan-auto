@@ -1,5 +1,5 @@
 // sw.js - Fixed service worker code for GitHub Pages
-const CACHE_VERSION = 'v4.5';
+const CACHE_VERSION = 'v4.6';
 const CACHE_NAME = `planuvannya-${CACHE_VERSION}`;
 const BASE_PATH = '/weekly-education-plan-auto';
 

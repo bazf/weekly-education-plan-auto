@@ -1,7 +1,8 @@
 :root {
-    --print-left-margin: 1mm;
-    --print-page-width: calc(297mm - var(--print-left-margin));  /* A4 landscape width minus margin */
-    --print-column-width: calc((297mm - var(--print-left-margin)) / 8);  /* Divide by number of columns */
+    --print-left-margin: 5mm;
+    --print-page-width: calc(297mm - var(--print-left-margin));
+    --first-column-width: calc(var(--print-page-width) * 0.15);
+    --other-column-width: calc((var(--print-page-width) - var(--first-column-width)) / 7);
 }
 
 [contenteditable="true"]:focus {
@@ -99,7 +100,7 @@
 
     @page {
         size: A4 landscape;
-        margin: 4mm 0 0 var(--print-left-margin);
+        margin: 0 0 0 var(--print-left-margin);
     }
 
     body {
@@ -146,16 +147,21 @@
         height: 12%;
     }
 
+    /* Updated column widths and wrapping */
     table td:first-child,
     table th:first-child {
-        width: var(--print-column-width) !important;
-        min-width: var(--print-column-width) !important;
-        word-break: break-word !important;
+        width: var(--first-column-width) !important;
+        min-width: var(--first-column-width) !important;
+        max-width: var(--first-column-width) !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        padding-right: 4mm !important;
     }
 
     table td:not(:first-child),
     table th:not(:first-child) {
-        width: var(--print-column-width) !important;
+        width: var(--other-column-width) !important;
     }
 
     th, td {
@@ -175,15 +181,31 @@
         background: none !important;
         padding: 0 !important;
         margin: 0 !important;
-        width: auto !important;
+        width: 100% !important;
         max-width: none !important;
-        display: inline !important;
+        display: block !important;
         white-space: normal !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         -webkit-appearance: none !important;
         appearance: none !important;
         font-size: 8pt !important;
+    }
+
+    /* Improved text wrapping for day theme */
+    .day-theme-input,
+    table td:first-child strong,
+    table td:first-child span {
+        display: block !important;
+        width: 100% !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+    }
+
+    table td:first-child strong {
+        margin-bottom: 2mm !important;
     }
 
     .week-theme-container {
@@ -198,12 +220,6 @@
     table td:first-child .week-theme-container {
         display: block;
         margin-top: 2mm;
-    }
-
-    table td {
-        white-space: normal !important;
-        word-wrap: break-word !important;
-        word-break: normal !important;
     }
 
     .cell-spinner,
@@ -246,7 +262,7 @@
 /* Additional Safari-specific print fixes */
 @media print and (min-width: 0\0) {
     .safari-print {
-        margin: 10mm 0 0 var(--print-left-margin) !important;
+        margin: 0 0 0 var(--print-left-margin) !important;
         padding: 0 !important;
         width: var(--print-page-width) !important;
     }
