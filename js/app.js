@@ -26,6 +26,15 @@ document.addEventListener('DOMContentLoaded', function () {
         checkAutoFillAvailability();
     });
 
+    // Restore skip filled checkbox state
+    const skipFilledCheck = document.getElementById('skipFilledCheck');
+    skipFilledCheck.checked = localStorage.getItem('skipFilled') === 'true';
+
+    // Save skip filled checkbox state on change
+    skipFilledCheck.addEventListener('change', function () {
+        localStorage.setItem('skipFilled', this.checked);
+    });
+
     // Keep "Clear All" checkbox in sync
     updateClearApiKeyCheckbox();
     updateGenerateButtonState();
@@ -111,16 +120,9 @@ function restoreUseAI() {
     const aiAutofillSection = document.getElementById('aiAutofillSection');
 
     if (savedUseAICheck === 'true') {
-        useAICheck.checked = true;
+        useAICheck.checked = savedUseAICheck === 'true';
         aiAutofillSection.style.display = 'block';
     } else {
-        useAICheck.checked = false;
-        aiAutofillSection.style.display = 'none';
-    }
-
-    // If no tables exist, turn off AI check
-    const hasGeneratedTables = document.querySelectorAll('.page').length > 0;
-    if (!hasGeneratedTables) {
         useAICheck.checked = false;
         aiAutofillSection.style.display = 'none';
     }
