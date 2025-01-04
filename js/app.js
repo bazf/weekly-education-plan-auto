@@ -996,26 +996,47 @@ ${JSON.stringify(promptObj.days, null, 2)}
  ****************************************************/
 const printBtn = document.getElementById('btnPrint');
 printBtn.addEventListener('click', function () {
-    const dayInputs = document.querySelectorAll('.day-theme-input');
-    const weekInputs = document.querySelectorAll('.week-theme-input');
-    const replacedElements = [];
+    // Store all elements we'll modify
+    const modifications = [];
 
-    function replaceInputWithSpan(input) {
-        const span = document.createElement('span');
-        span.textContent = input.value.trim();
-        replacedElements.push({ original: input, temp: span });
-        input.parentNode.replaceChild(span, input);
-    }
+    // Handle all theme inputs
+    document.querySelectorAll('.week-theme-input, .day-theme-input').forEach(input => {
+        // Create text node with input's value
+        const text = document.createTextNode(input.value.trim());
+        
+        // Store original parent and input for restoration
+        const parent = input.parentNode;
+        const container = parent.closest('.week-theme-container');
+        
+        // Store the modification
+        modifications.push({
+            container: container,
+            originalHTML: container.innerHTML,
+            input: input,
+            text: text
+        });
 
-    dayInputs.forEach(input => replaceInputWithSpan(input));
-    weekInputs.forEach(input => replaceInputWithSpan(input));
+        // Replace input with text
+        if (container) {
+            // Simplify container for printing
+            container.innerHTML = '';
+            container.appendChild(text);
+        }
+    });
 
+    // Print the document
     window.print();
 
-    // Restore inputs
-    replacedElements.forEach(({ original, temp }) => {
-        temp.parentNode.replaceChild(original, temp);
+    // Restore all modifications
+    modifications.forEach(mod => {
+        if (mod.container) {
+            mod.container.innerHTML = mod.originalHTML;
+        }
     });
+
+    // Ensure event handlers are reattached
+    reattachThemeInputHandlers?.();
+    updateRegenerateButtonsState?.();
 });
 
 /****************************************************

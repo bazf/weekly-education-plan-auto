@@ -19,6 +19,25 @@
         margin: 0;
     }
 
+    /* Make inputs display as text */
+    input.week-theme-input,
+    input.day-theme-input {
+        border: none;
+        background: none;
+        padding: 0;
+        width: auto;
+        display: inline;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    /* Ensure the theme containers take full width */
+    .week-theme-container {
+        width: 100%;
+        display: block !important;
+        margin-top: 2mm;
+    }
+
     body {
         margin: 0;
         padding: 0;
@@ -91,9 +110,9 @@
     }
 
     table td {
-        word-break: normal;
-        overflow-wrap: break-word;
-        white-space: normal;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        word-break: normal !important;
     }
 
     input,
