@@ -999,6 +999,12 @@ printBtn.addEventListener('click', function () {
     // Store all elements we'll modify
     const modifications = [];
 
+    // Add Safari-specific class if needed
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) {
+        document.body.classList.add('safari-print');
+    }
+
     // Handle all theme inputs
     document.querySelectorAll('.week-theme-input, .day-theme-input').forEach(input => {
         // Create text node with input's value
@@ -1024,6 +1030,9 @@ printBtn.addEventListener('click', function () {
         }
     });
 
+    // Force layout recalculation
+    document.body.offsetHeight;
+
     // Print the document
     window.print();
 
@@ -1033,6 +1042,11 @@ printBtn.addEventListener('click', function () {
             mod.container.innerHTML = mod.originalHTML;
         }
     });
+
+    // Remove Safari-specific class if it was added
+    if (isSafari) {
+        document.body.classList.remove('safari-print');
+    }
 
     // Ensure event handlers are reattached
     reattachThemeInputHandlers?.();

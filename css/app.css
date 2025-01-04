@@ -1,145 +1,12 @@
+/* Regular content editing styles */
 [contenteditable="true"]:focus {
     outline: none;
-    /* Remove default focus outline */
     border: 3px solid #2563eb !important;
-    /* Blue border, adjust color/thickness as needed */
     background-color: rgba(37, 99, 235, 0.05);
-    /* Light blue background */
     box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
-    /* Subtle blue glow */
 }
 
-@media print {
-    .no-print {
-        display: none !important;
-    }
-
-    @page {
-        size: A4 landscape;
-        margin: 0;
-    }
-
-    /* Make inputs display as text */
-    input.week-theme-input,
-    input.day-theme-input {
-        border: none;
-        background: none;
-        padding: 0;
-        width: auto;
-        display: inline;
-        -webkit-appearance: none;
-        appearance: none;
-    }
-
-    /* Ensure the theme containers take full width */
-    .week-theme-container {
-        width: 100%;
-        display: block !important;
-        margin-top: 2mm;
-    }
-
-    body {
-        margin: 0;
-        padding: 0;
-        width: 100vw;
-    }
-
-    .container {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-    }
-
-    .page {
-        width: 100%;
-        margin: 0;
-        page-break-after: always;
-        break-inside: avoid;
-        page-break-inside: avoid !important;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .page h2 {
-        margin: 0 0 4mm 0;
-        font-size: 11pt;
-        flex: 0 0 auto;
-    }
-
-    table {
-        width: 100% !important;
-        table-layout: fixed;
-        border-collapse: collapse;
-        font-size: 8pt;
-        margin: 0;
-        flex: 1;
-    }
-
-    thead {
-        height: 12%;
-    }
-
-    th,
-    td {
-        padding: 2mm !important;
-        word-wrap: break-word;
-        font-size: 8pt;
-        line-height: 1.2;
-        vertical-align: top;
-    }
-
-    table td:first-child,
-    table th:first-child {
-        width: 12%;
-        min-width: 120px;
-    }
-
-    table td:not(:first-child),
-    table th:not(:first-child) {
-        width: 12.57%;
-    }
-
-    table td:first-child .week-theme-container {
-        display: block;
-        margin-top: 2mm;
-    }
-
-    table td:first-child input {
-        width: 90%;
-        margin-top: 1mm;
-    }
-
-    table td {
-        white-space: normal !important;
-        word-wrap: break-word !important;
-        word-break: normal !important;
-    }
-
-    input,
-    span {
-        max-width: 100%;
-        word-wrap: break-word;
-        font-size: 8pt;
-        border: 0;
-    }
-
-    .week-theme-input {
-        margin: 2px 0;
-        padding: 1px;
-        font-size: 8pt;
-    }
-
-    .day-theme-input {
-        margin: 1px 0;
-        padding: 1px;
-        font-size: 8pt;
-    }
-
-    .cell-spinner {
-        display: none !important;
-    }
-}
-
+/* Spinner and overlay styles */
 #spinnerOverlay {
     display: none;
     position: fixed;
@@ -166,15 +33,11 @@
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
+/* Model select container */
 #modelSelectContainer {
     display: none;
 }
@@ -183,6 +46,7 @@
     display: none;
 }
 
+/* Regenerate button styles */
 .regenerate-btn {
     opacity: 0;
     transition: opacity 0.2s;
@@ -202,6 +66,7 @@
     opacity: 1;
 }
 
+/* Cell spinner styles */
 .cell-spinner {
     width: 20px;
     height: 20px;
@@ -216,25 +81,156 @@
     min-height: 40px;
 }
 
-@media print {
-    .cell-spinner {
-        display: none !important;
-    }
-}
-
-@media print {
-    .regenerate-btn {
-        display: none !important;
-    }
-}
-
+/* Week theme container styles */
 .week-theme-container {
     display: inline-flex;
     align-items: center;
 }
 
-/* Additional styles to visually disable the regenerate button */
+/* Disabled regenerate button */
 .regenerate-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    @page {
+        size: A4 landscape;
+        margin: 0;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100vw !important;
+        min-width: 100% !important;
+    }
+
+    .container {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        page-break-after: always;
+        page-break-inside: avoid !important;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .page h2 {
+        margin: 0 0 4mm 0;
+        font-size: 11pt;
+        flex: 0 0 auto;
+    }
+
+    /* Table styles */
+    table {
+        width: 100% !important;
+        margin: 0 !important;
+        table-layout: fixed !important;
+        border-collapse: collapse;
+        font-size: 8pt;
+        page-break-inside: avoid !important;
+        flex: 1;
+    }
+
+    thead {
+        height: 12%;
+    }
+
+    /* Column widths */
+    table td:first-child,
+    table th:first-child {
+        width: 15% !important;
+        min-width: 100px !important;
+        word-break: break-word !important;
+    }
+
+    table td:not(:first-child),
+    table th:not(:first-child) {
+        width: 12.14% !important;
+    }
+
+    /* Cell styles */
+    th, td {
+        padding: 2mm !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+        white-space: normal !important;
+        font-size: 8pt !important;
+        line-height: 1.2 !important;
+        vertical-align: top;
+    }
+
+    /* Theme inputs */
+    input.week-theme-input,
+    input.day-theme-input {
+        border: none !important;
+        background: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: auto !important;
+        max-width: none !important;
+        display: inline !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        font-size: 8pt !important;
+    }
+
+    .week-theme-container {
+        width: 100% !important;
+        display: block !important;
+        margin-top: 2mm !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+
+    /* Week theme specific styles */
+    table td:first-child .week-theme-container {
+        display: block;
+        margin-top: 2mm;
+    }
+
+    /* Hide elements in print */
+    .cell-spinner,
+    .regenerate-btn {
+        display: none !important;
+    }
+
+    /* Force proper color printing */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+/* Safari-specific print styles */
+@media print and (min-width: 0\0) {
+    .safari-print {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .safari-print .container {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
 }
