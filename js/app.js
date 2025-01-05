@@ -212,8 +212,8 @@ generateWeeksBtn.addEventListener('click', () => {
         Тиждень ${weekNumber} (${firstDateStr} – ${lastDateStr}).
         <div class="mt-2">
             <label class="inline-flex items-center">
-                <div class="week-theme-container cell-content-wrapper">
-                    <span>Тема тижня:</span>
+                <div class="week-theme-container cell-content-wrapper flex justify-between items-start">
+                    <span class="flex-grow">Тема тижня: </span>
                     <input type="text" class="week-theme-input border rounded-md ml-2 py-1 px-2" placeholder="Вкажіть тему тижня">
                     <button class="regenerate-btn" data-type="week-theme" title="Згенерувати нову тему тижня">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -290,11 +290,11 @@ generateWeeksBtn.addEventListener('click', () => {
             row.innerHTML = `
           <td class="border px-4 py-2">
               <strong>${ddMM} (${dayOfWeekName})</strong>
-              <br>
-              <div class="week-theme-container cell-content-wrapper">
-                  <span>Тема дня:</span>
+              <br />           
+              <div class="week-theme-container cell-content-wrapper flex justify-between items-start">
+                  <span class="flex-grow">Тема дня: </span>
                   <input type="text" class="day-theme-input border rounded-md mt-1 py-1 px-2" placeholder="Вкажіть тему дня">
-                  <button class="regenerate-btn" data-type="day-theme" title="Згенерувати нову тему дня">
+                  <button class="regenerate-btn flex-shrink-0" data-type="day-theme" title="Згенерувати нову тему дня">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
                       </svg>
@@ -995,64 +995,41 @@ ${JSON.stringify(promptObj.days, null, 2)}
  * PRINT
  ****************************************************/
 const printBtn = document.getElementById('btnPrint');
-printBtn.addEventListener('click', function () {
-    // Store all elements we'll modify
-    const modifications = [];
+printBtn.addEventListener('click', function() {
+  // This array will hold details for restoration after printing
+  const replacedElements = [];
 
-    // Add Safari-specific class if needed
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (isSafari) {
-        document.body.classList.add('safari-print');
-    }
+  // Turn all week/day theme inputs into <span> elements
+  document.querySelectorAll('.week-theme-input, .day-theme-input').forEach(input => {
+    const originalParent = input.parentNode;
+    const originalSpan = originalParent.querySelector('span');
 
-    // Handle all theme inputs
-    document.querySelectorAll('.week-theme-input, .day-theme-input').forEach(input => {
-        // Create text node with input's value
-        const text = document.createTextNode(input.value.trim());
-        
-        // Store original parent and input for restoration
-        const parent = input.parentNode;
-        const container = parent.closest('.week-theme-container');
-        
-        // Store the modification
-        modifications.push({
-            container: container,
-            originalHTML: container.innerHTML,
-            input: input,
-            text: text
-        });
+    // Create a new <span>, copy the input's text
+    const span = document.createElement('span');
+    span.textContent = (originalSpan?.textContent ?? "") + input.value.trim();
 
-        // Replace input with text
-        if (container) {
-            // Simplify container for printing
-            container.innerHTML = '';
-            container.appendChild(text);
-        }
+    // Save the original HTML so we can revert after printing if desired
+    replacedElements.push({
+      parent: originalParent,
+      originalHTML: originalParent.innerHTML,
     });
 
-    // Force layout recalculation
-    document.body.offsetHeight;
+    // Replace the entire contents of the parent with our <span>
+    originalParent.innerHTML = '';
+    originalParent.appendChild(span);
+  });
 
-    // Print the document
-    window.print();
+  // Force the layout to update before printing
+  document.body.offsetHeight;
 
-    // Restore all modifications
-    modifications.forEach(mod => {
-        if (mod.container) {
-            mod.container.innerHTML = mod.originalHTML;
-        }
-    });
+  // Now call the print dialog
+  window.print();
 
-    // Remove Safari-specific class if it was added
-    if (isSafari) {
-        document.body.classList.remove('safari-print');
-    }
-
-    // Ensure event handlers are reattached
-    reattachThemeInputHandlers?.();
-    updateRegenerateButtonsState?.();
+  // After printing, if you want to restore <input> fields so they're editable again:
+  replacedElements.forEach(item => {
+    item.parent.innerHTML = item.originalHTML;
+  });
 });
-
 /****************************************************
  * INSTRUCTIONS BUTTON
  ****************************************************/

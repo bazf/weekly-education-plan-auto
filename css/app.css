@@ -1,5 +1,5 @@
 :root {
-    --print-left-margin: 5mm;
+    --print-left-margin: 3mm;
     --print-page-width: calc(297mm - var(--print-left-margin));
     --first-column-width: calc(var(--print-page-width) * 0.15);
     --other-column-width: calc((var(--print-page-width) - var(--first-column-width)) / 7);
@@ -80,12 +80,11 @@
 }
 
 .cell-content-wrapper {
-    min-height: 40px;
 }
+   
 
 .week-theme-container {
-    display: inline-flex;
-    align-items: center;
+   
 }
 
 .regenerate-btn:disabled {
@@ -136,7 +135,6 @@
     table {
         width: var(--print-page-width) !important;
         margin: 0 !important;
-        table-layout: fixed !important;
         border-collapse: collapse;
         font-size: 8pt;
         page-break-inside: avoid !important;
@@ -146,18 +144,7 @@
     thead {
         height: 12%;
     }
-
-    /* Updated column widths and wrapping */
-    table td:first-child,
-    table th:first-child {
-        width: var(--first-column-width) !important;
-        min-width: var(--first-column-width) !important;
-        max-width: var(--first-column-width) !important;
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
-        white-space: normal !important;
-        padding-right: 4mm !important;
-    }
+    
 
     table td:not(:first-child),
     table th:not(:first-child) {
