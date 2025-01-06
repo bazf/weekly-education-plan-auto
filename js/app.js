@@ -291,7 +291,7 @@ generateWeeksBtn.addEventListener('click', () => {
           <td class="border px-4 py-2">
               <strong>${ddMM} (${dayOfWeekName})</strong>
               <br />           
-              <div class="flex justify-between items-start">
+              <div class="cell-content-wrapper flex justify-between items-start">
                   <span class="flex-grow">Тема дня: </span>
                   <input type="text" class="day-theme-input border rounded-md mt-1 py-1 px-2" placeholder="Вкажіть тему дня">
                   <button class="regenerate-btn flex-shrink-0" data-type="day-theme" title="Згенерувати нову тему дня">
