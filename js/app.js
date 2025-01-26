@@ -204,7 +204,7 @@ generateWeeksBtn.addEventListener('click', () => {
         const lastDateStr = formatDateDDMM(daysArray[daysArray.length - 1]);
 
         const pageDiv = document.createElement('div');
-        pageDiv.classList.add('page', 'mb-8');
+        pageDiv.classList.add('page', 'mb-8', 'overflow-scroll');
 
         const header = document.createElement('h2');
         header.classList.add('text-lg', 'font-semibold', 'mb-4');
@@ -265,7 +265,7 @@ generateWeeksBtn.addEventListener('click', () => {
         // Create table
         const table = document.createElement('table');
         table.id = tableId;
-        table.classList.add('min-w-full', 'bg-white', 'shadow-md', 'rounded', 'overflow-hidden');
+        table.classList.add('min-w-full', 'bg-white', 'shadow-md', 'rounded');
         table.innerHTML = `
         <thead>
             <tr>
@@ -576,8 +576,8 @@ autoFillDayThemesBtn.addEventListener('click', async () => {
 Свята повинні відповідати Григоріанському календарю, наприклад: правильно коли Різдво Христове тільки 25 грудня, а неправильно, коли 7 січня; Правильно, коли день Святого Миколая тільки 6 грудня, а неправильно, коли 19 грудня; тощо.).
 Не використовуй персонажів Діда Мороза чи Снігуроньки коли вимагає тема, замінюй Святим Миколаєм.
 Якщо свято випадає на вихідний, можна перенести тему на найближчий робочий день.
-Деякі теми днів повинні співвідноситися з темою тижня: "${weekTheme}, а інші можуть бути більш різноманітними, якщо немає свята на цей день."
-Подай відповідь у вигляді простого списку тем, кожна тема з нового рядка, без нумерації.
+Деякі з тем днів повинні повинні співвідноситися з темою тижня: "${weekTheme}, а інші можуть бути більш різноманітними, якщо немає свята на цей день."
+Подай відповідь у вигляді лише простого списку тем, кожна тема з нового рядка, без нумерації. Окрім тем відповідь не повинна містити більше нічого! Теми повинні бути лаконічні і цікаві.
 
 Ось дати та дні тижня для контексту:
 ${datesList.join('\n')}
