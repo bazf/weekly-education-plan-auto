@@ -5,7 +5,7 @@ const MODEL_CONFIG = {
     optimal: {
         name: "🌟 Оптимальна",
         weekThemes: "gemini-2.0-flash-exp",
-        dayThemes: "gemini-2.0-flash-thinking-exp-1219",
+        dayThemes: "gemini-2.0-flash-thinking-exp-01-21",
         activities: "gemini-2.0-flash-exp"
     },
     models: {
@@ -13,7 +13,7 @@ const MODEL_CONFIG = {
         "gemini-1.5-flash": "🚀 Швидка",
         "gemini-1.5-pro": "💪 Професійна",
         "gemini-2.0-flash-exp": "🔥 Потужна",
-        "gemini-2.0-flash-thinking-exp-1219": "🧠 Розумна"
+        "gemini-2.0-flash-thinking-exp-01-21": "🧠 Розумна"
     }
 };
 
